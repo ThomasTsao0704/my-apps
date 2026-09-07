@@ -167,77 +167,47 @@ input[type=checkbox]{accent-color:var(--accent);cursor:pointer;width:15px;height
 .field input:focus,.field textarea:focus{border-color:var(--accent)}
 .field textarea{resize:vertical;min-height:130px;font-family:"Fira Code",Consolas,monospace;font-size:12px;line-height:1.6}
 .chk-row{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+
+/* WYSIWYG（後台編輯視窗用，與主 app 一致）*/
+.wtoolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:6px 8px;
+  border:1px solid var(--border);border-bottom:none;border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--bg)}
+.wtoolbar button{background:none;border:1px solid transparent;color:var(--text-dim);min-width:26px;height:26px;
+  padding:0 6px;border-radius:4px;cursor:pointer;font-size:12px;line-height:1;transition:all var(--fast)}
+.wtoolbar button:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border)}
+.wtoolbar button.active{background:var(--accent-glow);color:var(--accent);border-color:var(--accent)}
+.wtoolbar select{height:26px;background:var(--bg-card);color:var(--text);border:1px solid var(--border);
+  border-radius:4px;font-size:11.5px;cursor:pointer;outline:none;padding:0 3px}
+.wtoolbar select:hover{border-color:var(--border-focus)}
+.wsep{width:1px;height:18px;background:var(--border);margin:0 3px}
+.wcolor{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:28px;height:26px;
+  border-radius:4px;cursor:pointer;color:var(--text-dim);font-weight:700;font-size:11px;line-height:1;transition:all var(--fast)}
+.wcolor:hover{background:var(--bg-hover);color:var(--text)}
+.wcolor span{pointer-events:none}
+.wcolor input[type=color]{width:18px;height:4px;border:none;background:none;padding:0;margin-top:1px;cursor:pointer}
+.wcolor input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.wcolor input[type=color]::-webkit-color-swatch{border:none;border-radius:1px}
+.wed-area{border:1px solid var(--border);border-radius:0 0 var(--radius-sm) var(--radius-sm);min-height:200px;max-height:44vh;
+  overflow-y:auto;padding:12px 14px;font-size:13.5px;line-height:1.75;color:#e2e4ed;background:var(--bg);outline:none}
+.wed-area:empty::before{content:'在這裡開始寫作…';color:var(--text-dim)}
+.wed-area h1{font-size:1.5em;margin:.3em 0;color:#fff}
+.wed-area h2{font-size:1.25em;margin:.3em 0;border-bottom:1px solid var(--border);padding-bottom:.2em}
+.wed-area h3{font-size:1.08em;margin:.3em 0}
+.wed-area p{margin:0 0 .5em}
+.wed-area ul,.wed-area ol{margin:0 0 .5em 1.3em}
+.wed-area blockquote{border-left:3px solid var(--accent);padding:.3em .7em;margin:.3em 0;background:var(--accent-glow);border-radius:0 6px 6px 0}
+.wed-area pre{background:#0d0f17;padding:10px;border-radius:6px;overflow-x:auto;font-size:12px;margin:.3em 0}
+.wed-area :not(pre)>code{background:var(--tag-bg);padding:1px 5px;border-radius:3px;font-family:Consolas,monospace}
+.wed-area a{color:var(--accent)}
+.wed-area img{max-width:100%;border-radius:6px;margin:.3em 0;display:block}
+.wed-area table{width:100%;border-collapse:collapse;margin:.4em 0}
+.wed-area th,.wed-area td{border:1px solid var(--border);padding:5px 9px;text-align:left}
+.wed-area th{background:var(--tag-bg)}
+.wed-area sub,.wed-area sup{font-size:.75em}
+.wed-area hr{border:none;border-top:1px solid var(--border);margin:.8em 0}
+.wed-source{border:1px solid var(--border);border-radius:0 0 var(--radius-sm) var(--radius-sm);width:100%;min-height:200px;
+  max-height:44vh;overflow-y:auto;padding:12px 14px;font-family:Consolas,monospace;font-size:12px;line-height:1.6;
+  color:var(--green);background:#0a0c12;outline:none;resize:none}
 .warn-ico{font-size:36px;text-align:center;margin-bottom:10px;opacity:.75}
-
-/* ── WYSIWYG 編輯器工具列（移植自 editor-enhanced.html）── */
-.wysiwyg-toolbar{
-  display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:8px 10px;
-  border:1px solid var(--border);border-bottom:none;border-radius:var(--radius-sm) var(--radius-sm) 0 0;
-  background:var(--bg);
-}
-.wysiwyg-toolbar button{
-  background:none;border:1px solid transparent;color:var(--text-dim);
-  min-width:28px;height:28px;padding:0 7px;border-radius:4px;cursor:pointer;
-  font-size:12px;line-height:1;transition:all var(--fast);
-}
-.wysiwyg-toolbar button:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border)}
-.wysiwyg-toolbar button.active{background:var(--accent-glow);color:var(--accent);border-color:var(--accent)}
-.tb-sep{width:1px;height:20px;background:var(--border);margin:0 4px}
-.wysiwyg-toolbar select{
-  height:28px;background:var(--bg);color:var(--text);border:1px solid var(--border);
-  border-radius:4px;padding:0 4px;font-size:12px;cursor:pointer;outline:none;
-}
-.wysiwyg-toolbar select:hover{border-color:var(--border-focus)}
-.tb-color{
-  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
-  width:30px;height:28px;border-radius:4px;cursor:pointer;color:var(--text-dim);
-  font-weight:700;font-size:12px;line-height:1;transition:all var(--fast);
-  border:1px solid transparent;position:relative;
-}
-.tb-color:hover{background:var(--bg-hover);color:var(--text)}
-.tb-color span{pointer-events:none}
-.tb-color input[type=color]{
-  width:20px;height:4px;border:none;background:none;padding:0;margin-top:2px;cursor:pointer;
-}
-.tb-color input[type=color]::-webkit-color-swatch-wrapper{padding:0}
-.tb-color input[type=color]::-webkit-color-swatch{border:none;border-radius:1px}
-.tb-color input[type=color]::-moz-color-swatch{border:none;border-radius:1px}
-
-.editor-area{
-  min-height:200px;max-height:38vh;overflow-y:auto;padding:14px 16px;
-  font-size:13.5px;line-height:1.75;color:#e2e4ed;background:var(--bg);outline:none;
-  border:1px solid var(--border);border-radius:0 0 var(--radius-sm) var(--radius-sm);
-}
-.editor-area:empty::before{content:'在這裡開始寫作…';color:var(--text-dim);pointer-events:none}
-.editor-area h1{font-size:1.5em;margin:.4em 0;color:#fff}
-.editor-area h2{font-size:1.25em;margin:.4em 0;color:#e8eaf2;border-bottom:1px solid var(--border);padding-bottom:.2em}
-.editor-area h3{font-size:1.05em;margin:.3em 0;color:#d0d4e4}
-.editor-area p{margin:0 0 .6em}
-.editor-area ul,.editor-area ol{margin:0 0 .6em 1.4em}
-.editor-area blockquote{border-left:3px solid var(--accent);padding:.4em .8em;margin:.4em 0;
-  background:var(--accent-glow);border-radius:0 6px 6px 0}
-.editor-area pre{background:#0d0f17;padding:12px;border-radius:6px;overflow-x:auto;
-  font-size:12px;margin:.4em 0}
-.editor-area code{font-family:"Fira Code",Consolas,monospace;font-size:.9em}
-.editor-area :not(pre)>code{background:var(--tag-bg);padding:1px 5px;border-radius:3px}
-.editor-area a{color:var(--accent)}
-.editor-area hr{border:none;border-top:1px solid var(--border);margin:1em 0}
-.editor-area table{width:100%;border-collapse:collapse;margin:.6em 0}
-.editor-area th,.editor-area td{border:1px solid var(--border);padding:6px 10px;text-align:left}
-.editor-area th{background:var(--tag-bg)}
-.editor-area img{max-width:100%;border-radius:6px;margin:.4em 0;display:block}
-.editor-area sub,.editor-area sup{font-size:.75em}
-
-.source-area{
-  width:100%;min-height:200px;max-height:38vh;overflow-y:auto;padding:12px 14px;
-  font-size:12px;line-height:1.7;font-family:"Fira Code",Consolas,monospace;
-  color:var(--green);background:#0a0c12;border:1px solid var(--border);
-  border-radius:0 0 var(--radius-sm) var(--radius-sm);outline:none;resize:none;
-}
-.preview-frame{width:100%;min-height:200px;max-height:38vh;border:1px solid var(--border);
-  border-radius:0 0 var(--radius-sm) var(--radius-sm);background:#fff;display:block}
-.ed-toolfoot{display:flex;justify-content:flex-end;margin-top:4px}
-.ed-toolfoot .count{color:var(--text-dim);font-size:11px}
 
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(16px);
   background:var(--bg-card);color:var(--text);padding:9px 22px;border-radius:10px;border:1px solid var(--border);
@@ -352,68 +322,56 @@ input[type=checkbox]{accent-color:var(--accent);cursor:pointer;width:15px;height
 
 <!-- Edit modal -->
 <div class="overlay" id="editOverlay">
-  <div class="modal">
+  <div class="modal" style="max-width:700px">
     <div class="modal-hd"><h3 id="editTitle">編輯文章</h3><button class="x" data-x="editOverlay">✕</button></div>
     <div class="modal-bd">
       <div class="field"><label>標題</label><input id="fTitle" type="text" placeholder="文章標題" /></div>
       <div class="field"><label>標籤 <small style="opacity:.6">（逗號分隔）</small></label><input id="fTags" type="text" placeholder="交易, 心理" /></div>
       <div class="field"><label>摘要</label><input id="fDesc" type="text" placeholder="簡短描述（選填）" /></div>
-      <div class="field">
-        <label>內容</label>
-        <div class="wysiwyg-toolbar">
-          <button type="button" data-cmd="undo" title="復原 (Ctrl+Z)">↶</button>
-          <button type="button" data-cmd="redo" title="重做 (Ctrl+Y)">↷</button>
-          <span class="tb-sep"></span>
-          <select id="blockSelect" title="段落樣式">
-            <option value="P">內文</option>
-            <option value="H1">標題 1</option>
-            <option value="H2">標題 2</option>
-            <option value="H3">標題 3</option>
-            <option value="BLOCKQUOTE">引用</option>
-            <option value="PRE">程式碼區塊</option>
+      <div class="field"><label>內容</label>
+        <div class="wtoolbar" id="edToolbar">
+          <button type="button" data-cmd="undo" title="復原">↶</button>
+          <button type="button" data-cmd="redo" title="重做">↷</button>
+          <span class="wsep"></span>
+          <select id="edBlock" title="段落樣式">
+            <option value="P">內文</option><option value="H1">H1</option><option value="H2">H2</option>
+            <option value="H3">H3</option><option value="BLOCKQUOTE">引用</option><option value="PRE">程式區塊</option>
           </select>
-          <select id="sizeSelect" title="字級">
-            <option value="">字級</option>
-            <option value="12px">小</option>
-            <option value="15px">正常</option>
-            <option value="20px">大</option>
-            <option value="28px">特大</option>
+          <select id="edSize" title="字級">
+            <option value="">字級</option><option value="12px">小</option><option value="15px">正常</option>
+            <option value="20px">大</option><option value="28px">特大</option>
           </select>
-          <span class="tb-sep"></span>
-          <button type="button" data-cmd="bold" title="粗體 (Ctrl+B)"><b>B</b></button>
-          <button type="button" data-cmd="italic" title="斜體 (Ctrl+I)"><i>I</i></button>
-          <button type="button" data-cmd="underline" title="底線 (Ctrl+U)"><u>U</u></button>
+          <span class="wsep"></span>
+          <button type="button" data-cmd="bold" title="粗體"><b>B</b></button>
+          <button type="button" data-cmd="italic" title="斜體"><i>I</i></button>
+          <button type="button" data-cmd="underline" title="底線"><u>U</u></button>
           <button type="button" data-cmd="strikeThrough" title="刪除線"><s>S</s></button>
-          <label class="tb-color" title="文字顏色"><span>A</span><input type="color" id="foreColor" value="#f87171" /></label>
-          <label class="tb-color" title="螢光筆（背景）"><span>🖌</span><input type="color" id="hiliteColor" value="#fbbf24" /></label>
-          <span class="tb-sep"></span>
+          <label class="wcolor" title="文字顏色"><span>A</span><input type="color" id="edFore" value="#f87171"></label>
+          <label class="wcolor" title="螢光筆"><span>🖌</span><input type="color" id="edHilite" value="#fbbf24"></label>
+          <span class="wsep"></span>
           <button type="button" data-cmd="justifyLeft" title="靠左">⬅</button>
           <button type="button" data-cmd="justifyCenter" title="置中">⬌</button>
           <button type="button" data-cmd="justifyRight" title="靠右">➡</button>
-          <button type="button" data-cmd="justifyFull" title="兩端對齊">☰</button>
-          <span class="tb-sep"></span>
+          <span class="wsep"></span>
           <button type="button" data-cmd="insertUnorderedList" title="項目清單">•</button>
           <button type="button" data-cmd="insertOrderedList" title="數字清單">1.</button>
           <button type="button" data-cmd="outdent" title="減少縮排">⇤</button>
           <button type="button" data-cmd="indent" title="增加縮排">⇥</button>
-          <span class="tb-sep"></span>
+          <span class="wsep"></span>
           <button type="button" data-cmd="superscript" title="上標">x²</button>
           <button type="button" data-cmd="subscript" title="下標">x₂</button>
-          <span class="tb-sep"></span>
-          <button type="button" id="insertCodeBtn" title="行內程式碼">&lt;/&gt;</button>
-          <button type="button" id="insertLinkBtn" title="插入連結">🔗</button>
-          <button type="button" id="insertImgBtn" title="插入圖片（網址）">🖼</button>
-          <button type="button" id="insertTableBtn" title="插入表格">▦</button>
-          <button type="button" id="insertHrBtn" title="分隔線">―</button>
-          <span class="tb-sep"></span>
+          <span class="wsep"></span>
+          <button type="button" id="edCode" title="行內程式碼">&lt;/&gt;</button>
+          <button type="button" id="edLink" title="連結">🔗</button>
+          <button type="button" id="edImg" title="圖片（網址）">🖼</button>
+          <button type="button" id="edTable" title="表格">▦</button>
+          <button type="button" id="edHr" title="分隔線">―</button>
+          <span class="wsep"></span>
           <button type="button" data-cmd="removeFormat" title="清除格式">⌫</button>
-          <button type="button" id="previewBtn" title="渲染預覽（淺色輸出）">👁</button>
-          <button type="button" id="toggleSourceBtn" title="切換 HTML 原始碼">{ }</button>
+          <button type="button" id="edSourceBtn" title="HTML 原始碼">{ }</button>
         </div>
-        <div id="editorArea" class="editor-area" contenteditable="true"></div>
-        <textarea id="fContent" class="source-area" style="display:none" spellcheck="false" placeholder="<p>文章內容…</p>"></textarea>
-        <iframe id="previewFrame" class="preview-frame" style="display:none" sandbox="allow-same-origin"></iframe>
-        <div class="ed-toolfoot"><span id="edCharCount" class="count"></span></div>
+        <div id="edArea" class="wed-area" contenteditable="true"></div>
+        <textarea id="edSource" class="wed-source" style="display:none" spellcheck="false"></textarea>
       </div>
       <label class="chk-row"><input type="checkbox" id="fStar" /> 加入收藏</label>
     </div>
@@ -759,231 +717,6 @@ function exportItems(ids){
   toast(`📤 已匯出 ${list.length} 篇`);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   WYSIWYG 編輯器（移植自 editor-enhanced.html）
-   ═══════════════════════════════════════════════════════════════ */
-const $editorArea = document.getElementById('editorArea');
-const $sourceArea = document.getElementById('fContent');
-const $previewFrame = document.getElementById('previewFrame');
-let edSourceMode = false, edPreviewMode = false;
-
-function setEditorContent(html){
-  edSourceMode = false; edPreviewMode = false;
-  $editorArea.innerHTML = html || '';
-  $sourceArea.value = html || '';
-  $editorArea.style.display = '';
-  $sourceArea.style.display = 'none';
-  $previewFrame.style.display = 'none';
-  $previewFrame.removeAttribute('srcdoc');
-  document.getElementById('toggleSourceBtn').classList.remove('active');
-  document.getElementById('previewBtn').classList.remove('active');
-  updateEdCharCount();
-}
-function getEditorContent(){
-  return edSourceMode ? $sourceArea.value : $editorArea.innerHTML;
-}
-
-function edExec(cmd, val = null) {
-  $editorArea.focus();
-  document.execCommand(cmd, false, val);
-  syncToolbarState();
-}
-function edExecCSS(cmd, val) {
-  $editorArea.focus();
-  document.execCommand('styleWithCSS', false, true);
-  const ok = document.execCommand(cmd, false, val);
-  document.execCommand('styleWithCSS', false, false);
-  syncToolbarState();
-  return ok;
-}
-
-document.querySelectorAll('.wysiwyg-toolbar [data-cmd]').forEach(btn => {
-  btn.addEventListener('mousedown', e => e.preventDefault());
-  btn.addEventListener('click', () => edExec(btn.dataset.cmd, btn.dataset.val || null));
-});
-
-document.getElementById('blockSelect').addEventListener('change', function () {
-  edExec('formatBlock', this.value);
-  this.selectedIndex = 0;
-});
-
-document.getElementById('sizeSelect').addEventListener('change', function () {
-  const px = this.value;
-  this.selectedIndex = 0;
-  if (!px) return;
-  $editorArea.focus();
-  document.execCommand('fontSize', false, '7');
-  $editorArea.querySelectorAll('font[size="7"]').forEach(f => {
-    const span = document.createElement('span');
-    span.style.fontSize = px;
-    while (f.firstChild) span.appendChild(f.firstChild);
-    f.replaceWith(span);
-  });
-});
-
-document.getElementById('foreColor').addEventListener('input', function () {
-  edExecCSS('foreColor', this.value);
-});
-document.getElementById('hiliteColor').addEventListener('input', function () {
-  if (!edExecCSS('hiliteColor', this.value)) edExecCSS('backColor', this.value);
-});
-document.querySelectorAll('.tb-color').forEach(l =>
-  l.addEventListener('mousedown', e => { if (e.target.tagName !== 'INPUT') e.preventDefault(); })
-);
-
-document.getElementById('insertCodeBtn').addEventListener('click', () => {
-  $editorArea.focus();
-  const sel = window.getSelection();
-  const text = sel && sel.toString();
-  if (text) document.execCommand('insertHTML', false, '<code>' + esc(text) + '</code>');
-  else document.execCommand('insertHTML', false, '<code>程式碼</code>&nbsp;');
-});
-
-document.getElementById('insertLinkBtn').addEventListener('click', () => {
-  const url = prompt('輸入連結網址：', 'https://');
-  if (!url) return;
-  $editorArea.focus();
-  const sel = window.getSelection();
-  if (sel && sel.toString()) document.execCommand('createLink', false, url);
-  else document.execCommand('insertHTML', false,
-    `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>`);
-});
-
-document.getElementById('insertImgBtn').addEventListener('click', () => {
-  const url = prompt('輸入圖片網址：', 'https://');
-  if (!url) return;
-  $editorArea.focus();
-  document.execCommand('insertImage', false, url);
-});
-
-document.getElementById('insertTableBtn').addEventListener('click', () => {
-  const rows = parseInt(prompt('列數（含標題列）：', '3'), 10);
-  const cols = parseInt(prompt('欄數：', '3'), 10);
-  if (!rows || !cols || rows < 1 || cols < 1) return;
-  let html = '<table><thead><tr>';
-  for (let c = 0; c < cols; c++) html += '<th>標題' + (c + 1) + '</th>';
-  html += '</tr></thead><tbody>';
-  for (let r = 0; r < rows - 1; r++) {
-    html += '<tr>';
-    for (let c = 0; c < cols; c++) html += '<td>&nbsp;</td>';
-    html += '</tr>';
-  }
-  html += '</tbody></table><p><br></p>';
-  $editorArea.focus();
-  document.execCommand('insertHTML', false, html);
-});
-
-document.getElementById('insertHrBtn').addEventListener('click', () => {
-  $editorArea.focus();
-  document.execCommand('insertHTML', false, '<hr><p><br></p>');
-});
-
-$editorArea.addEventListener('paste', e => {
-  const items = (e.clipboardData || window.clipboardData).items || [];
-  for (const it of items) {
-    if (it.type && it.type.indexOf('image') === 0) {
-      e.preventDefault();
-      const file = it.getAsFile();
-      const reader = new FileReader();
-      reader.onload = () => { $editorArea.focus(); document.execCommand('insertImage', false, reader.result); };
-      reader.readAsDataURL(file);
-      return;
-    }
-  }
-  const html = e.clipboardData && e.clipboardData.getData('text/html');
-  if (html) { e.preventDefault(); document.execCommand('insertHTML', false, cleanPastedHTML(html)); }
-});
-
-$editorArea.addEventListener('dragover', e => e.preventDefault());
-$editorArea.addEventListener('drop', e => {
-  const files = e.dataTransfer && e.dataTransfer.files;
-  if (files && files.length && files[0].type.indexOf('image') === 0) {
-    e.preventDefault();
-    const reader = new FileReader();
-    reader.onload = () => { $editorArea.focus(); document.execCommand('insertImage', false, reader.result); };
-    reader.readAsDataURL(files[0]);
-  }
-});
-
-function cleanPastedHTML(html) {
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  tmp.querySelectorAll('script,style,meta,link,noscript,iframe').forEach(el => el.remove());
-  tmp.querySelectorAll('*').forEach(el => {
-    el.removeAttribute('style'); el.removeAttribute('class'); el.removeAttribute('id');
-    [...el.attributes].forEach(a => {
-      if (/^on/i.test(a.name)) el.removeAttribute(a.name);
-      if (a.name === 'href' && /^javascript:/i.test(a.value)) el.removeAttribute(a.name);
-    });
-  });
-  return tmp.innerHTML;
-}
-
-const ED_STATE_CMDS = ['bold', 'italic', 'underline', 'strikeThrough',
-  'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
-  'insertUnorderedList', 'insertOrderedList', 'superscript', 'subscript'];
-function syncToolbarState() {
-  ED_STATE_CMDS.forEach(cmd => {
-    const btn = document.querySelector(`.wysiwyg-toolbar [data-cmd="${cmd}"]`);
-    if (!btn) return;
-    let on = false;
-    try { on = document.queryCommandState(cmd); } catch (e) {}
-    btn.classList.toggle('active', on);
-  });
-}
-document.addEventListener('selectionchange', () => {
-  if (document.activeElement === $editorArea) syncToolbarState();
-});
-
-document.getElementById('toggleSourceBtn').addEventListener('click', function () {
-  if (edPreviewMode) togglePreview();
-  edSourceMode = !edSourceMode;
-  if (edSourceMode) {
-    $sourceArea.value = $editorArea.innerHTML;
-    $editorArea.style.display = 'none';
-    $sourceArea.style.display = '';
-    $sourceArea.focus();
-  } else {
-    $editorArea.innerHTML = $sourceArea.value;
-    $sourceArea.style.display = 'none';
-    $editorArea.style.display = '';
-    $editorArea.focus();
-  }
-  this.classList.toggle('active', edSourceMode);
-  updateEdCharCount();
-});
-
-function togglePreview() {
-  edPreviewMode = !edPreviewMode;
-  const btn = document.getElementById('previewBtn');
-  if (edPreviewMode) {
-    if (edSourceMode) document.getElementById('toggleSourceBtn').click();
-    $previewFrame.srcdoc = wrapArticleHTML($editorArea.innerHTML, document.getElementById('fTitle').value);
-    $editorArea.style.display = 'none';
-    $previewFrame.style.display = '';
-  } else {
-    $previewFrame.style.display = 'none';
-    $previewFrame.removeAttribute('srcdoc');
-    $editorArea.style.display = '';
-  }
-  btn.classList.toggle('active', edPreviewMode);
-}
-document.getElementById('previewBtn').addEventListener('click', togglePreview);
-
-function updateEdCharCount() {
-  const text = edSourceMode ? $sourceArea.value : $editorArea.innerText;
-  document.getElementById('edCharCount').textContent = (text || '').replace(/\s/g, '').length + ' 字';
-}
-$editorArea.addEventListener('input', updateEdCharCount);
-$sourceArea.addEventListener('input', updateEdCharCount);
-
-$editorArea.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-    e.preventDefault();
-    document.getElementById('insertLinkBtn').click();
-  }
-});
-
 /* ── Edit modal ── */
 let editingId=null;
 function openEdit(id){
@@ -994,8 +727,8 @@ function openEdit(id){
   document.getElementById('fTitle').value = d.title||'';
   document.getElementById('fTags').value = (d.tags||[]).join(', ');
   document.getElementById('fDesc').value = d.desc||'';
+  Editor.set(isNew ? '' : (articles[id]||''));
   document.getElementById('fStar').checked = isNew?false : starred.has(id);
-  setEditorContent(isNew?'' : (articles[id]||''));
   openModal('editOverlay');
   setTimeout(()=>document.getElementById('fTitle').focus(),150);
 }
@@ -1004,7 +737,7 @@ document.getElementById('editSave').onclick = ()=>{
   if(!title) return toast('⚠️ 請輸入標題');
   const tags=document.getElementById('fTags').value.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
   const desc=document.getElementById('fDesc').value.trim();
-  const content=getEditorContent();
+  const content=Editor.get();
   const star=document.getElementById('fStar').checked;
   const now=Date.now();
 
@@ -1118,6 +851,84 @@ function buildDemo(){
   const recent=[src[3].id,src[0].id,src[1].id,src[5].id];
   return { db, articles, starred, recent };
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   後台編輯視窗的所見即所得編輯器（與主 app 強化版一致）
+   對外只暴露 Editor.set(html) / Editor.get()
+   ═══════════════════════════════════════════════════════════════ */
+const Editor = (() => {
+  const area   = document.getElementById('edArea');
+  const source = document.getElementById('edSource');
+  const toolbar= document.getElementById('edToolbar');
+  const srcBtn = document.getElementById('edSourceBtn');
+  let sourceMode = false;
+
+  function exec(cmd, val=null){ area.focus(); document.execCommand(cmd,false,val); sync(); }
+  function execCSS(cmd, val){
+    area.focus(); document.execCommand('styleWithCSS',false,true);
+    const ok = document.execCommand(cmd,false,val);
+    document.execCommand('styleWithCSS',false,false); sync(); return ok;
+  }
+  function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escA(s){ return escH(s).replace(/'/g,'&#39;'); }
+
+  // 一般指令按鈕
+  toolbar.querySelectorAll('[data-cmd]').forEach(b=>{
+    b.addEventListener('mousedown', e=>e.preventDefault());
+    b.addEventListener('click', ()=>exec(b.dataset.cmd, b.dataset.val||null));
+  });
+  // 段落樣式 / 字級
+  document.getElementById('edBlock').addEventListener('change', function(){ exec('formatBlock', this.value); this.selectedIndex=0; });
+  document.getElementById('edSize').addEventListener('change', function(){
+    const px=this.value; this.selectedIndex=0; if(!px) return; area.focus();
+    document.execCommand('fontSize',false,'7');
+    area.querySelectorAll('font[size="7"]').forEach(f=>{ const s=document.createElement('span'); s.style.fontSize=px; while(f.firstChild)s.appendChild(f.firstChild); f.replaceWith(s); });
+  });
+  // 顏色
+  document.getElementById('edFore').addEventListener('input', function(){ execCSS('foreColor', this.value); });
+  document.getElementById('edHilite').addEventListener('input', function(){ if(!execCSS('hiliteColor', this.value)) execCSS('backColor', this.value); });
+  toolbar.querySelectorAll('.wcolor').forEach(l=> l.addEventListener('mousedown', e=>{ if(e.target.tagName!=='INPUT') e.preventDefault(); }));
+  // 行內程式碼 / 連結 / 圖片 / 表格 / 分隔線
+  document.getElementById('edCode').addEventListener('click', ()=>{ area.focus(); const t=(window.getSelection()+''); document.execCommand('insertHTML',false, t?'<code>'+escH(t)+'</code>':'<code>程式碼</code>&nbsp;'); });
+  document.getElementById('edLink').addEventListener('click', ()=>{ const u=prompt('連結網址：','https://'); if(!u)return; area.focus(); const s=window.getSelection(); (s&&s.toString())?document.execCommand('createLink',false,u):document.execCommand('insertHTML',false,`<a href="${escA(u)}" target="_blank" rel="noopener">${escH(u)}</a>`); });
+  document.getElementById('edImg').addEventListener('click', ()=>{ const u=prompt('圖片網址：','https://'); if(!u)return; area.focus(); document.execCommand('insertImage',false,u); });
+  document.getElementById('edTable').addEventListener('click', ()=>{ const r=parseInt(prompt('列數（含標題）：','3'),10), c=parseInt(prompt('欄數：','3'),10); if(!r||!c||r<1||c<1)return; let h='<table><thead><tr>'; for(let j=0;j<c;j++)h+='<th>標題'+(j+1)+'</th>'; h+='</tr></thead><tbody>'; for(let i=0;i<r-1;i++){h+='<tr>';for(let j=0;j<c;j++)h+='<td>&nbsp;</td>';h+='</tr>';} h+='</tbody></table><p><br></p>'; area.focus(); document.execCommand('insertHTML',false,h); });
+  document.getElementById('edHr').addEventListener('click', ()=>{ area.focus(); document.execCommand('insertHTML',false,'<hr><p><br></p>'); });
+  // 原始碼切換
+  srcBtn.addEventListener('click', ()=>{
+    sourceMode=!sourceMode;
+    if(sourceMode){ source.value=area.innerHTML; area.style.display='none'; source.style.display=''; source.focus(); }
+    else{ area.innerHTML=source.value; source.style.display='none'; area.style.display=''; area.focus(); }
+    srcBtn.classList.toggle('active', sourceMode);
+  });
+  // 貼上：圖片→base64 內嵌；HTML→清理樣式
+  area.addEventListener('paste', e=>{
+    const items=(e.clipboardData||window.clipboardData).items||[];
+    for(const it of items){ if(it.type&&it.type.indexOf('image')===0){ e.preventDefault(); const f=it.getAsFile(); const r=new FileReader(); r.onload=()=>{area.focus();document.execCommand('insertImage',false,r.result);}; r.readAsDataURL(f); return; } }
+    const html=e.clipboardData&&e.clipboardData.getData('text/html');
+    if(html){ e.preventDefault(); document.execCommand('insertHTML',false,clean(html)); }
+  });
+  area.addEventListener('dragover', e=>e.preventDefault());
+  area.addEventListener('drop', e=>{ const fs=e.dataTransfer&&e.dataTransfer.files; if(fs&&fs.length&&fs[0].type.indexOf('image')===0){ e.preventDefault(); const r=new FileReader(); r.onload=()=>{area.focus();document.execCommand('insertImage',false,r.result);}; r.readAsDataURL(fs[0]); } });
+  function clean(html){
+    const t=document.createElement('div'); t.innerHTML=html;
+    t.querySelectorAll('script,style,meta,link,noscript,iframe').forEach(e=>e.remove());
+    t.querySelectorAll('*').forEach(el=>{
+      el.removeAttribute('style'); el.removeAttribute('class'); el.removeAttribute('id');
+      [...el.attributes].forEach(a=>{ if(/^on/i.test(a.name))el.removeAttribute(a.name); if(a.name==='href'&&/^javascript:/i.test(a.value))el.removeAttribute(a.name); });
+    });
+    return t.innerHTML;
+  }
+  // 工具列即時反白
+  const STATE=['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight','insertUnorderedList','insertOrderedList','superscript','subscript'];
+  function sync(){ STATE.forEach(c=>{ const b=toolbar.querySelector(`[data-cmd="${c}"]`); if(!b)return; let on=false; try{on=document.queryCommandState(c);}catch(e){} b.classList.toggle('active',on); }); }
+  document.addEventListener('selectionchange', ()=>{ if(document.activeElement===area) sync(); });
+
+  return {
+    set(html){ sourceMode=false; srcBtn.classList.remove('active'); source.style.display='none'; area.style.display=''; area.innerHTML=html||''; },
+    get(){ return sourceMode ? source.value : area.innerHTML; },
+  };
+})();
 
 /* ═══ Boot ═══ */
 loadData();
