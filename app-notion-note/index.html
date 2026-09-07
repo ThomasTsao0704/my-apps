@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>📊 知識庫 — 儀表板與後台</title>
+<style>
+:root{
+  --bg:#0c0e14; --bg-card:#151821; --bg-hover:#1e2230; --bg-active:#252a3a; --bg-modal:#181c28;
+  --border:#272d42; --border-focus:#4a5580;
+  --text:#dfe2ed; --text-dim:#6b7194;
+  --accent:#6c8cff; --accent-glow:rgba(108,140,255,.15); --accent-hover:#849dff;
+  --danger:#f87171; --danger-bg:rgba(248,113,113,.12); --star:#fbbf24;
+  --green:#34d399; --tag-bg:#1e2336; --tag-text:#8892b5;
+  --radius:10px; --radius-sm:6px; --fast:.15s ease;
+  --c1:#6c8cff; --c2:#34d399; --c3:#fbbf24; --c4:#f472b6; --c5:#22d3ee;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ── Header ── */
+.top{display:flex;align-items:center;gap:16px;padding:0 20px;height:56px;
+  background:var(--bg-card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.brand .logo{font-size:20px}
+.tabs{display:flex;gap:4px;margin-left:8px}
+.tab{padding:7px 16px;border:none;background:none;color:var(--text-dim);font-size:13px;
+  font-weight:600;cursor:pointer;border-radius:8px;transition:all var(--fast)}
+.tab:hover{background:var(--bg-hover);color:var(--text)}
+.tab.active{background:var(--accent-glow);color:var(--accent)}
+.top .spacer{flex:1}
+.back-link{color:var(--text-dim);font-size:12.5px;text-decoration:none;padding:6px 12px;
+  border:1px solid var(--border);border-radius:8px;transition:all var(--fast)}
+.back-link:hover{color:var(--text);background:var(--bg-hover)}
+
+.demo-banner{background:rgba(251,191,36,.1);color:var(--star);font-size:12px;
+  text-align:center;padding:6px;border-bottom:1px solid var(--border)}
+
+.page{max-width:1120px;margin:0 auto;padding:24px 20px 60px}
+.view{display:none}
+.view.active{display:block}
+
+/* ── Stat chips ── */
+.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.chip{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.chip .n{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.chip .l{font-size:11.5px;color:var(--text-dim)}
+.chip.accent .n{color:var(--accent)} .chip.green .n{color:var(--green)}
+.chip.star .n{color:var(--star)} .chip.pink .n{color:var(--c4)}
+
+/* ── Panels ── */
+.panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 20px;margin-bottom:16px}
+.panel-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.panel-hd h3{font-size:13.5px;font-weight:700}
+.panel-hd .sub{font-size:11.5px;color:var(--text-dim)}
+
+/* Hero activity chart */
+.hero .total{font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1}
+.hero .total small{font-size:12px;color:var(--text-dim);font-weight:500;margin-left:6px}
+.chart-wrap{margin-top:10px}
+.chart-svg{width:100%;height:170px;display:block;overflow:visible}
+.axis-lbls{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text-dim)}
+
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.cols2{grid-template-columns:1fr}}
+
+/* Tag bars */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}
+.bar-row .lbl{width:92px;flex-shrink:0;color:var(--tag-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:9px;background:var(--bg);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--c5));transition:width .5s ease}
+.bar-row .val{width:28px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+
+/* List panels */
+.mini-list{display:flex;flex-direction:column;gap:2px}
+.mini-item{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:background var(--fast)}
+.mini-item:hover{background:var(--bg-hover)}
+.mini-item .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.mini-item .t{flex:1;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-item .meta{font-size:10.5px;color:var(--text-dim);flex-shrink:0}
+.empty-note{color:var(--text-dim);font-size:12px;padding:14px 4px;text-align:center}
+
+/* ── Management toolbar ── */
+.mgmt-bar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:8px;padding:0 10px;flex:1;min-width:180px}
+.search-box:focus-within{border-color:var(--accent)}
+.search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:13px;padding:8px 6px}
+.search-box input::placeholder{color:var(--text-dim)}
+.sel{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text);
+  font-size:12.5px;padding:8px 10px;cursor:pointer;outline:none}
+.sel:hover{border-color:var(--border-focus)}
+
+/* bulk action bar */
+.bulk{display:none;align-items:center;gap:8px;background:var(--accent-glow);
+  border:1px solid var(--accent);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12.5px}
+.bulk.show{display:flex}
+.bulk .cnt{color:var(--accent);font-weight:700}
+.bulk .spacer{flex:1}
+
+/* ── Table ── */
+.table-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{text-align:left;padding:11px 12px;font-size:11px;color:var(--text-dim);font-weight:700;
+  border-bottom:1px solid var(--border);background:var(--bg-card);position:sticky;top:56px;white-space:nowrap}
+thead th.sortable{cursor:pointer;user-select:none}
+thead th.sortable:hover{color:var(--text)}
+thead th .arr{opacity:.5;font-size:9px;margin-left:2px}
+tbody tr{border-bottom:1px solid var(--border);transition:background var(--fast)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg-hover)}
+tbody tr.sel{background:var(--accent-glow)}
+td{padding:10px 12px;vertical-align:middle}
+td.title-cell{font-weight:600;max-width:280px}
+td.title-cell .tt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.row-tag{font-size:9px;padding:1px 6px;border-radius:7px;background:var(--tag-bg);color:var(--tag-text)}
+.pill{font-size:9.5px;padding:2px 7px;border-radius:8px;font-weight:600;white-space:nowrap}
+.pill.local{background:rgba(52,211,153,.12);color:var(--green)}
+.pill.file{background:var(--tag-bg);color:var(--tag-text)}
+.pill.star{background:rgba(251,191,36,.14);color:var(--star)}
+.num{font-variant-numeric:tabular-nums;color:var(--text-dim)}
+.dim{color:var(--text-dim)}
+.row-actions{display:flex;gap:2px;justify-content:flex-end}
+.iconbtn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;
+  padding:4px 6px;border-radius:5px;transition:all var(--fast)}
+.iconbtn:hover{background:var(--bg-active);color:var(--text)}
+.iconbtn.danger:hover{color:var(--danger);background:var(--danger-bg)}
+input[type=checkbox]{accent-color:var(--accent);cursor:pointer;width:15px;height:15px}
+.table-foot{padding:10px 14px;font-size:11.5px;color:var(--text-dim);border-top:1px solid var(--border)}
+
+/* ── Buttons ── */
+.btn{padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;
+  border:1px solid transparent;transition:all var(--fast)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{opacity:.88}
+.btn-ghost{background:none;color:var(--text-dim);border-color:var(--border)}
+.btn-ghost:hover{color:var(--text);background:var(--bg-hover)}
+.btn-sm{padding:5px 11px;font-size:11.5px}
+
+/* ── Modal ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.overlay.open{display:flex}
+.modal{background:var(--bg-modal);border:1px solid var(--border);border-radius:14px;
+  width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.modal.sm{max-width:420px}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.modal-hd h3{font-size:15px}
+.x{background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;padding:4px;border-radius:4px}
+.x:hover{color:var(--text);background:var(--bg-hover)}
+.modal-bd{padding:18px;overflow-y:auto}
+.modal-ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--border)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:4px;font-weight:600}
+.field input,.field textarea{width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none}
+.field input:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:130px;font-family:"Fira Code",Consolas,monospace;font-size:12px;line-height:1.6}
+.chk-row{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.warn-ico{font-size:36px;text-align:center;margin-bottom:10px;opacity:.75}
+
+/* ── WYSIWYG 編輯器工具列（移植自 editor-enhanced.html）── */
+.wysiwyg-toolbar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:8px 10px;
+  border:1px solid var(--border);border-bottom:none;border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+  background:var(--bg);
+}
+.wysiwyg-toolbar button{
+  background:none;border:1px solid transparent;color:var(--text-dim);
+  min-width:28px;height:28px;padding:0 7px;border-radius:4px;cursor:pointer;
+  font-size:12px;line-height:1;transition:all var(--fast);
+}
+.wysiwyg-toolbar button:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border)}
+.wysiwyg-toolbar button.active{background:var(--accent-glow);color:var(--accent);border-color:var(--accent)}
+.tb-sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+.wysiwyg-toolbar select{
+  height:28px;background:var(--bg);color:var(--text);border:1px solid var(--border);
+  border-radius:4px;padding:0 4px;font-size:12px;cursor:pointer;outline:none;
+}
+.wysiwyg-toolbar select:hover{border-color:var(--border-focus)}
+.tb-color{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  width:30px;height:28px;border-radius:4px;cursor:pointer;color:var(--text-dim);
+  font-weight:700;font-size:12px;line-height:1;transition:all var(--fast);
+  border:1px solid transparent;position:relative;
+}
+.tb-color:hover{background:var(--bg-hover);color:var(--text)}
+.tb-color span{pointer-events:none}
+.tb-color input[type=color]{
+  width:20px;height:4px;border:none;background:none;padding:0;margin-top:2px;cursor:pointer;
+}
+.tb-color input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.tb-color input[type=color]::-webkit-color-swatch{border:none;border-radius:1px}
+.tb-color input[type=color]::-moz-color-swatch{border:none;border-radius:1px}
+
+.editor-area{
+  min-height:200px;max-height:38vh;overflow-y:auto;padding:14px 16px;
+  font-size:13.5px;line-height:1.75;color:#e2e4ed;background:var(--bg);outline:none;
+  border:1px solid var(--border);border-radius:0 0 var(--radius-sm) var(--radius-sm);
+}
+.editor-area:empty::before{content:'在這裡開始寫作…';color:var(--text-dim);pointer-events:none}
+.editor-area h1{font-size:1.5em;margin:.4em 0;color:#fff}
+.editor-area h2{font-size:1.25em;margin:.4em 0;color:#e8eaf2;border-bottom:1px solid var(--border);padding-bottom:.2em}
+.editor-area h3{font-size:1.05em;margin:.3em 0;color:#d0d4e4}
+.editor-area p{margin:0 0 .6em}
+.editor-area ul,.editor-area ol{margin:0 0 .6em 1.4em}
+.editor-area blockquote{border-left:3px solid var(--accent);padding:.4em .8em;margin:.4em 0;
+  background:var(--accent-glow);border-radius:0 6px 6px 0}
+.editor-area pre{background:#0d0f17;padding:12px;border-radius:6px;overflow-x:auto;
+  font-size:12px;margin:.4em 0}
+.editor-area code{font-family:"Fira Code",Consolas,monospace;font-size:.9em}
+.editor-area :not(pre)>code{background:var(--tag-bg);padding:1px 5px;border-radius:3px}
+.editor-area a{color:var(--accent)}
+.editor-area hr{border:none;border-top:1px solid var(--border);margin:1em 0}
+.editor-area table{width:100%;border-collapse:collapse;margin:.6em 0}
+.editor-area th,.editor-area td{border:1px solid var(--border);padding:6px 10px;text-align:left}
+.editor-area th{background:var(--tag-bg)}
+.editor-area img{max-width:100%;border-radius:6px;margin:.4em 0;display:block}
+.editor-area sub,.editor-area sup{font-size:.75em}
+
+.source-area{
+  width:100%;min-height:200px;max-height:38vh;overflow-y:auto;padding:12px 14px;
+  font-size:12px;line-height:1.7;font-family:"Fira Code",Consolas,monospace;
+  color:var(--green);background:#0a0c12;border:1px solid var(--border);
+  border-radius:0 0 var(--radius-sm) var(--radius-sm);outline:none;resize:none;
+}
+.preview-frame{width:100%;min-height:200px;max-height:38vh;border:1px solid var(--border);
+  border-radius:0 0 var(--radius-sm) var(--radius-sm);background:#fff;display:block}
+.ed-toolfoot{display:flex;justify-content:flex-end;margin-top:4px}
+.ed-toolfoot .count{color:var(--text-dim);font-size:11px}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--bg-card);color:var(--text);padding:9px 22px;border-radius:10px;border:1px solid var(--border);
+  font-size:12.5px;opacity:0;pointer-events:none;transition:all .3s ease;z-index:999;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand"><span class="logo">🧠</span> 知識庫控制台</div>
+  <div class="tabs">
+    <button class="tab active" data-view="dashView">📊 儀表板</button>
+    <button class="tab" data-view="mgmtView">🗂 文章管理</button>
+  </div>
+  <div class="spacer"></div>
+  <a class="back-link" href="index.html">← 回知識庫</a>
+</div>
+
+<div id="demoBanner" class="demo-banner" style="display:none">
+  ⚠️ 目前顯示範例資料（放進你的專案後會自動讀取真實文章）
+</div>
+
+<div class="page">
+
+  <!-- ════ 儀表板 ════ -->
+  <section id="dashView" class="view active">
+    <div class="chips" id="chips"></div>
+
+    <div class="panel hero">
+      <div class="panel-hd">
+        <div>
+          <h3>寫作活動</h3>
+          <div class="total" id="heroTotal"></div>
+        </div>
+        <span class="sub" id="heroRange"></span>
+      </div>
+      <div class="chart-wrap">
+        <svg class="chart-svg" id="activityChart" viewBox="0 0 600 170" preserveAspectRatio="none"></svg>
+        <div class="axis-lbls" id="axisLbls"></div>
+      </div>
+    </div>
+
+    <div class="cols2">
+      <div class="panel">
+        <div class="panel-hd"><h3>標籤分布</h3><span class="sub" id="tagTotal"></span></div>
+        <div id="tagBars"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><h3>最近更新</h3></div>
+        <div class="mini-list" id="recentUpdated"></div>
+      </div>
+    </div>
+
+    <div class="cols2">
+      <div class="panel">
+        <div class="panel-hd"><h3>最常閱讀</h3><span class="sub">依開啟紀錄</span></div>
+        <div class="mini-list" id="mostRead"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><h3>內容概況</h3></div>
+        <div class="mini-list" id="contentStats"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 文章管理（後台）════ -->
+  <section id="mgmtView" class="view">
+    <div class="mgmt-bar">
+      <div class="search-box">
+        <span style="opacity:.5">🔍</span>
+        <input id="mSearch" type="text" placeholder="搜尋標題、標籤、摘要…" />
+      </div>
+      <select id="mTag" class="sel"><option value="">全部標籤</option></select>
+      <select id="mStatus" class="sel">
+        <option value="">全部狀態</option>
+        <option value="local">本地文章</option>
+        <option value="file">檔案文章</option>
+        <option value="star">已收藏</option>
+      </select>
+      <button class="btn btn-primary btn-sm" id="mNew">＋ 新增</button>
+    </div>
+
+    <div class="bulk" id="bulkBar">
+      <span>已選 <span class="cnt" id="bulkCnt">0</span> 篇</span>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" id="bulkTag">加標籤</button>
+      <button class="btn btn-ghost btn-sm" id="bulkStar">切換收藏</button>
+      <button class="btn btn-ghost btn-sm" id="bulkExport">匯出</button>
+      <button class="btn btn-ghost btn-sm" id="bulkPush" style="display:none">推送到 Sheet</button>
+      <button class="btn btn-danger btn-sm" id="bulkDelete">刪除</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:34px"><input type="checkbox" id="checkAll" /></th>
+            <th class="sortable" data-sort="title">標題 <span class="arr"></span></th>
+            <th class="sortable" data-sort="chars" style="width:70px">字數 <span class="arr"></span></th>
+            <th style="width:120px">狀態</th>
+            <th class="sortable" data-sort="updated" style="width:110px">更新 <span class="arr"></span></th>
+            <th style="width:96px;text-align:right">操作</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="table-foot" id="tableFoot"></div>
+    </div>
+  </section>
+</div>
+
+<!-- Edit modal -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <div class="modal-hd"><h3 id="editTitle">編輯文章</h3><button class="x" data-x="editOverlay">✕</button></div>
+    <div class="modal-bd">
+      <div class="field"><label>標題</label><input id="fTitle" type="text" placeholder="文章標題" /></div>
+      <div class="field"><label>標籤 <small style="opacity:.6">（逗號分隔）</small></label><input id="fTags" type="text" placeholder="交易, 心理" /></div>
+      <div class="field"><label>摘要</label><input id="fDesc" type="text" placeholder="簡短描述（選填）" /></div>
+      <div class="field">
+        <label>內容</label>
+        <div class="wysiwyg-toolbar">
+          <button type="button" data-cmd="undo" title="復原 (Ctrl+Z)">↶</button>
+          <button type="button" data-cmd="redo" title="重做 (Ctrl+Y)">↷</button>
+          <span class="tb-sep"></span>
+          <select id="blockSelect" title="段落樣式">
+            <option value="P">內文</option>
+            <option value="H1">標題 1</option>
+            <option value="H2">標題 2</option>
+            <option value="H3">標題 3</option>
+            <option value="BLOCKQUOTE">引用</option>
+            <option value="PRE">程式碼區塊</option>
+          </select>
+          <select id="sizeSelect" title="字級">
+            <option value="">字級</option>
+            <option value="12px">小</option>
+            <option value="15px">正常</option>
+            <option value="20px">大</option>
+            <option value="28px">特大</option>
+          </select>
+          <span class="tb-sep"></span>
+          <button type="button" data-cmd="bold" title="粗體 (Ctrl+B)"><b>B</b></button>
+          <button type="button" data-cmd="italic" title="斜體 (Ctrl+I)"><i>I</i></button>
+          <button type="button" data-cmd="underline" title="底線 (Ctrl+U)"><u>U</u></button>
+          <button type="button" data-cmd="strikeThrough" title="刪除線"><s>S</s></button>
+          <label class="tb-color" title="文字顏色"><span>A</span><input type="color" id="foreColor" value="#f87171" /></label>
+          <label class="tb-color" title="螢光筆（背景）"><span>🖌</span><input type="color" id="hiliteColor" value="#fbbf24" /></label>
+          <span class="tb-sep"></span>
+          <button type="button" data-cmd="justifyLeft" title="靠左">⬅</button>
+          <button type="button" data-cmd="justifyCenter" title="置中">⬌</button>
+          <button type="button" data-cmd="justifyRight" title="靠右">➡</button>
+          <button type="button" data-cmd="justifyFull" title="兩端對齊">☰</button>
+          <span class="tb-sep"></span>
+          <button type="button" data-cmd="insertUnorderedList" title="項目清單">•</button>
+          <button type="button" data-cmd="insertOrderedList" title="數字清單">1.</button>
+          <button type="button" data-cmd="outdent" title="減少縮排">⇤</button>
+          <button type="button" data-cmd="indent" title="增加縮排">⇥</button>
+          <span class="tb-sep"></span>
+          <button type="button" data-cmd="superscript" title="上標">x²</button>
+          <button type="button" data-cmd="subscript" title="下標">x₂</button>
+          <span class="tb-sep"></span>
+          <button type="button" id="insertCodeBtn" title="行內程式碼">&lt;/&gt;</button>
+          <button type="button" id="insertLinkBtn" title="插入連結">🔗</button>
+          <button type="button" id="insertImgBtn" title="插入圖片（網址）">🖼</button>
+          <button type="button" id="insertTableBtn" title="插入表格">▦</button>
+          <button type="button" id="insertHrBtn" title="分隔線">―</button>
+          <span class="tb-sep"></span>
+          <button type="button" data-cmd="removeFormat" title="清除格式">⌫</button>
+          <button type="button" id="previewBtn" title="渲染預覽（淺色輸出）">👁</button>
+          <button type="button" id="toggleSourceBtn" title="切換 HTML 原始碼">{ }</button>
+        </div>
+        <div id="editorArea" class="editor-area" contenteditable="true"></div>
+        <textarea id="fContent" class="source-area" style="display:none" spellcheck="false" placeholder="<p>文章內容…</p>"></textarea>
+        <iframe id="previewFrame" class="preview-frame" style="display:none" sandbox="allow-same-origin"></iframe>
+        <div class="ed-toolfoot"><span id="edCharCount" class="count"></span></div>
+      </div>
+      <label class="chk-row"><input type="checkbox" id="fStar" /> 加入收藏</label>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" data-x="editOverlay">取消</button>
+      <button class="btn btn-primary" id="editSave">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete modal -->
+<div class="overlay" id="delOverlay">
+  <div class="modal sm">
+    <div class="modal-hd"><h3>確認刪除</h3><button class="x" data-x="delOverlay">✕</button></div>
+    <div class="modal-bd" style="text-align:center">
+      <div class="warn-ico">⚠️</div>
+      <p id="delMsg"></p>
+      <p class="dim" style="font-size:12px;margin-top:6px">此操作無法復原。</p>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" data-x="delOverlay">取消</button>
+      <button class="btn btn-danger" id="delConfirm">確認刪除</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════════
+   資料層 — 與主 app 共用同一組 localStorage keys
+   ═══════════════════════════════════════════════════════════════ */
+const LS = { db:'kb_db', articles:'kb_articles', starred:'kb_starred', recent:'kb_recent' };
+let db = [], articles = {}, starred = new Set(), recent = [], usingDemo = false;
+
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
+
+function loadData(){
+  const rawDb = lsGet(LS.db);
+  if (rawDb) {
+    db       = JSON.parse(rawDb) || [];
+    articles = JSON.parse(lsGet(LS.articles) || '{}');
+    starred  = new Set(JSON.parse(lsGet(LS.starred) || '[]'));
+    recent   = JSON.parse(lsGet(LS.recent) || '[]');
+  } else {
+    usingDemo = true;
+    ({ db, articles, starred, recent } = buildDemo());
+    document.getElementById('demoBanner').style.display = 'block';
+  }
+}
+function persist(){
+  if (usingDemo) return; // 範例資料不寫回
+  lsSet(LS.db, JSON.stringify(db));
+  lsSet(LS.articles, JSON.stringify(articles));
+  lsSet(LS.starred, JSON.stringify([...starred]));
+  lsSet(LS.recent, JSON.stringify(recent));
+}
+
+/* ── 小工具 ── */
+function textOf(html){ const d=document.createElement('div'); d.innerHTML=html||''; return d.innerText||d.textContent||''; }
+function charCount(id){ return articles[id] ? textOf(articles[id]).replace(/\s/g,'').length : 0; }
+function isLocal(id){ return !!articles[id]; }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(ts){ if(!ts) return '—'; const d=new Date(ts);
+  return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0'); }
+function ago(ts){ if(!ts) return '—'; const s=(Date.now()-ts)/1000;
+  if(s<60) return '剛剛'; const m=s/60; if(m<60) return Math.floor(m)+' 分前';
+  const h=m/60; if(h<24) return Math.floor(h)+' 小時前'; const d=h/24; if(d<30) return Math.floor(d)+' 天前';
+  const mo=d/30; if(mo<12) return Math.floor(mo)+' 個月前'; return Math.floor(mo/12)+' 年前'; }
+function genId(){ return 'a_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7); }
+
+let toastTimer=null;
+function toast(msg,d=2200){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),d); }
+
+/* ═══════════════════════════════════════════════════════════════
+   儀表板
+   ═══════════════════════════════════════════════════════════════ */
+function renderDashboard(){
+  const tagSet = new Set(db.flatMap(d=>d.tags||[]));
+  const totalChars = db.reduce((s,d)=>s+charCount(d.id),0);
+  const localCount = db.filter(d=>isLocal(d.id)).length;
+
+  document.getElementById('chips').innerHTML = `
+    <div class="chip accent"><div class="n">${db.length}</div><div class="l">篇文章</div></div>
+    <div class="chip"><div class="n">${tagSet.size}</div><div class="l">個標籤</div></div>
+    <div class="chip star"><div class="n">${starred.size}</div><div class="l">已收藏</div></div>
+    <div class="chip green"><div class="n">${localCount}</div><div class="l">本地文章</div></div>
+    <div class="chip pink"><div class="n">${(totalChars/1000).toFixed(1)}k</div><div class="l">總字數</div></div>`;
+
+  renderActivity();
+  renderTagBars();
+  renderRecentUpdated();
+  renderMostRead();
+  renderContentStats(totalChars);
+}
+
+/* 月度活動：以 created 分月 */
+function monthlyData(){
+  const times = db.map(d=>d.created).filter(Boolean);
+  const now = new Date();
+  const months = [];
+  const span = 6; // 顯示近 6 個月
+  for(let i=span-1;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push({ key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),
+                  label:(d.getMonth()+1)+'月', count:0 });
+  }
+  const idx={}; months.forEach((m,i)=>idx[m.key]=i);
+  times.forEach(ts=>{ const d=new Date(ts); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    if(k in idx) months[idx[k]].count++; });
+  return months;
+}
+
+function renderActivity(){
+  const data = monthlyData();
+  const total = db.length;
+  document.getElementById('heroTotal').innerHTML = total + ' <small>篇累計</small>';
+  document.getElementById('heroRange').textContent = data[0].label + ' – ' + data[data.length-1].label;
+
+  const W=600,H=170,pad=8;
+  const max=Math.max(1,...data.map(d=>d.count));
+  const n=data.length;
+  const x=i=> pad + i*((W-pad*2)/(n-1||1));
+  const y=v=> H-20 - (v/max)*(H-40);
+  const pts=data.map((d,i)=>[x(i),y(d.count)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=line+` L ${x(n-1).toFixed(1)} ${H-20} L ${x(0).toFixed(1)} ${H-20} Z`;
+
+  const dots=pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.2" fill="var(--accent)" stroke="var(--bg-card)" stroke-width="2"/>`).join('');
+  const vals=data.map((d,i)=> d.count?`<text x="${x(i).toFixed(1)}" y="${(y(d.count)-9).toFixed(1)}" fill="var(--text-dim)" font-size="10" text-anchor="middle">${d.count}</text>`:'').join('');
+
+  document.getElementById('activityChart').innerHTML = `
+    <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--accent)" stop-opacity=".28"/>
+      <stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+    <line x1="${pad}" y1="${H-20}" x2="${W-pad}" y2="${H-20}" stroke="var(--border)"/>
+    <path d="${area}" fill="url(#ag)"/>
+    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/>
+    ${dots}${vals}`;
+  document.getElementById('axisLbls').innerHTML = data.map(d=>`<span>${d.label}</span>`).join('');
+}
+
+function renderTagBars(){
+  const counts={};
+  db.forEach(d=>(d.tags||[]).forEach(t=>counts[t]=(counts[t]||0)+1));
+  const arr=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max=Math.max(1,...arr.map(a=>a[1]));
+  document.getElementById('tagTotal').textContent = Object.keys(counts).length+' 個';
+  document.getElementById('tagBars').innerHTML = arr.length ? arr.map(([t,n])=>`
+    <div class="bar-row"><span class="lbl" title="${esc(t)}">${esc(t)}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(n/max*100).toFixed(1)}%"></div></div>
+      <span class="val">${n}</span></div>`).join('') : '<div class="empty-note">尚無標籤</div>';
+}
+
+function renderRecentUpdated(){
+  const arr=db.slice().sort((a,b)=>(b.updated||0)-(a.updated||0)).slice(0,6);
+  document.getElementById('recentUpdated').innerHTML = arr.length ? arr.map(d=>`
+    <div class="mini-item" onclick="openArticle('${d.id}')">
+      <span class="dot"></span><span class="t">${esc(d.title||'未命名')}</span>
+      <span class="meta">${ago(d.updated)}</span></div>`).join('') : '<div class="empty-note">尚無文章</div>';
+}
+
+function renderMostRead(){
+  const seen=new Set(); const arr=[];
+  recent.forEach(id=>{ if(seen.has(id))return; seen.add(id); const d=db.find(x=>x.id===id); if(d)arr.push(d); });
+  const top=arr.slice(0,6);
+  document.getElementById('mostRead').innerHTML = top.length ? top.map((d,i)=>`
+    <div class="mini-item" onclick="openArticle('${d.id}')">
+      <span class="meta" style="width:16px;color:var(--accent)">${i+1}</span>
+      <span class="t">${esc(d.title||'未命名')}</span>
+      <span class="meta">${charCount(d.id)} 字</span></div>`).join('') : '<div class="empty-note">尚無閱讀紀錄</div>';
+}
+
+function renderContentStats(totalChars){
+  const withDesc=db.filter(d=>d.desc).length;
+  const noTag=db.filter(d=>!(d.tags||[]).length).length;
+  const avg=db.length?Math.round(totalChars/db.length):0;
+  const rows=[
+    ['平均字數', avg+' 字'],
+    ['有摘要的文章', withDesc+' / '+db.length],
+    ['未分類（無標籤）', noTag+' 篇'],
+    ['本地 / 檔案文章', db.filter(d=>isLocal(d.id)).length+' / '+db.filter(d=>!isLocal(d.id)).length],
+  ];
+  document.getElementById('contentStats').innerHTML = rows.map(([k,v])=>`
+    <div class="mini-item" style="cursor:default"><span class="t dim">${k}</span><span class="meta">${v}</span></div>`).join('');
+}
+
+function openArticle(id){
+  const item=db.find(d=>d.id===id); if(!item) return;
+  if(articles[id]){
+    const w=window.open('','_blank'); w.document.write(wrapArticleHTML(articles[id],item.title)); w.document.close();
+  } else if(item.path){ window.open(item.path,'_blank'); }
+  else { toast('這篇沒有本地內容'); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   文章管理（後台）
+   ═══════════════════════════════════════════════════════════════ */
+let sortKey='updated', sortDir=-1, selected=new Set();
+
+function currentRows(){
+  const kw=document.getElementById('mSearch').value.trim().toLowerCase();
+  const tag=document.getElementById('mTag').value;
+  const st=document.getElementById('mStatus').value;
+  let pool=db.slice();
+  if(tag) pool=pool.filter(d=>(d.tags||[]).includes(tag));
+  if(st==='local') pool=pool.filter(d=>isLocal(d.id));
+  else if(st==='file') pool=pool.filter(d=>!isLocal(d.id));
+  else if(st==='star') pool=pool.filter(d=>starred.has(d.id));
+  if(kw) pool=pool.filter(d=>
+    (d.title||'').toLowerCase().includes(kw) ||
+    (d.desc||'').toLowerCase().includes(kw) ||
+    (d.tags||[]).some(t=>t.toLowerCase().includes(kw)));
+  pool.sort((a,b)=>{
+    let av,bv;
+    if(sortKey==='title'){ av=(a.title||'').toLowerCase(); bv=(b.title||'').toLowerCase(); return av<bv?-sortDir:av>bv?sortDir:0; }
+    if(sortKey==='chars'){ av=charCount(a.id); bv=charCount(b.id); }
+    else { av=a[sortKey]||0; bv=b[sortKey]||0; }
+    return (av-bv)*sortDir;
+  });
+  return pool;
+}
+
+function renderTable(){
+  const pool=currentRows();
+  const tb=document.getElementById('rows');
+  tb.innerHTML = pool.map(d=>{
+    const on=selected.has(d.id);
+    const tags=(d.tags||[]).map(t=>`<span class="row-tag">${esc(t)}</span>`).join('');
+    const status = (starred.has(d.id)?'<span class="pill star">★ 收藏</span> ':'') +
+      (isLocal(d.id)?'<span class="pill local">本地</span>':'<span class="pill file">檔案</span>');
+    return `<tr class="${on?'sel':''}" data-id="${d.id}">
+      <td><input type="checkbox" class="rowchk" ${on?'checked':''}></td>
+      <td class="title-cell"><div class="tt">${esc(d.title||'未命名')}</div>
+        ${tags?`<div class="row-tags">${tags}</div>`:''}</td>
+      <td class="num">${charCount(d.id)}</td>
+      <td>${status}</td>
+      <td class="num" title="${fmtDate(d.updated)}">${ago(d.updated)}</td>
+      <td><div class="row-actions">
+        <button class="iconbtn" data-act="open" title="開啟">↗</button>
+        <button class="iconbtn" data-act="edit" title="編輯">✎</button>
+        <button class="iconbtn danger" data-act="del" title="刪除">🗑</button>
+      </div></td></tr>`;
+  }).join('') || `<tr><td colspan="6"><div class="empty-note">找不到符合的文章</div></td></tr>`;
+
+  document.getElementById('tableFoot').textContent =
+    `顯示 ${pool.length} / ${db.length} 篇` + (selected.size?`　·　已選 ${selected.size}`:'');
+  document.getElementById('checkAll').checked = pool.length>0 && pool.every(d=>selected.has(d.id));
+  updateBulkBar();
+  updateSortArrows();
+}
+
+function updateBulkBar(){
+  const bar=document.getElementById('bulkBar');
+  bar.classList.toggle('show', selected.size>0);
+  document.getElementById('bulkCnt').textContent=selected.size;
+}
+function updateSortArrows(){
+  document.querySelectorAll('th.sortable').forEach(th=>{
+    const arr=th.querySelector('.arr');
+    arr.textContent = th.dataset.sort===sortKey ? (sortDir>0?'▲':'▼') : '';
+  });
+}
+
+/* ── 表格事件（事件委派）── */
+document.getElementById('rows').addEventListener('click', e=>{
+  const tr=e.target.closest('tr[data-id]'); if(!tr) return;
+  const id=tr.dataset.id;
+  if(e.target.classList.contains('rowchk')){
+    e.target.checked ? selected.add(id) : selected.delete(id);
+    tr.classList.toggle('sel', e.target.checked); updateBulkBar();
+    document.getElementById('tableFoot').textContent =
+      `顯示 ${currentRows().length} / ${db.length} 篇` + (selected.size?`　·　已選 ${selected.size}`:'');
+    return;
+  }
+  const act=e.target.dataset.act;
+  if(act==='open') openArticle(id);
+  else if(act==='edit') openEdit(id);
+  else if(act==='del') askDelete([id]);
+});
+
+document.getElementById('checkAll').addEventListener('change', e=>{
+  const pool=currentRows();
+  if(e.target.checked) pool.forEach(d=>selected.add(d.id));
+  else pool.forEach(d=>selected.delete(d.id));
+  renderTable();
+});
+
+document.querySelectorAll('th.sortable').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const k=th.dataset.sort;
+    if(sortKey===k) sortDir*=-1; else { sortKey=k; sortDir = k==='title'?1:-1; }
+    renderTable();
+  });
+});
+
+['mSearch','mTag','mStatus'].forEach(id=>
+  document.getElementById(id).addEventListener('input', renderTable));
+
+/* ── Bulk actions ── */
+document.getElementById('bulkDelete').onclick = ()=> askDelete([...selected]);
+document.getElementById('bulkStar').onclick = ()=>{
+  const ids=[...selected]; const allStarred=ids.every(id=>starred.has(id));
+  ids.forEach(id=> allStarred?starred.delete(id):starred.add(id));
+  persist(); renderTable(); renderDashboard();
+  toast(allStarred?'已取消收藏':'⭐ 已加入收藏');
+};
+document.getElementById('bulkTag').onclick = ()=>{
+  const t=prompt('要為選取的文章加上哪個標籤？'); if(!t) return;
+  const tag=t.trim(); if(!tag) return;
+  selected.forEach(id=>{ const d=db.find(x=>x.id===id); if(d){ d.tags=d.tags||[]; if(!d.tags.includes(tag)) d.tags.push(tag); d.updated=Date.now(); }});
+  persist(); buildTagFilter(); renderTable(); renderDashboard();
+  toast(`已為 ${selected.size} 篇加上「${tag}」`);
+};
+document.getElementById('bulkExport').onclick = ()=> exportItems([...selected]);
+document.getElementById('bulkPush').onclick = ()=>{
+  if(typeof SheetAPI==='undefined'||!SheetAPI.enabled()) return;
+  const ids=[...selected];
+  Promise.all(ids.map(id=>{ const d=db.find(x=>x.id===id);
+    return SheetAPI.saveArticle({ id, title:d.title, desc:d.desc, tags:d.tags,
+      created:d.created, updated:d.updated, content:articles[id]||'' }); }))
+    .then(()=>toast(`☁️ 已推送 ${ids.length} 篇到 Sheet`))
+    .catch(()=>toast('⚠️ 推送失敗',3000));
+};
+document.getElementById('mNew').onclick = ()=> openEdit(null);
+
+function exportItems(ids){
+  const list = ids.length ? ids : db.map(d=>d.id);
+  const payload = {
+    version:2, exported:new Date().toISOString(),
+    db: db.filter(d=>list.includes(d.id)),
+    articles: Object.fromEntries(list.filter(id=>articles[id]).map(id=>[id,articles[id]])),
+    starred: [...starred].filter(id=>list.includes(id)),
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='知識庫匯出_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  URL.revokeObjectURL(a.href);
+  toast(`📤 已匯出 ${list.length} 篇`);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WYSIWYG 編輯器（移植自 editor-enhanced.html）
+   ═══════════════════════════════════════════════════════════════ */
+const $editorArea = document.getElementById('editorArea');
+const $sourceArea = document.getElementById('fContent');
+const $previewFrame = document.getElementById('previewFrame');
+let edSourceMode = false, edPreviewMode = false;
+
+function setEditorContent(html){
+  edSourceMode = false; edPreviewMode = false;
+  $editorArea.innerHTML = html || '';
+  $sourceArea.value = html || '';
+  $editorArea.style.display = '';
+  $sourceArea.style.display = 'none';
+  $previewFrame.style.display = 'none';
+  $previewFrame.removeAttribute('srcdoc');
+  document.getElementById('toggleSourceBtn').classList.remove('active');
+  document.getElementById('previewBtn').classList.remove('active');
+  updateEdCharCount();
+}
+function getEditorContent(){
+  return edSourceMode ? $sourceArea.value : $editorArea.innerHTML;
+}
+
+function edExec(cmd, val = null) {
+  $editorArea.focus();
+  document.execCommand(cmd, false, val);
+  syncToolbarState();
+}
+function edExecCSS(cmd, val) {
+  $editorArea.focus();
+  document.execCommand('styleWithCSS', false, true);
+  const ok = document.execCommand(cmd, false, val);
+  document.execCommand('styleWithCSS', false, false);
+  syncToolbarState();
+  return ok;
+}
+
+document.querySelectorAll('.wysiwyg-toolbar [data-cmd]').forEach(btn => {
+  btn.addEventListener('mousedown', e => e.preventDefault());
+  btn.addEventListener('click', () => edExec(btn.dataset.cmd, btn.dataset.val || null));
+});
+
+document.getElementById('blockSelect').addEventListener('change', function () {
+  edExec('formatBlock', this.value);
+  this.selectedIndex = 0;
+});
+
+document.getElementById('sizeSelect').addEventListener('change', function () {
+  const px = this.value;
+  this.selectedIndex = 0;
+  if (!px) return;
+  $editorArea.focus();
+  document.execCommand('fontSize', false, '7');
+  $editorArea.querySelectorAll('font[size="7"]').forEach(f => {
+    const span = document.createElement('span');
+    span.style.fontSize = px;
+    while (f.firstChild) span.appendChild(f.firstChild);
+    f.replaceWith(span);
+  });
+});
+
+document.getElementById('foreColor').addEventListener('input', function () {
+  edExecCSS('foreColor', this.value);
+});
+document.getElementById('hiliteColor').addEventListener('input', function () {
+  if (!edExecCSS('hiliteColor', this.value)) edExecCSS('backColor', this.value);
+});
+document.querySelectorAll('.tb-color').forEach(l =>
+  l.addEventListener('mousedown', e => { if (e.target.tagName !== 'INPUT') e.preventDefault(); })
+);
+
+document.getElementById('insertCodeBtn').addEventListener('click', () => {
+  $editorArea.focus();
+  const sel = window.getSelection();
+  const text = sel && sel.toString();
+  if (text) document.execCommand('insertHTML', false, '<code>' + esc(text) + '</code>');
+  else document.execCommand('insertHTML', false, '<code>程式碼</code>&nbsp;');
+});
+
+document.getElementById('insertLinkBtn').addEventListener('click', () => {
+  const url = prompt('輸入連結網址：', 'https://');
+  if (!url) return;
+  $editorArea.focus();
+  const sel = window.getSelection();
+  if (sel && sel.toString()) document.execCommand('createLink', false, url);
+  else document.execCommand('insertHTML', false,
+    `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>`);
+});
+
+document.getElementById('insertImgBtn').addEventListener('click', () => {
+  const url = prompt('輸入圖片網址：', 'https://');
+  if (!url) return;
+  $editorArea.focus();
+  document.execCommand('insertImage', false, url);
+});
+
+document.getElementById('insertTableBtn').addEventListener('click', () => {
+  const rows = parseInt(prompt('列數（含標題列）：', '3'), 10);
+  const cols = parseInt(prompt('欄數：', '3'), 10);
+  if (!rows || !cols || rows < 1 || cols < 1) return;
+  let html = '<table><thead><tr>';
+  for (let c = 0; c < cols; c++) html += '<th>標題' + (c + 1) + '</th>';
+  html += '</tr></thead><tbody>';
+  for (let r = 0; r < rows - 1; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) html += '<td>&nbsp;</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table><p><br></p>';
+  $editorArea.focus();
+  document.execCommand('insertHTML', false, html);
+});
+
+document.getElementById('insertHrBtn').addEventListener('click', () => {
+  $editorArea.focus();
+  document.execCommand('insertHTML', false, '<hr><p><br></p>');
+});
+
+$editorArea.addEventListener('paste', e => {
+  const items = (e.clipboardData || window.clipboardData).items || [];
+  for (const it of items) {
+    if (it.type && it.type.indexOf('image') === 0) {
+      e.preventDefault();
+      const file = it.getAsFile();
+      const reader = new FileReader();
+      reader.onload = () => { $editorArea.focus(); document.execCommand('insertImage', false, reader.result); };
+      reader.readAsDataURL(file);
+      return;
+    }
+  }
+  const html = e.clipboardData && e.clipboardData.getData('text/html');
+  if (html) { e.preventDefault(); document.execCommand('insertHTML', false, cleanPastedHTML(html)); }
+});
+
+$editorArea.addEventListener('dragover', e => e.preventDefault());
+$editorArea.addEventListener('drop', e => {
+  const files = e.dataTransfer && e.dataTransfer.files;
+  if (files && files.length && files[0].type.indexOf('image') === 0) {
+    e.preventDefault();
+    const reader = new FileReader();
+    reader.onload = () => { $editorArea.focus(); document.execCommand('insertImage', false, reader.result); };
+    reader.readAsDataURL(files[0]);
+  }
+});
+
+function cleanPastedHTML(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  tmp.querySelectorAll('script,style,meta,link,noscript,iframe').forEach(el => el.remove());
+  tmp.querySelectorAll('*').forEach(el => {
+    el.removeAttribute('style'); el.removeAttribute('class'); el.removeAttribute('id');
+    [...el.attributes].forEach(a => {
+      if (/^on/i.test(a.name)) el.removeAttribute(a.name);
+      if (a.name === 'href' && /^javascript:/i.test(a.value)) el.removeAttribute(a.name);
+    });
+  });
+  return tmp.innerHTML;
+}
+
+const ED_STATE_CMDS = ['bold', 'italic', 'underline', 'strikeThrough',
+  'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
+  'insertUnorderedList', 'insertOrderedList', 'superscript', 'subscript'];
+function syncToolbarState() {
+  ED_STATE_CMDS.forEach(cmd => {
+    const btn = document.querySelector(`.wysiwyg-toolbar [data-cmd="${cmd}"]`);
+    if (!btn) return;
+    let on = false;
+    try { on = document.queryCommandState(cmd); } catch (e) {}
+    btn.classList.toggle('active', on);
+  });
+}
+document.addEventListener('selectionchange', () => {
+  if (document.activeElement === $editorArea) syncToolbarState();
+});
+
+document.getElementById('toggleSourceBtn').addEventListener('click', function () {
+  if (edPreviewMode) togglePreview();
+  edSourceMode = !edSourceMode;
+  if (edSourceMode) {
+    $sourceArea.value = $editorArea.innerHTML;
+    $editorArea.style.display = 'none';
+    $sourceArea.style.display = '';
+    $sourceArea.focus();
+  } else {
+    $editorArea.innerHTML = $sourceArea.value;
+    $sourceArea.style.display = 'none';
+    $editorArea.style.display = '';
+    $editorArea.focus();
+  }
+  this.classList.toggle('active', edSourceMode);
+  updateEdCharCount();
+});
+
+function togglePreview() {
+  edPreviewMode = !edPreviewMode;
+  const btn = document.getElementById('previewBtn');
+  if (edPreviewMode) {
+    if (edSourceMode) document.getElementById('toggleSourceBtn').click();
+    $previewFrame.srcdoc = wrapArticleHTML($editorArea.innerHTML, document.getElementById('fTitle').value);
+    $editorArea.style.display = 'none';
+    $previewFrame.style.display = '';
+  } else {
+    $previewFrame.style.display = 'none';
+    $previewFrame.removeAttribute('srcdoc');
+    $editorArea.style.display = '';
+  }
+  btn.classList.toggle('active', edPreviewMode);
+}
+document.getElementById('previewBtn').addEventListener('click', togglePreview);
+
+function updateEdCharCount() {
+  const text = edSourceMode ? $sourceArea.value : $editorArea.innerText;
+  document.getElementById('edCharCount').textContent = (text || '').replace(/\s/g, '').length + ' 字';
+}
+$editorArea.addEventListener('input', updateEdCharCount);
+$sourceArea.addEventListener('input', updateEdCharCount);
+
+$editorArea.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    document.getElementById('insertLinkBtn').click();
+  }
+});
+
+/* ── Edit modal ── */
+let editingId=null;
+function openEdit(id){
+  editingId=id;
+  const isNew=!id;
+  document.getElementById('editTitle').textContent = isNew?'新增文章':'編輯文章';
+  const d = isNew ? {title:'',tags:[],desc:''} : db.find(x=>x.id===id);
+  document.getElementById('fTitle').value = d.title||'';
+  document.getElementById('fTags').value = (d.tags||[]).join(', ');
+  document.getElementById('fDesc').value = d.desc||'';
+  document.getElementById('fStar').checked = isNew?false : starred.has(id);
+  setEditorContent(isNew?'' : (articles[id]||''));
+  openModal('editOverlay');
+  setTimeout(()=>document.getElementById('fTitle').focus(),150);
+}
+document.getElementById('editSave').onclick = ()=>{
+  const title=document.getElementById('fTitle').value.trim();
+  if(!title) return toast('⚠️ 請輸入標題');
+  const tags=document.getElementById('fTags').value.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
+  const desc=document.getElementById('fDesc').value.trim();
+  const content=getEditorContent();
+  const star=document.getElementById('fStar').checked;
+  const now=Date.now();
+
+  let id=editingId;
+  if(id){
+    const d=db.find(x=>x.id===id);
+    Object.assign(d,{title,tags,desc,updated:now});
+  } else {
+    id=genId();
+    db.unshift({id,title,desc,tags,path:'',created:now,updated:now});
+  }
+  if(content.trim()) articles[id]=content; else delete articles[id];
+  star ? starred.add(id) : starred.delete(id);
+
+  persist(); buildTagFilter(); renderTable(); renderDashboard();
+  closeModal('editOverlay');
+  toast(editingId?'✅ 已更新':'✅ 已新增');
+
+  if(typeof SheetAPI!=='undefined' && SheetAPI.enabled()){
+    const d=db.find(x=>x.id===id);
+    SheetAPI.saveArticle({id,title:d.title,desc:d.desc,tags:d.tags,created:d.created,updated:d.updated,content:articles[id]||''}).catch(()=>{});
+  }
+};
+
+/* ── Delete modal ── */
+let delIds=[];
+function askDelete(ids){
+  delIds=ids;
+  document.getElementById('delMsg').innerHTML = ids.length===1
+    ? `確定要刪除「<strong>${esc((db.find(d=>d.id===ids[0])||{}).title||'未命名')}</strong>」嗎？`
+    : `確定要刪除選取的 <strong>${ids.length}</strong> 篇文章嗎？`;
+  openModal('delOverlay');
+}
+document.getElementById('delConfirm').onclick = ()=>{
+  delIds.forEach(id=>{
+    const i=db.findIndex(d=>d.id===id); if(i>-1) db.splice(i,1);
+    delete articles[id]; starred.delete(id); selected.delete(id);
+    recent=recent.filter(r=>r!==id);
+    if(typeof SheetAPI!=='undefined' && SheetAPI.enabled()) SheetAPI.deleteArticle(id).catch(()=>{});
+  });
+  persist(); buildTagFilter(); renderTable(); renderDashboard();
+  closeModal('delOverlay');
+  toast(`🗑 已刪除 ${delIds.length} 篇`);
+};
+
+/* ── Tag filter options ── */
+function buildTagFilter(){
+  const tags=[...new Set(db.flatMap(d=>d.tags||[]))].sort();
+  const sel=document.getElementById('mTag'); const cur=sel.value;
+  sel.innerHTML='<option value="">全部標籤</option>'+tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  sel.value = tags.includes(cur)?cur:'';
+}
+
+/* ── Modal helpers / tabs ── */
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('[data-x]').forEach(b=> b.onclick=()=>closeModal(b.dataset.x));
+document.querySelectorAll('.overlay').forEach(o=> o.onclick=e=>{ if(e.target===o) closeModal(o.id); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open')); });
+
+document.querySelectorAll('.tab').forEach(t=> t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById(t.dataset.view).classList.add('active');
+});
+
+/* ── 若有載入 sheet-api.js 就顯示推送鈕 ── */
+function initSheetFeature(){
+  if(typeof SheetAPI!=='undefined' && SheetAPI.enabled())
+    document.getElementById('bulkPush').style.display='';
+}
+
+/* ── 文章渲染包裝（沿用主 app 的輸出樣式）── */
+function wrapArticleHTML(body,title){
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(title||'')}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;max-width:760px;margin:0 auto;padding:40px 24px;line-height:1.8;color:#1a1a2e;font-size:15px}h1{font-size:1.8em;margin:0 0 .6em}h2{font-size:1.4em;margin:1.4em 0 .5em;border-bottom:2px solid #e8e8f0;padding-bottom:.3em}h3{font-size:1.15em;margin:1.2em 0 .4em}p{margin:0 0 1em}ul,ol{margin:0 0 1em 1.5em}blockquote{border-left:4px solid #6c8cff;margin:1em 0;padding:.6em 1em;background:#f0f2ff;border-radius:0 6px 6px 0}pre{background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;margin:1em 0}:not(pre)>code{background:#f0f0f5;padding:2px 6px;border-radius:4px;color:#c7254e}img{max-width:100%;border-radius:8px}table{width:100%;border-collapse:collapse;margin:1em 0}th,td{border:1px solid #ddd;padding:8px 12px}th{background:#f5f5fa}</style></head><body>${body}</body></html>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   範例資料（僅在 localStorage 沒有真實資料時使用）
+   ═══════════════════════════════════════════════════════════════ */
+function buildDemo(){
+  const D=24*3600*1000;
+  const now=Date.now();
+  const mk=(title,tags,desc,daysAgo,body)=>{
+    const id=genId();
+    return { meta:{id,title,tags,desc,path:'',created:now-daysAgo*D,updated:now-Math.floor(daysAgo/2)*D}, id, body };
+  };
+  const src=[
+    mk('順勢交易的三個進場訊號',['交易','策略'],'用均線與量能過濾假突破',5,
+       '<h2>核心概念</h2><p>順勢交易的關鍵在於<b>不預測、只跟隨</b>。</p><h3>三個訊號</h3><ul><li>均線多頭排列</li><li>量能放大</li><li>回測不破前低</li></ul>'),
+    mk('交易心理：如何面對連續虧損',['心理'],'停損之後更難的是心態管理',12,
+       '<h2>連虧的真相</h2><p>連續虧損多半來自<i>過度交易</i>，而非策略失效。</p><blockquote>先降低部位，再恢復信心。</blockquote>'),
+    mk('資金控管的凱利公式筆記',['策略','數學'],'別把凱利開太滿',20,
+       '<h2>凱利公式</h2><pre><code>f = (bp - q) / b</code></pre><p>實務上多半用 <b>半凱利</b> 以降低波動。</p>'),
+    mk('K 線型態速查',['交易','圖表'],'常見反轉與續勢型態整理',33,
+       '<h2>反轉型態</h2><table><thead><tr><th>型態</th><th>意義</th></tr></thead><tbody><tr><td>吞噬</td><td>強反轉</td></tr><tr><td>十字星</td><td>猶豫</td></tr></tbody></table>'),
+    mk('為什麼我改用週線做決策',['心理','策略'],'降低雜訊、減少過度交易',48,
+       '<p>把時間框架拉長之後，<b>假訊號明顯變少</b>，情緒也穩定許多。</p>'),
+    mk('建立交易日誌的模板',['交易','工具'],'記錄進出場理由與情緒',70,
+       '<h2>欄位設計</h2><ul><li>進場理由</li><li>當下情緒</li><li>出場結果</li><li>事後檢討</li></ul>'),
+    mk('波動率與部位大小',['數學','策略'],'用 ATR 動態調整部位',95,
+       '<p>以 <code>ATR</code> 反比配置部位，讓每筆風險趨於一致。</p>'),
+    mk('讀盤：量價背離的辨識',['圖表'],'價創新高但量縮的警訊',120,
+       '<h2>背離</h2><p>價量背離常是<b>趨勢轉弱</b>的先行指標。</p>'),
+  ];
+  const db=src.map(s=>s.meta);
+  const articles={}; src.forEach(s=>articles[s.id]=s.body);
+  const starred=new Set([src[0].id,src[2].id]);
+  const recent=[src[3].id,src[0].id,src[1].id,src[5].id];
+  return { db, articles, starred, recent };
+}
+
+/* ═══ Boot ═══ */
+loadData();
+buildTagFilter();
+renderDashboard();
+renderTable();
+initSheetFeature();
+</script>
+</body>
+</html>
