@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字數計算器 — My Apps</title>
+<style>
+  :root{--bg:#eef0f4;--panel:#fff;--ink:#16181d;--muted:#5a6270;--line:#d7dbe3;--accent:#2f4bff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:system-ui,"Noto Sans TC",sans-serif;line-height:1.6}
+  .wrap{max-width:680px;margin:0 auto;padding:40px 24px 80px}
+  a.back{font-size:14px;color:var(--muted);text-decoration:none}
+  a.back:hover{color:var(--ink)}
+  h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:18px 0 6px}
+  .sub{color:var(--muted);margin-bottom:28px}
+  textarea{width:100%;min-height:200px;padding:18px;font-size:16px;font-family:inherit;line-height:1.7;background:var(--panel);border:1px solid var(--line);border-radius:14px;resize:vertical;color:var(--ink)}
+  textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px #e6e9ff}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:20px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .stat .n{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .stat .l{font-size:13px;color:var(--muted);margin-top:2px}
+  details{margin-top:26px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:0 24px}
+  summary{padding:20px 0;font-weight:600;cursor:pointer}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .howto{padding:18px 0 24px;color:var(--muted);font-size:15px}
+  .howto ol{padding-left:20px}.howto li{margin:7px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← 回到工具列表</a>
+  <h1>📝 字數計算器</h1>
+  <p class="sub">貼上文字,即時算出各項統計。</p>
+
+  <textarea id="txt" placeholder="在這裡輸入或貼上文字…"></textarea>
+
+  <div class="stats">
+    <div class="stat"><div class="n" id="chars">0</div><div class="l">字元數</div></div>
+    <div class="stat"><div class="n" id="words">0</div><div class="l">字數</div></div>
+    <div class="stat"><div class="n" id="lines">0</div><div class="l">行數</div></div>
+    <div class="stat"><div class="n" id="read">0</div><div class="l">分鐘閱讀</div></div>
+  </div>
+
+  <details>
+    <summary>使用說明</summary>
+    <div class="howto">
+      <ol>
+        <li>在文字框輸入或貼上你的內容。</li>
+        <li>下方四個數字會即時更新。</li>
+        <li>「字數」對中文以字元計、對英文以空白分詞;「分鐘閱讀」以每分鐘約 200 字估算。</li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>
+  const txt=document.getElementById('txt');
+  function update(){
+    const t=txt.value;
+    const chars=t.length;
+    const cjk=(t.match(/[\u4e00-\u9fff\u3040-\u30ff]/g)||[]).length;
+    const en=(t.replace(/[\u4e00-\u9fff\u3040-\u30ff]/g,' ').match(/\b\w+\b/g)||[]).length;
+    const words=cjk+en;
+    const lines=t.trim()===''?0:t.split(/\n/).length;
+    document.getElementById('chars').textContent=chars;
+    document.getElementById('words').textContent=words;
+    document.getElementById('lines').textContent=lines;
+    document.getElementById('read').textContent=Math.max(words>0?1:0,Math.round(words/200));
+  }
+  txt.addEventListener('input',update);
+</script>
+</body>
+</html>

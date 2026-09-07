@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>色彩挑選器 — My Apps</title>
+<style>
+  :root{--bg:#eef0f4;--panel:#fff;--ink:#16181d;--muted:#5a6270;--line:#d7dbe3;--accent:#2f4bff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:system-ui,"Noto Sans TC",sans-serif;line-height:1.6}
+  .wrap{max-width:640px;margin:0 auto;padding:40px 24px 80px}
+  a.back{font-size:14px;color:var(--muted);text-decoration:none}
+  a.back:hover{color:var(--ink)}
+  h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:18px 0 6px}
+  .sub{color:var(--muted);margin-bottom:28px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px}
+  .preview{height:150px;border-radius:12px;border:1px solid var(--line);margin-bottom:22px;transition:background .1s}
+  input[type=color]{width:100%;height:52px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--panel)}
+  .row{display:flex;align-items:center;gap:12px;margin-top:14px}
+  .row label{width:46px;font-size:13px;color:var(--muted);font-weight:600}
+  .row .val{flex:1;font-family:ui-monospace,monospace;font-size:15px;background:#f4f5f8;padding:11px 14px;border-radius:9px}
+  .copy{padding:11px 16px;border:1px solid var(--line);background:var(--panel);border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink)}
+  .copy:hover{border-color:var(--accent);color:var(--accent)}
+  .copy.done{background:var(--accent);color:#fff;border-color:var(--accent)}
+  details{margin-top:26px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:0 24px}
+  summary{padding:20px 0;font-weight:600;cursor:pointer}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .howto{padding:18px 0 24px;color:var(--muted);font-size:15px}
+  .howto ol{padding-left:20px}.howto li{margin:7px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← 回到工具列表</a>
+  <h1>🎨 色彩挑選器</h1>
+  <p class="sub">挑一個顏色,馬上拿到三種格式,一鍵複製。</p>
+
+  <div class="panel">
+    <div class="preview" id="preview"></div>
+    <input type="color" id="pick" value="#2f4bff">
+    <div class="row"><label>HEX</label><span class="val" id="hex"></span><button class="copy" data-t="hex">複製</button></div>
+    <div class="row"><label>RGB</label><span class="val" id="rgb"></span><button class="copy" data-t="rgb">複製</button></div>
+    <div class="row"><label>HSL</label><span class="val" id="hsl"></span><button class="copy" data-t="hsl">複製</button></div>
+  </div>
+
+  <details>
+    <summary>使用說明</summary>
+    <div class="howto">
+      <ol>
+        <li>點上方的色塊,從系統色盤選一個顏色。</li>
+        <li>下方會即時顯示 HEX、RGB、HSL 三種格式。</li>
+        <li>按任一個「複製」鍵,把該格式複製到剪貼簿。</li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>
+  const pick=document.getElementById('pick');
+  const out={hex:document.getElementById('hex'),rgb:document.getElementById('rgb'),hsl:document.getElementById('hsl')};
+  function toRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
+  function toHsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h,s,l=(mx+mn)/2;if(mx===mn){h=s=0}else{const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6}return[Math.round(h*360),Math.round(s*100),Math.round(l*100)]}
+  function update(){const h=pick.value;document.getElementById('preview').style.background=h;const[r,g,b]=toRgb(h);const[hh,s,l]=toHsl(r,g,b);out.hex.textContent=h.toUpperCase();out.rgb.textContent=`rgb(${r}, ${g}, ${b})`;out.hsl.textContent=`hsl(${hh}, ${s}%, ${l}%)`}
+  pick.addEventListener('input',update);
+  document.querySelectorAll('.copy').forEach(btn=>btn.onclick=()=>{navigator.clipboard.writeText(out[btn.dataset.t].textContent);btn.textContent='已複製';btn.classList.add('done');setTimeout(()=>{btn.textContent='複製';btn.classList.remove('done')},1200)});
+  update();
+</script>
+</body>
+</html>
