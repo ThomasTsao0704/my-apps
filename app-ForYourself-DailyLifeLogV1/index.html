@@ -1,1 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>For Yourself｜每日人生誌</title>
+<style>
+:root{
+  --bg:#0c0e14;--bg-card:#151821;--bg-hover:#1e2230;--bg-active:#252a3a;--bg-modal:#181c28;
+  --border:#272d42;--border-focus:#4a5580;--text:#dfe2ed;--text-dim:#6b7194;
+  --accent:#6c8cff;--accent-glow:rgba(108,140,255,.15);--accent-hover:#849dff;
+  --danger:#f87171;--danger-bg:rgba(248,113,113,.12);--star:#fbbf24;
+  --green:#34d399;--tag-bg:#1e2336;--tag-text:#8892b5;--pink:#f472b6;--cyan:#22d3ee;
+  --radius:10px;--radius-sm:6px;--fast:.15s ease
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.top{display:flex;align-items:center;gap:16px;padding:0 20px;height:58px;background:var(--bg-card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px}.brand .logo{font-size:20px}
+.tabs{display:flex;gap:4px;margin-left:8px}.tab{padding:7px 15px;border:0;background:none;color:var(--text-dim);font-size:13px;font-weight:600;cursor:pointer;border-radius:8px}
+.tab:hover{background:var(--bg-hover);color:var(--text)}.tab.active{background:var(--accent-glow);color:var(--accent)}
+.top .spacer{flex:1}.date-now{font-size:11px;color:var(--text-dim)}
+.page{max-width:1180px;margin:0 auto;padding:24px 20px 70px}.view{display:none}.view.active{display:block}
+.chips{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}.chip{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.chip .n{font-size:25px;font-weight:700}.chip .l{font-size:11px;color:var(--text-dim);margin-top:3px}.accent .n{color:var(--accent)}.green .n{color:var(--green)}.star .n{color:var(--star)}.pink .n{color:var(--pink)}.cyan .n{color:var(--cyan)}
+.panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px}
+.panel-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}.panel-hd h3{font-size:13.5px}.sub{font-size:11.5px;color:var(--text-dim)}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:800px){.cols2{grid-template-columns:1fr}.chips{grid-template-columns:repeat(2,1fr)}.tabs{overflow:auto}}
+.hero-grid{display:grid;grid-template-columns:1.4fr .8fr;gap:16px}@media(max-width:800px){.hero-grid{grid-template-columns:1fr}}
+.hero-quote{font-size:18px;line-height:1.75;padding:8px 0 4px}.hero-quote small{display:block;color:var(--text-dim);font-size:11px;margin-top:8px}
+.mood-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mood-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}.mood-box .v{font-size:22px;font-weight:700}.mood-box .k{font-size:10px;color:var(--text-dim);margin-top:3px}
+.chart-wrap{margin-top:8px}.chart-svg{width:100%;height:190px;display:block}.axis{display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim)}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}.bar-row .lbl{width:78px;color:var(--tag-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bar-track{flex:1;height:9px;background:var(--bg);border-radius:5px;overflow:hidden}.bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--cyan))}.bar-row .val{width:30px;text-align:right;color:var(--text-dim)}
+.mini-list{display:flex;flex-direction:column;gap:2px}.mini-item{display:flex;align-items:center;gap:9px;padding:8px;border-radius:7px;cursor:pointer}.mini-item:hover{background:var(--bg-hover)}.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}.mini-item .t{flex:1;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:10.5px;color:var(--text-dim);flex:none}.empty-note{text-align:center;color:var(--text-dim);font-size:12px;padding:18px}
+.insight{border-left:3px solid var(--accent);background:var(--accent-glow);padding:12px 14px;border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.8}
+.search-box{display:flex;align-items:center;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:0 10px;flex:1;min-width:220px}.search-box:focus-within{border-color:var(--accent)}.search-box input{flex:1;background:none;border:0;outline:0;color:var(--text);font-size:13px;padding:9px 6px}.search-box input::placeholder{color:var(--text-dim)}
+.mgmt-bar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.sel{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;padding:9px}.btn{padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid transparent}.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover)}.btn-ghost{background:none;color:var(--text-dim);border-color:var(--border)}.btn-ghost:hover{background:var(--bg-hover);color:var(--text)}.btn-danger{background:var(--danger);color:#fff}
+.table-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}table{width:100%;border-collapse:collapse;font-size:12.5px}th{text-align:left;padding:11px 12px;color:var(--text-dim);font-size:11px;border-bottom:1px solid var(--border)}td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}tbody tr:hover{background:var(--bg-hover)}td.title{font-weight:600;max-width:320px}.tt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}.row-tag{font-size:9px;padding:1px 6px;border-radius:7px;background:var(--tag-bg);color:var(--tag-text)}.pill{font-size:9.5px;padding:2px 7px;border-radius:8px;font-weight:600}.pill.good{background:rgba(52,211,153,.12);color:var(--green)}.pill.star{background:rgba(251,191,36,.14);color:var(--star)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200;padding:18px}.overlay.open{display:flex}.modal{background:var(--bg-modal);border:1px solid var(--border);border-radius:14px;width:100%;max-width:760px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}.modal-hd h3{font-size:15px}.x{background:none;border:0;color:var(--text-dim);font-size:18px;cursor:pointer}.modal-bd{padding:18px;overflow:auto}.modal-ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--border)}
+.field{margin-bottom:12px}.field label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:5px;font-weight:600}.field input,.field textarea{width:100%;padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none}.field input:focus,.field textarea:focus{border-color:var(--accent)}
+.wtoolbar{display:flex;flex-wrap:wrap;gap:2px;padding:6px 8px;border:1px solid var(--border);border-bottom:0;border-radius:6px 6px 0 0;background:var(--bg)}.wtoolbar button,.wtoolbar select{height:27px;background:none;border:1px solid transparent;color:var(--text-dim);border-radius:4px;cursor:pointer}.wtoolbar button{min-width:27px}.wtoolbar button:hover,.wtoolbar select:hover{background:var(--bg-hover);color:var(--text)}.wtoolbar select{background:var(--bg-card);font-size:11px}.wsep{width:1px;height:18px;background:var(--border);margin:4px}.wed-area{border:1px solid var(--border);border-radius:0 0 6px 6px;min-height:260px;max-height:45vh;overflow:auto;padding:12px 14px;background:var(--bg);outline:none;font-size:13.5px;line-height:1.8}.wed-area:empty:before{content:'寫下今天的你……';color:var(--text-dim)}
+.range-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.range-grid label{font-size:11px;color:var(--text-dim)}.range-grid input{width:100%;accent-color:var(--accent)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(15px);background:var(--bg-card);color:var(--text);padding:9px 22px;border-radius:10px;border:1px solid var(--border);font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:7px}.cloud-tag{padding:5px 9px;background:var(--tag-bg);border:1px solid var(--border);border-radius:14px;font-size:11px;color:var(--tag-text);cursor:pointer}.cloud-tag:hover{border-color:var(--accent);color:var(--accent)}
+.type-line{margin-top:10px;font-size:11px;color:var(--text-dim)}
+.trend-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px}.trend-row:last-child{border-bottom:0}.trend-k{flex:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trend-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap}.tr-up{background:rgba(52,211,153,.14);color:var(--green)}.tr-down{background:var(--danger-bg);color:var(--danger)}.tr-flat{background:var(--tag-bg);color:var(--tag-text)}.trend-meta{font-size:10.5px;color:var(--text-dim);width:56px;text-align:right;white-space:nowrap}
+.tl-row{display:flex;align-items:center;gap:10px;font-size:12px;margin-bottom:7px}.tl-mon{width:42px;color:var(--tag-text);flex:none}.tl-track{flex:1;height:9px;background:var(--bg);border-radius:5px;overflow:hidden}.tl-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--pink))}.tl-dom{width:64px;color:var(--text);flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tl-n{width:30px;text-align:right;color:var(--text-dim);flex:none}.tl-empty{color:var(--text-dim)}
+.settings-note{font-size:12.5px;line-height:1.8;color:var(--text-dim);margin-bottom:14px}
+.lex-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.lex-form input{flex:1;min-width:120px;padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none}.lex-form input:focus{border-color:var(--accent)}.lex-form .sel{padding:9px}
+.lex-hint{font-size:11px;color:var(--text-dim);margin:8px 0 4px;line-height:1.6}
+.lex-list-hd{font-size:11.5px;color:var(--text-dim);margin:14px 0 8px;font-weight:600}
+.lex-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:7px}
+.lex-w{font-weight:600;font-size:13px;min-width:60px}
+.lex-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}.lex-t-event{background:var(--accent-glow);color:var(--accent)}.lex-t-emotion{background:rgba(244,114,182,.14);color:var(--pink)}.lex-t-theme{background:rgba(34,211,238,.12);color:var(--cyan)}.lex-t-action{background:rgba(52,211,153,.14);color:var(--green)}
+.lex-dom{flex:1;font-size:11.5px;color:var(--tag-text)}
+.lex-del{padding:5px 11px;font-size:11.5px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand"><span class="logo">🧠</span> For Yourself</div>
+  <div class="tabs">
+    <button class="tab active" data-view="dashView">📊 我的人生</button>
+    <button class="tab" data-view="journalView">📖 每日日誌</button>
+    <button class="tab" data-view="mgmtView">🗂 紀錄管理</button>
+  </div>
+  <div class="spacer"></div><span class="date-now" id="now"></span>
+  <button class="btn btn-ghost" id="settingsBtn">⚙ 設定</button>
+  <button class="btn btn-primary" id="newBtn">＋ 今天</button>
+</div>
 
+<div class="page">
+<section id="dashView" class="view active">
+  <div class="chips" id="chips"></div>
+  <div class="hero-grid">
+    <div class="panel">
+      <div class="panel-hd"><h3>最近 30 天的我</h3><span class="sub">心情趨勢</span></div>
+      <svg class="chart-svg" id="moodChart" viewBox="0 0 700 190" preserveAspectRatio="none"></svg>
+      <div class="axis" id="moodAxis"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-hd"><h3>今日狀態</h3><span class="sub" id="todayLabel"></span></div>
+      <div class="mood-row">
+        <div class="mood-box"><div class="v" id="todayMood">—</div><div class="k">心情</div></div>
+        <div class="mood-box"><div class="v" id="todayEnergy">—</div><div class="k">能量</div></div>
+        <div class="mood-box"><div class="v" id="todayStress">—</div><div class="k">壓力</div></div>
+      </div>
+      <div style="height:14px"></div><div class="insight" id="dailyInsight">寫下今天，系統才有資料可以認識你。</div>
+    </div>
+  </div>
+  <div class="cols2">
+    <div class="panel"><div class="panel-hd"><h3>🔥 最近高頻關鍵字</h3><span class="sub">近 90 天</span></div><div id="keywordBars"></div></div>
+    <div class="panel"><div class="panel-hd"><h3>🧩 人生領域</h3><span class="sub">事件分布</span></div><div id="categoryBars"></div></div>
+  </div>
+  <div class="panel"><div class="panel-hd"><h3>🎭 心情分數 vs 文字情緒</h3><span class="sub">近 90 天</span></div><div id="moodEmotion"></div></div>
+  <div class="cols2">
+    <div class="panel"><div class="panel-hd"><h3>📈 主題趨勢</h3><span class="sub">近 30 天 vs 前 30 天</span></div><div id="trends"></div></div>
+    <div class="panel"><div class="panel-hd"><h3>🔗 常一起出現的主題</h3><span class="sub">近 90 天</span></div><div id="cooc"></div></div>
+  </div>
+  <div class="panel"><div class="panel-hd"><h3>🗓 人生時間軸</h3><span class="sub">近 12 個月，每月注意力重心</span></div><div id="timeline"></div></div>
+  <div class="cols2">
+    <div class="panel"><div class="panel-hd"><h3>💭 最近正在想什麼</h3></div><div id="thinking"></div></div>
+    <div class="panel"><div class="panel-hd"><h3>📌 最近紀錄</h3></div><div class="mini-list" id="recentList"></div></div>
+  </div>
+  <div class="panel"><div class="panel-hd"><h3>關鍵字雲</h3><span class="sub">點擊可搜尋</span></div><div class="tag-cloud" id="cloud"></div></div>
+</section>
+
+<section id="journalView" class="view">
+  <div class="panel">
+    <div class="panel-hd"><h3>📖 每日日誌</h3><span class="sub">不用寫得漂亮，只要留下真實的你</span></div>
+    <div class="search-box" style="max-width:100%"><span>🔍</span><input id="journalSearch" placeholder="搜尋關鍵字，例如：工作、自由、股票、焦慮……"></div>
+  </div>
+  <div id="journalList"></div>
+</section>
+
+<section id="mgmtView" class="view">
+  <div class="mgmt-bar">
+    <div class="search-box"><span>🔍</span><input id="mSearch" placeholder="搜尋內容、標題、關鍵字、領域……"></div>
+    <select id="mCategory" class="sel"><option value="">全部領域</option></select>
+    <button class="btn btn-primary" id="mNew">＋ 新增紀錄</button>
+    <button class="btn btn-ghost" id="exportBtn">匯出 JSON</button>
+    <button class="btn btn-ghost" id="importBtn">匯入 JSON</button>
+    <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>日期</th><th>標題 / 關鍵字</th><th>心情</th><th>能量</th><th>壓力</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table>
+  </div>
+</section>
+</div>
+
+<div class="overlay" id="editOverlay">
+<div class="modal">
+  <div class="modal-hd"><h3 id="editTitle">今天的我</h3><button class="x" data-close="editOverlay">✕</button></div>
+  <div class="modal-bd">
+    <div class="field"><label>日期</label><input id="fDate" type="date"></div>
+    <div class="field"><label>標題</label><input id="fTitle" placeholder="例如：今天突然想明白了一件事"></div>
+    <div class="field"><label>今天發生了什麼？</label>
+      <div class="wtoolbar" id="toolbar">
+        <button data-cmd="bold"><b>B</b></button><button data-cmd="italic"><i>I</i></button><button data-cmd="underline"><u>U</u></button>
+        <span class="wsep"></span><button data-cmd="insertUnorderedList">• 清單</button><button data-cmd="insertOrderedList">1. 清單</button>
+        <button data-cmd="formatBlock" data-val="H2">H2</button><button data-cmd="formatBlock" data-val="BLOCKQUOTE">引用</button>
+      </div>
+      <div id="edArea" class="wed-area" contenteditable="true"></div>
+    </div>
+    <div class="range-grid">
+      <div><label>心情 <b id="moodVal">5</b>/10</label><input id="fMood" type="range" min="1" max="10" value="5"></div>
+      <div><label>能量 <b id="energyVal">5</b>/10</label><input id="fEnergy" type="range" min="1" max="10" value="5"></div>
+      <div><label>壓力 <b id="stressVal">5</b>/10</label><input id="fStress" type="range" min="1" max="10" value="5"></div>
+    </div>
+    <div class="field" style="margin-top:14px"><label>自訂關鍵字 <small>（可選；系統也會自動分析）</small></label><input id="fTags" placeholder="工作, 自由, 未來"></div>
+    <label style="font-size:12px"><input id="fStar" type="checkbox"> ⭐ 重要的一天</label>
+  </div>
+  <div class="modal-ft"><button class="btn btn-ghost" data-close="editOverlay">取消</button><button class="btn btn-primary" id="saveBtn">儲存今天</button></div>
+</div>
+</div>
+
+<div class="overlay" id="settingsOverlay">
+<div class="modal">
+  <div class="modal-hd"><h3>⚙ 設定 · 我的詞庫</h3><button class="x" data-close="settingsOverlay">✕</button></div>
+  <div class="modal-bd">
+    <p class="settings-note">系統會自動分析每篇日誌的關鍵字。內建詞庫已涵蓋常見主題，你可以在這裡補上自己常用、但系統還抓不到的詞。<b>新增或刪除後會立刻重新分析所有紀錄。</b></p>
+    <div class="lex-form">
+      <input id="lexWord" placeholder="要新增的詞，例如：冥想">
+      <select id="lexType" class="sel">
+        <option value="event">事件</option>
+        <option value="emotion">情緒</option>
+        <option value="theme">議題</option>
+        <option value="action">行動</option>
+      </select>
+      <input id="lexDomain" list="lexDomainList" placeholder="歸到哪個領域，例如：興趣">
+      <select id="lexPolarity" class="sel" style="display:none">
+        <option value="正面">正面情緒</option>
+        <option value="負面">負面情緒</option>
+      </select>
+      <button class="btn btn-primary" id="lexAdd">新增</button>
+    </div>
+    <datalist id="lexDomainList"></datalist>
+    <div class="lex-hint" id="lexHint">「情緒」類請選正面／負面，才能算進「心情 vs 文字情緒」的對照；其他類型請填領域（會影響人生領域與時間軸）。</div>
+    <div id="lexList"></div>
+  </div>
+  <div class="modal-ft"><button class="btn btn-ghost" data-close="settingsOverlay">關閉</button></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+const LS_KEY='for_yourself_journal_v1';
+const LS_LEX='for_yourself_lexicon_v1';
+let entries=[],editingId=null,userLex=[];
+
+/* 分型詞庫：type=事件/情緒/議題/行動；domain=顯示用的人生領域。
+   結構 LEX_DEF[type][domain]=[詞...]，其中詞可為字串，或 [詞,[陷阱詞...]]。
+   陷阱詞：計數前會把這些複合詞先遮掉，避免「累」被「累積」誤判。 */
+const LEX_DEF={
+  event:{
+    '工作':['工作','上班','主管','老闆','同事','同仁','公司','職場','加班','任務','專案','會議','客戶','面試'],
+    '金錢':['薪水','收入','存款','債務','帳單','花費','消費','房租','貸款','賺錢'],
+    '理財':['股票','股價','基金','ETF','大盤','加密','比特幣'],
+    '人際':['朋友','家人','父母','爸媽','兄弟','姊妹','伴侶','另一半','女友','男友','同學','聚會','聊天','吵架'],
+    '身體':['睡眠','失眠','運動','健身','生病','感冒','頭痛','胃痛','脹氣','疲勞','飲食','身體'],
+    '興趣':['程式','寫作','閱讀','看書','旅行','健行','爬山','攝影','電影','音樂','遊戲','追劇','研究']
+  },
+  emotion:{
+    '正面':['開心','快樂','幸福','期待','興奮','平靜','放鬆','滿足','感動','踏實','有精神','充實','自在'],
+    '負面':['焦慮','煩躁','心煩',['煩',['麻煩','煩躁','心煩','煩惱','不耐煩']],'生氣','憤怒','難過','悲傷','失望','沮喪','疲累',['累',['累積','積累','連累','拖累','累計','日積月累','牽累','疲累','勞累','累壞']],'厭倦','厭煩','孤單','空虛','無力','委屈','緊張','害怕','恐懼']
+  },
+  theme:{
+    '人生議題':['自由','未來','人生','方向','目標','意義','自我','選擇','關係','安全感','成長','價值','夢想','初衷','重心']
+  },
+  action:{
+    '行動':['開始','停止','改變','決定','嘗試','放棄','離職','換工作','投資','購買','戒掉','戒菸','戒酒','報名','規劃','計畫','堅持','努力']
+  }
+};
+const TYPE_LABEL={event:'事件',emotion:'情緒',theme:'議題',action:'行動'};
+/* 攤平內建詞庫成查詢清單：{w, type, domain, traps} */
+const BUILTIN_LEX=(()=>{
+  const out=[];
+  for(const type in LEX_DEF)for(const domain in LEX_DEF[type])for(const item of LEX_DEF[type][domain]){
+    if(Array.isArray(item))out.push({w:item[0],type,domain,traps:item[1]||[]});
+    else out.push({w:item,type,domain,traps:[]});
+  }
+  return out;
+})();
+let LEXICON=[];
+/* 合併內建 + 使用者自訂詞。以「詞」去重，使用者的定義會覆蓋內建（可重新分類），且避免同一個詞被重複計數。 */
+function buildLexicon(){
+  const map=new Map();
+  for(const it of BUILTIN_LEX)map.set(it.w,it);
+  for(const it of userLex){if(it&&it.w)map.set(it.w,{w:it.w,type:it.type||'event',domain:it.domain||'自訂',traps:[]});}
+  LEXICON=[...map.values()];
+  _anaCache.clear();   // 詞庫變了，舊的分析快取全部作廢
+}
+
+function load(){
+  try{entries=JSON.parse(localStorage.getItem(LS_KEY)||'[]')||[]}catch(e){entries=[]}
+  try{userLex=JSON.parse(localStorage.getItem(LS_LEX)||'[]')||[]}catch(e){userLex=[]}
+  buildLexicon();
+}
+function save(){localStorage.setItem(LS_KEY,JSON.stringify(entries))}
+function saveLex(){localStorage.setItem(LS_LEX,JSON.stringify(userLex))}
+function id(){return 'j_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function today(){return localDate(new Date())}
+function textOf(html){const d=document.createElement('div');d.innerHTML=html||'';return d.innerText||d.textContent||''}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtDate(s){if(!s)return '—';const d=new Date(s+'T00:00:00');return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`}
+function ago(s){const d=Math.floor((Date.now()-new Date(s+'T00:00:00'))/86400000);return d<=0?'今天':d===1?'昨天':d+' 天前'}
+/* 計算 word 在 text 中的實際出現次數；traps 內的複合詞會先被同長度遮罩，避免子字串誤判 */
+function countWord(text,word,traps){
+  let masked=text;
+  if(traps&&traps.length)for(const t of traps)masked=masked.split(t).join('\u0000'.repeat(t.length));
+  let n=0,i=0;
+  while((i=masked.indexOf(word,i))!==-1){n++;i+=word.length;}
+  return n;
+}
+function analyze(content,customTags=[]){
+  const text=textOf(content);
+  const counts={},kwType={},kwDomain={};
+  for(const {w,type,domain,traps} of LEXICON){
+    const n=countWord(text,w,traps);
+    if(n){counts[w]=(counts[w]||0)+n;kwType[w]=type;kwDomain[w]=domain;}
+  }
+  // 自訂關鍵字：至少計 1 次，並在內文中補算實際出現次數；歸為「事件／自訂」
+  for(const raw of customTags){
+    const w=raw.trim();if(!w)continue;
+    const n=countWord(text,w,[]);
+    counts[w]=(counts[w]||0)+Math.max(1,n);
+    if(!kwType[w]){kwType[w]='event';kwDomain[w]='自訂';}
+  }
+  return {counts,kwType,kwDomain};
+}
+const _anaCache=new Map();
+function ensureAnalysis(e){
+  const sig=(e.updated||0)+'|'+((e.content||'').length)+'|'+((e.customTags||[]).join(','));
+  const hit=_anaCache.get(e.id);
+  if(hit&&hit.sig===sig){Object.assign(e,hit.res);return e;}
+  const {counts,kwType,kwDomain}=analyze(e.content||'',e.customTags||[]);
+  const domainCount={},typeCount={event:0,emotion:0,theme:0,action:0};
+  for(const [w,n] of Object.entries(counts)){
+    domainCount[kwDomain[w]]=(domainCount[kwDomain[w]]||0)+n;
+    typeCount[kwType[w]]=(typeCount[kwType[w]]||0)+n;
+  }
+  const res={
+    counts,                                   // {詞: 次數}
+    keywords:Object.keys(counts),             // 去重後的關鍵字（給搜尋/雲/列表用）
+    kwType,kwDomain,                          // 每個詞的類型與領域
+    typeCount,                                // {event,emotion,theme,action} 次數
+    domainCount,                              // {領域: 次數}
+    categories:Object.entries(domainCount).sort((a,b)=>b[1]-a[1]).map(x=>x[0]), // 領域（沿用舊欄位）
+    emotions:Object.keys(counts).filter(w=>kwType[w]==='emotion'),
+    posCount:Object.entries(counts).reduce((s,[w,n])=>s+(kwDomain[w]==='正面'?n:0),0),
+    negCount:Object.entries(counts).reduce((s,[w,n])=>s+(kwDomain[w]==='負面'?n:0),0)
+  };
+  _anaCache.set(e.id,{sig,res});
+  Object.assign(e,res);
+  return e;
+}
+function openEdit(e=null){
+  editingId=e?.id||null;
+  document.getElementById('editTitle').textContent=e?'編輯人生紀錄':'今天的我';
+  document.getElementById('fDate').value=e?.date||today();
+  document.getElementById('fTitle').value=e?.title||'';
+  document.getElementById('edArea').innerHTML=e?.content||'';
+  document.getElementById('fMood').value=e?.mood||5;
+  document.getElementById('fEnergy').value=e?.energy||5;
+  document.getElementById('fStress').value=e?.stress||5;
+  document.getElementById('fTags').value=(e?.customTags||[]).join(', ');
+  document.getElementById('fStar').checked=!!e?.star;
+  syncRanges();document.getElementById('editOverlay').classList.add('open');
+}
+function closeEdit(){document.getElementById('editOverlay').classList.remove('open')}
+function syncRanges(){
+  ['Mood','Energy','Stress'].forEach(x=>document.getElementById(x.toLowerCase()+'Val').textContent=document.getElementById('f'+x).value)
+}
+document.querySelectorAll('input[type=range]').forEach(x=>x.addEventListener('input',syncRanges));
+document.getElementById('saveBtn').onclick=()=>{
+  const content=document.getElementById('edArea').innerHTML.trim();
+  if(!content)return toast('請先寫下今天的內容');
+  const date=document.getElementById('fDate').value||today();
+  const custom=document.getElementById('fTags').value.split(/[,，]/).map(x=>x.trim()).filter(Boolean);
+  let e=editingId?entries.find(x=>x.id===editingId):null;
+  if(!e){e={id:id(),created:Date.now()};entries.push(e)}
+  Object.assign(e,{date,title:document.getElementById('fTitle').value.trim()||'今天的我',content,
+    mood:+document.getElementById('fMood').value,energy:+document.getElementById('fEnergy').value,
+    stress:+document.getElementById('fStress').value,customTags:custom,star:document.getElementById('fStar').checked,updated:Date.now()});
+  ensureAnalysis(e);save();closeEdit();renderAll();toast(editingId?'已更新這一天':'今天已記錄');
+};
+document.querySelectorAll('[data-close]').forEach(x=>x.onclick=()=>document.getElementById(x.dataset.close).classList.remove('open'));
+document.getElementById('editOverlay').onclick=e=>{if(e.target.id==='editOverlay')closeEdit()}
+document.getElementById('settingsOverlay').onclick=e=>{if(e.target.id==='settingsOverlay')closeSettings()}
+document.getElementById('settingsBtn').onclick=openSettings;
+document.getElementById('newBtn').onclick=()=>openEdit();
+document.getElementById('mNew').onclick=()=>openEdit();
+
+/* ---- 設定：我的詞庫 ---- */
+function openSettings(){renderLexList();document.getElementById('settingsOverlay').classList.add('open')}
+function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open')}
+function lexDomains(){
+  const s=new Set(BUILTIN_LEX.map(x=>x.domain));userLex.forEach(x=>s.add(x.domain));
+  return [...s].filter(d=>d!=='正面'&&d!=='負面').sort();
+}
+function renderLexList(){
+  document.getElementById('lexDomainList').innerHTML=lexDomains().map(d=>`<option value="${esc(d)}">`).join('');
+  const el=document.getElementById('lexList');
+  if(!userLex.length){el.innerHTML='<div class="empty-note">還沒有自訂詞。內建詞庫已涵蓋常見主題，這裡用來補上你個人化的詞。</div>';return;}
+  el.innerHTML='<div class="lex-list-hd">你的自訂詞（'+userLex.length+'）</div>'+userLex.map((it,i)=>`<div class="lex-item">
+    <span class="lex-w">${esc(it.w)}</span>
+    <span class="lex-tag lex-t-${esc(it.type)}">${TYPE_LABEL[it.type]||'事件'}</span>
+    <span class="lex-dom">${esc(it.domain)}</span>
+    <button class="btn btn-danger lex-del" data-i="${i}">刪除</button>
+  </div>`).join('');
+  el.querySelectorAll('.lex-del').forEach(b=>b.onclick=()=>removeLex(+b.dataset.i));
+}
+function addLex(){
+  const w=document.getElementById('lexWord').value.trim();
+  const type=document.getElementById('lexType').value;
+  const domain=type==='emotion'?document.getElementById('lexPolarity').value:(document.getElementById('lexDomain').value.trim()||'自訂');
+  if(!w)return toast('請先輸入要新增的詞');
+  if(w.length>12)return toast('詞太長了，建議用簡短的關鍵字');
+  if(userLex.some(x=>x.w===w))return toast('這個詞已經在你的詞庫裡了');
+  if(BUILTIN_LEX.some(x=>x.w===w)&&!confirm(`「${w}」內建詞庫已經有了。\n繼續會用你的分類覆蓋內建設定，要繼續嗎？`))return;
+  userLex.push({w,type,domain});
+  saveLex();buildLexicon();
+  document.getElementById('lexWord').value='';
+  renderLexList();renderAll();
+  toast(`已新增「${w}」，並重新分析了所有紀錄`);
+}
+function removeLex(i){
+  const it=userLex[i];if(!it)return;
+  userLex.splice(i,1);saveLex();buildLexicon();renderLexList();renderAll();
+  toast(`已移除「${it.w}」`);
+}
+document.getElementById('lexType').onchange=function(){
+  const emo=this.value==='emotion';
+  document.getElementById('lexDomain').style.display=emo?'none':'';
+  document.getElementById('lexPolarity').style.display=emo?'':'none';
+};
+document.getElementById('lexAdd').onclick=addLex;
+document.getElementById('lexWord').addEventListener('keydown',e=>{if(e.key==='Enter')addLex()});
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');document.getElementById(t.dataset.view).classList.add('active');
+});
+
+function renderDashboard(){
+  entries.forEach(ensureAnalysis);
+  const now=new Date(), cutoff=new Date();cutoff.setDate(now.getDate()-89);
+  const recent=entries.filter(e=>new Date(e.date+'T00:00:00')>=cutoff);
+  const todayE=entries.find(e=>e.date===today());
+  const keywords={},cats={};
+  recent.forEach(e=>{for(const [k,n] of Object.entries(e.counts||{}))keywords[k]=(keywords[k]||0)+n;});
+  recent.forEach(e=>{for(const [k,n] of Object.entries(e.domainCount||{}))cats[k]=(cats[k]||0)+n;});
+  const avgMood=recent.length?(recent.reduce((s,e)=>s+(e.mood||0),0)/recent.length).toFixed(1):'—';
+  document.getElementById('chips').innerHTML=`
+    <div class="chip accent"><div class="n">${entries.length}</div><div class="l">人生紀錄</div></div>
+    <div class="chip green"><div class="n">${new Set(recent.flatMap(e=>e.keywords||[])).size}</div><div class="l">活躍關鍵字</div></div>
+    <div class="chip star"><div class="n">${entries.filter(e=>e.star).length}</div><div class="l">重要日子</div></div>
+    <div class="chip pink"><div class="n">${avgMood}</div><div class="l">近 90 天平均心情</div></div>
+    <div class="chip cyan"><div class="n">${recent.length}</div><div class="l">近 90 天紀錄</div></div>`;
+  document.getElementById('todayLabel').textContent=fmtDate(today());
+  document.getElementById('todayMood').textContent=todayE?todayE.mood:'—';
+  document.getElementById('todayEnergy').textContent=todayE?todayE.energy:'—';
+  document.getElementById('todayStress').textContent=todayE?todayE.stress:'—';
+  document.getElementById('dailyInsight').textContent=todayE?buildInsight(todayE):'今天還沒有留下紀錄。先寫下來，之後才能看見長期的自己。';
+  drawMood();
+  renderBars('keywordBars',keywords,8);renderBars('categoryBars',cats,7);
+  renderThinking(recent,keywords);renderRecent();renderCloud(keywords);
+  renderMoodEmotion(recent,avgMood);
+  renderTrends();renderCooc(recent);renderTimeline();
+}
+/* issue 6：心情分數 vs 文字情緒的落差偵測 */
+function renderMoodEmotion(recent,avgMood){
+  const el=document.getElementById('moodEmotion');if(!el)return;
+  const pos=recent.reduce((s,e)=>s+(e.posCount||0),0),neg=recent.reduce((s,e)=>s+(e.negCount||0),0);
+  const total=pos+neg;
+  const tc={event:0,emotion:0,theme:0,action:0};
+  recent.forEach(e=>{for(const k in tc)tc[k]+=(e.typeCount?.[k]||0);});
+  const typeLine=Object.entries(tc).filter(([,n])=>n).map(([k,n])=>`${TYPE_LABEL[k]} ${n}`).join(' · ')||'—';
+  let msg;
+  if(total<3){
+    msg=`文字裡的情緒詞還不夠多，暫時看不出傾向。心情分數平均 <b>${avgMood}</b>。`;
+  }else{
+    const negRatio=neg/total, moodNum=parseFloat(avgMood);
+    if(moodNum>=7&&negRatio>=0.6){
+      msg=`心情分數偏高（平均 <b>${avgMood}</b>），但文字裡的情緒多半是<b>負面</b>的（負面 ${neg} : 正面 ${pos}）。分數和文字的落差，往往比分數本身更值得看一眼。`;
+    }else if(moodNum<=4&&negRatio<=0.4&&pos>0){
+      msg=`心情分數偏低（平均 <b>${avgMood}</b>），但文字裡卻常出現<b>正面</b>字眼（正面 ${pos} : 負面 ${neg}）。也許某些讓你有能量的事，被你低估了。`;
+    }else{
+      msg=`心情分數平均 <b>${avgMood}</b>，文字情緒 正面 ${pos} : 負面 ${neg}，兩者方向一致。`;
+    }
+  }
+  el.innerHTML=`<div class="insight">${msg}</div><div class="type-line">近 90 天關鍵字類型：${typeLine}</div>`;
+}
+/* section 4：主題趨勢（近 N 天 vs 前 N 天） */
+function renderTrends(){
+  const el=document.getElementById('trends');if(!el)return;
+  const N=30, now=new Date();
+  const startCur=new Date(now);startCur.setDate(now.getDate()-N+1);
+  const startPrev=new Date(now);startPrev.setDate(now.getDate()-2*N+1);
+  const cur={},prev={};
+  entries.forEach(e=>{
+    const d=new Date(e.date+'T00:00:00');
+    const bucket=d>=startCur?cur:(d>=startPrev?prev:null);
+    if(!bucket)return;
+    for(const [k,n] of Object.entries(e.counts||{}))bucket[k]=(bucket[k]||0)+n;
+  });
+  const keys=new Set([...Object.keys(cur),...Object.keys(prev)]);
+  const rows=[];
+  keys.forEach(k=>{
+    const c=cur[k]||0,p=prev[k]||0;if(c+p<3)return; // 過濾雜訊
+    let pct,tag;
+    if(p===0){pct=null;tag='new';}
+    else{pct=Math.round((c-p)/p*100);tag=pct>0?'up':(pct<0?'down':'flat');}
+    rows.push({k,c,p,pct,tag,delta:c-p});
+  });
+  rows.sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+  const top=rows.slice(0,8);
+  el.innerHTML=top.length?top.map(r=>{
+    const arrow=r.tag==='new'?'✦':(r.tag==='up'?'↑':(r.tag==='down'?'↓':'→'));
+    const cls=r.tag==='down'?'tr-down':(r.tag==='flat'?'tr-flat':'tr-up');
+    const label=r.tag==='new'?'新出現':(r.pct>0?'+'+r.pct+'%':r.pct+'%');
+    return `<div class="trend-row"><span class="trend-k">${esc(r.k)}</span><span class="trend-badge ${cls}">${arrow} ${label}</span><span class="trend-meta">${r.p} → ${r.c}</span></div>`;
+  }).join(''):`<div class="empty-note">需要近 ${2*N} 天內、跨兩段時間的紀錄才能比較趨勢。</div>`;
+}
+/* section 6：關鍵字共現（哪些主題常一起出現） */
+function renderCooc(recent){
+  const el=document.getElementById('cooc');if(!el)return;
+  const pair={};
+  recent.forEach(e=>{
+    const ks=Object.keys(e.counts||{});
+    for(let i=0;i<ks.length;i++)for(let j=i+1;j<ks.length;j++){
+      const key=[ks[i],ks[j]].sort().join('\u0001');
+      pair[key]=(pair[key]||0)+1;
+    }
+  });
+  const arr=Object.entries(pair).map(([k,n])=>{const [a,b]=k.split('\u0001');return {a,b,n};}).filter(x=>x.n>=2).sort((a,b)=>b.n-a.n).slice(0,8);
+  const max=Math.max(1,...arr.map(x=>x.n));
+  el.innerHTML=arr.length?arr.map(x=>`<div class="bar-row"><span class="lbl" style="width:118px">${esc(x.a)} × ${esc(x.b)}</span><div class="bar-track"><div class="bar-fill" style="width:${x.n/max*100}%"></div></div><span class="val">${x.n}</span></div>`).join(''):'<div class="empty-note">同一天出現 2 次以上的主題組合，會在這裡浮現。</div>';
+}
+/* section 5：人生時間軸（每月注意力重心） */
+function renderTimeline(){
+  const el=document.getElementById('timeline');if(!el)return;
+  const months=[],now=new Date();
+  for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({y:d.getFullYear(),m:d.getMonth(),dom:{}});}
+  entries.forEach(e=>{
+    const d=new Date(e.date+'T00:00:00');
+    const slot=months.find(x=>x.y===d.getFullYear()&&x.m===d.getMonth());
+    if(!slot)return;
+    for(const [dom,n] of Object.entries(e.domainCount||{}))slot.dom[dom]=(slot.dom[dom]||0)+n;
+  });
+  let globalMax=1;
+  months.forEach(s=>{const t=Object.values(s.dom).reduce((a,b)=>a+b,0);s.total=t;if(t>globalMax)globalMax=t;
+    const top=Object.entries(s.dom).sort((a,b)=>b[1]-a[1])[0];s.topDom=top?top[0]:null;s.topN=top?top[1]:0;});
+  el.innerHTML=months.map(s=>{
+    const label=`${String(s.m+1).padStart(2,'0')}月`;
+    if(!s.topDom)return `<div class="tl-row"><span class="tl-mon">${label}</span><span class="tl-empty">—</span></div>`;
+    const w=s.total/globalMax*100;
+    return `<div class="tl-row"><span class="tl-mon">${label}</span><div class="tl-track"><div class="tl-fill" style="width:${w}%"></div></div><span class="tl-dom">${esc(s.topDom)}</span><span class="tl-n">${s.total}</span></div>`;
+  }).join('');
+}
+function drawMood(){
+  const W=700,H=190,p=12,days=[];const now=new Date();
+  for(let i=29;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);const s=localDate(d);const e=entries.find(x=>x.date===s);days.push({label:(d.getMonth()+1)+'/'+d.getDate(),v:e?.mood||null})}
+  const pts=days.map((d,i)=>[p+i*((W-p*2)/29),d.v?H-25-(d.v/10)*(H-50):null]).filter(x=>x[1]!=null);
+  const line=pts.map((x,i)=>(i?'L':'M')+x[0].toFixed(1)+' '+x[1].toFixed(1)).join(' ');
+  const circles=pts.map(x=>`<circle cx="${x[0]}" cy="${x[1]}" r="3.5" fill="var(--accent)"/>`).join('');
+  document.getElementById('moodChart').innerHTML=`<line x1="${p}" y1="${H-25}" x2="${W-p}" y2="${H-25}" stroke="var(--border)"/>
+  <line x1="${p}" y1="${H/2}" x2="${W-p}" y2="${H/2}" stroke="var(--border)" stroke-dasharray="3 4"/>
+  ${line?`<path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`:''}${circles}
+  <text x="4" y="18" fill="var(--text-dim)" font-size="10">10</text><text x="4" y="${H/2+3}" fill="var(--text-dim)" font-size="10">5</text><text x="4" y="${H-27}" fill="var(--text-dim)" font-size="10">1</text>`;
+  document.getElementById('moodAxis').innerHTML=[days[0].label,days[7].label,days[14].label,days[21].label,days[29].label].map(x=>`<span>${x}</span>`).join('');
+}
+function renderBars(id,obj,maxN){
+  const arr=Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,maxN);const max=Math.max(1,...arr.map(x=>x[1]));
+  document.getElementById(id).innerHTML=arr.length?arr.map(([k,n])=>`<div class="bar-row"><span class="lbl">${esc(k)}</span><div class="bar-track"><div class="bar-fill" style="width:${n/max*100}%"></div></div><span class="val">${n}</span></div>`).join(''):'<div class="empty-note">資料累積中……</div>';
+}
+function buildInsight(e){
+  const a=e.categories?.slice(0,2).map(x=>x.name).join('、')||'生活';
+  if(e.stress>=8)return `今天的壓力偏高（${e.stress}/10）。主要涉及：${a}。先記錄，不急著替今天下結論。`;
+  if(e.mood>=8)return `今天的心情很好（${e.mood}/10）。記下讓你有能量的事情，未來可以回頭找規律。`;
+  if(e.energy<=3)return `今天能量偏低（${e.energy}/10）。低能量也是資料，不代表你退步了。`;
+  return `今天主要圍繞「${a}」。持續累積，系統會逐漸看見你的長期模式。`;
+}
+function renderThinking(recent,keywords){
+  const top=Object.entries(keywords).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  document.getElementById('thinking').innerHTML=top.length?`<div class="insight">近 90 天，你最常留下的主題是 <b>${top.map(x=>x[0]).join('、')}</b>。這不是結論，而是一組值得你繼續觀察的線索。</div>`:'<div class="empty-note">開始寫日誌後，這裡會出現你的思考脈絡。</div>';
+}
+function renderRecent(){
+  const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
+  document.getElementById('recentList').innerHTML=arr.length?arr.map(e=>`<div class="mini-item" onclick="openEditById('${e.id}')"><span class="dot"></span><span class="t">${esc(e.title)}</span><span class="meta">${ago(e.date)}</span></div>`).join(''):'<div class="empty-note">還沒有紀錄</div>';
+}
+function renderCloud(keywords){
+  const arr=Object.entries(keywords).sort((a,b)=>b[1]-a[1]).slice(0,30);
+  document.getElementById('cloud').innerHTML=arr.length?arr.map(([k,n])=>`<span class="cloud-tag" onclick="searchKeyword('${esc(k)}')">#${esc(k)} ${n}</span>`).join(''):'<span class="empty-note">關鍵字會在你開始記錄後出現</span>';
+}
+function openEditById(i){const e=entries.find(x=>x.id===i);if(e)openEdit(e)}
+function searchKeyword(k){
+  document.getElementById('journalSearch').value=k;
+  document.querySelector('[data-view="journalView"]').click();renderJournal();
+}
+function renderJournal(){
+  const q=document.getElementById('journalSearch').value.trim().toLowerCase();
+  const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).filter(e=>!q||(e.title+' '+textOf(e.content)+' '+(e.keywords||[]).join(' ')).toLowerCase().includes(q));
+  document.getElementById('journalList').innerHTML=arr.length?arr.map(e=>`
+    <div class="panel" onclick="openEditById('${e.id}')" style="cursor:pointer">
+      <div class="panel-hd"><h3>${e.star?'⭐ ':''}${esc(e.title)}</h3><span class="sub">${fmtDate(e.date)}</span></div>
+      <div style="font-size:13px;line-height:1.8;color:var(--text-dim);max-height:75px;overflow:hidden">${esc(textOf(e.content)).slice(0,300)}</div>
+      <div class="row-tags" style="margin-top:10px">${(e.keywords||[]).slice(0,10).map(k=>`<span class="row-tag">#${esc(k)}</span>`).join('')}</div>
+    </div>`).join(''):'<div class="empty-note">沒有找到相關紀錄</div>';
+}
+document.getElementById('journalSearch').addEventListener('input',renderJournal);
+
+function buildCategoryFilter(){
+  const cats=[...new Set(entries.flatMap(e=>e.categories||[]))].sort(),sel=document.getElementById('mCategory'),cur=sel.value;
+  sel.innerHTML='<option value="">全部領域</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');sel.value=cats.includes(cur)?cur:'';
+}
+function renderTable(){
+  const q=document.getElementById('mSearch').value.trim().toLowerCase(),cat=document.getElementById('mCategory').value;
+  const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).filter(e=>(!q||(e.title+' '+textOf(e.content)+' '+(e.keywords||[]).join(' ')).toLowerCase().includes(q))&&(!cat||(e.categories||[]).includes(cat)));
+  document.getElementById('rows').innerHTML=arr.length?arr.map(e=>`<tr>
+    <td>${fmtDate(e.date)}</td><td class="title"><div class="tt">${e.star?'⭐ ':''}${esc(e.title)}</div><div class="row-tags">${(e.keywords||[]).slice(0,6).map(k=>`<span class="row-tag">${esc(k)}</span>`).join('')}</div></td>
+    <td>${e.mood}/10</td><td>${e.energy}/10</td><td>${e.stress}/10</td>
+    <td><button class="btn btn-ghost" onclick="openEditById('${e.id}')">編輯</button> <button class="btn btn-danger" onclick="deleteEntry('${e.id}')">刪除</button></td>
+  </tr>`).join(''):'<tr><td colspan="6"><div class="empty-note">沒有符合的紀錄</div></td></tr>';
+}
+document.getElementById('mSearch').addEventListener('input',renderTable);document.getElementById('mCategory').addEventListener('change',renderTable);
+function deleteEntry(i){if(!confirm('確定刪除這筆人生紀錄？此操作無法復原。'))return;entries=entries.filter(e=>e.id!==i);save();renderAll();toast('已刪除')}
+document.getElementById('exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify({version:2,exported:new Date().toISOString(),entries,lexicon:userLex},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='For自己_人生紀錄_'+today()+'.json';a.click();URL.revokeObjectURL(a.href);toast('已匯出人生資料');
+};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=ev=>{
+  const file=ev.target.files&&ev.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    let imported,parsed;
+    try{parsed=JSON.parse(reader.result);imported=Array.isArray(parsed)?parsed:parsed.entries;}
+    catch(err){toast('檔案格式錯誤，無法解析 JSON');ev.target.value='';return;}
+    if(!Array.isArray(imported)){toast('找不到可匯入的紀錄');ev.target.value='';return;}
+    const byId=new Map(entries.map(e=>[e.id,e]));
+    let added=0,updated=0,skipped=0,lexAdded=0;
+    imported.forEach(raw=>{
+      if(!raw||typeof raw!=='object'||!raw.date){skipped++;return;}
+      if(!raw.id)raw.id=id();
+      const cur=byId.get(raw.id);
+      if(!cur){byId.set(raw.id,raw);added++;}
+      else if((raw.updated||0)>(cur.updated||0)){byId.set(raw.id,raw);updated++;}
+      else{skipped++;}
+    });
+    const incomingLex=(parsed&&Array.isArray(parsed.lexicon))?parsed.lexicon:[];
+    incomingLex.forEach(it=>{if(it&&it.w&&!userLex.some(x=>x.w===it.w)){userLex.push({w:it.w,type:it.type||'event',domain:it.domain||'自訂'});lexAdded++;}});
+    if(!added&&!updated&&!lexAdded){toast(`沒有新增或更新任何資料（略過 ${skipped} 筆）`);ev.target.value='';return;}
+    if(!confirm(`即將匯入：新增 ${added} 筆紀錄、更新 ${updated} 筆、略過 ${skipped} 筆，並新增 ${lexAdded} 個自訂詞。\n現有資料不會被刪除。要繼續嗎？`)){ev.target.value='';return;}
+    entries=[...byId.values()];
+    if(lexAdded){saveLex();buildLexicon();}
+    entries.forEach(ensureAnalysis);save();renderAll();
+    toast(`匯入完成：紀錄 +${added}／更新 ${updated}，自訂詞 +${lexAdded}`);
+    ev.target.value='';
+  };
+  reader.onerror=()=>{toast('讀取檔案失敗');ev.target.value='';};
+  reader.readAsText(file);
+};
+document.querySelectorAll('#toolbar button').forEach(b=>b.onclick=()=>{document.getElementById('edArea').focus();document.execCommand(b.dataset.cmd,false,b.dataset.val||null)});
+
+function renderAll(){entries.forEach(ensureAnalysis);buildCategoryFilter();renderDashboard();renderJournal();renderTable();document.getElementById('now').textContent=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'short'});}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+load();renderAll();
+</script>
+</body>
+</html>
