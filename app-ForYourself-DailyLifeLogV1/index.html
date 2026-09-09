@@ -55,6 +55,87 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .lex-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}.lex-t-event{background:var(--accent-glow);color:var(--accent)}.lex-t-emotion{background:rgba(244,114,182,.14);color:var(--pink)}.lex-t-theme{background:rgba(34,211,238,.12);color:var(--cyan)}.lex-t-action{background:rgba(52,211,153,.14);color:var(--green)}
 .lex-dom{flex:1;font-size:11.5px;color:var(--tag-text)}
 .lex-del{padding:5px 11px;font-size:11.5px}
+.settings-sep{height:1px;background:var(--border);margin:20px 0}
+.settings-h4{font-size:14px;margin:0 0 8px}
+.settings-note code{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:11px}
+.cloud-auto{display:flex;align-items:center;gap:7px;font-size:12.5px;margin:10px 0;color:var(--text)}
+.cloud-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.cloud-status{font-size:12px;margin-top:10px;min-height:16px;color:var(--text-dim)}.cloud-status.ok{color:var(--green)}.cloud-status.err{color:var(--danger)}
+.row-note{font-size:11.5px;color:var(--accent);margin-top:4px;font-style:italic;line-height:1.5}
+.sn-panel{background:linear-gradient(135deg,var(--accent-glow),transparent),var(--bg-card)}
+.sn-lead{font-size:11.5px;color:var(--text-dim);margin-bottom:8px}
+.sn-quote{font-size:17px;line-height:1.8;font-weight:600;color:var(--text)}
+.sn-quote::before{content:'“';color:var(--accent);margin-right:2px}.sn-quote::after{content:'”';color:var(--accent);margin-left:2px}
+
+/* ============ 手機 RWD（<=640px） ============ */
+@media(max-width:640px){
+  /* 防止 iOS 聚焦時自動放大：表單字級 >=16px */
+  input,select,textarea,.wed-area{font-size:16px !important}
+
+  /* 頂部工具列：品牌 + 按鈕一行，分頁換到第二行可橫向捲動 */
+  .top{flex-wrap:wrap;height:auto;gap:8px 10px;padding:9px 12px}
+  .brand{order:0;font-size:14px}.brand .logo{font-size:18px}
+  .spacer{order:1;flex:1}
+  #settingsBtn{order:2}#newBtn{order:3}
+  .date-now{display:none}
+  .tabs{order:4;width:100%;margin-left:0;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px}
+  .tab{padding:9px 13px;font-size:13px;white-space:nowrap;flex:none}
+
+  /* 內距與加大點擊區 */
+  .page{padding:16px 12px 40px}
+  .btn{padding:10px 15px}
+  .chips{gap:10px}.chip{padding:12px 12px}.chip .n{font-size:22px}
+  .panel{padding:15px 15px}
+  .hero-quote{font-size:16px}
+  .chart-svg{height:160px}
+
+  /* 管理列：搜尋框整行，選單與按鈕平均分配 */
+  .mgmt-bar{gap:8px}
+  .mgmt-bar .search-box{flex:1 1 100%;min-width:0}
+  .mgmt-bar .sel{flex:1 1 auto}
+  .mgmt-bar .btn{flex:1 1 auto;text-align:center}
+
+  /* 表格 -> 卡片式 */
+  .table-wrap{background:none;border:0;border-radius:0;overflow:visible}
+  table{font-size:13px}
+  thead{display:none}
+  #rows tr{display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+  #rows tr:hover{background:var(--bg-card)}
+  #rows td{display:block;border:0;padding:2px 0;max-width:none}
+  #rows td.c-date{font-size:11px;color:var(--text-dim)}
+  #rows td.title{font-weight:600;font-size:14.5px;margin:2px 0 7px}
+  #rows td.title .tt{white-space:normal}
+  #rows td.c-metric{display:inline-block;margin-right:16px;font-size:12.5px;color:var(--text)}
+  #rows td.c-metric::before{content:attr(data-label) " ";color:var(--text-dim);font-size:11px}
+  #rows td.c-actions{display:flex;gap:8px;margin-top:11px}
+  #rows td.c-actions .btn{flex:1;text-align:center}
+  #rows td[colspan]{padding:0}
+
+  /* Modal 改為近全螢幕 */
+  .overlay{padding:0;align-items:stretch}
+  .modal{max-width:none;width:100%;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;border-radius:0;border:0}
+  .modal-bd{padding:14px}
+  .modal-hd{padding:13px 15px}.modal-ft{padding:11px 15px}
+  .modal-ft .btn{flex:1}
+  .x{font-size:24px;padding:2px 6px}
+
+  /* 編輯器工具列與內容 */
+  .wtoolbar button,.wtoolbar select{height:34px}.wtoolbar button{min-width:34px}
+  .wed-area{min-height:200px;max-height:none;line-height:2}
+  .range-grid{gap:10px}
+
+  /* 設定：詞庫表單堆疊、雲端按鈕整行好按 */
+  .lex-form>input,.lex-form>.sel{flex:1 1 100%}
+  .lex-item{flex-wrap:wrap}
+  .lex-dom{flex:1 1 100%;order:5}
+  .cloud-btns .btn{flex:1 1 100%}
+}
+/* 更窄（<=380px）：聊天氣泡型統計改單欄 */
+@media(max-width:380px){
+  .chips{grid-template-columns:1fr 1fr;gap:8px}
+  .chip .n{font-size:20px}
+  .brand{font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -89,6 +170,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
       <div style="height:14px"></div><div class="insight" id="dailyInsight">寫下今天，系統才有資料可以認識你。</div>
     </div>
   </div>
+  <div class="panel sn-panel"><div class="panel-hd"><h3>✍ 給自己的話</h3><span class="sub">回顧</span></div><div id="selfNote"></div></div>
   <div class="cols2">
     <div class="panel"><div class="panel-hd"><h3>🔥 最近高頻關鍵字</h3><span class="sub">近 90 天</span></div><div id="keywordBars"></div></div>
     <div class="panel"><div class="panel-hd"><h3>🧩 人生領域</h3><span class="sub">事件分布</span></div><div id="categoryBars"></div></div>
@@ -143,6 +225,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
       </div>
       <div id="edArea" class="wed-area" contenteditable="true"></div>
     </div>
+    <div class="field"><label>✍ 給自己的一句話 <small>（可選；今天想對自己說的一句話）</small></label><input id="fNote" placeholder="例如：慢一點沒關係，你已經在往前走了。"></div>
     <div class="range-grid">
       <div><label>心情 <b id="moodVal">5</b>/10</label><input id="fMood" type="range" min="1" max="10" value="5"></div>
       <div><label>能量 <b id="energyVal">5</b>/10</label><input id="fEnergy" type="range" min="1" max="10" value="5"></div>
@@ -178,6 +261,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
     <datalist id="lexDomainList"></datalist>
     <div class="lex-hint" id="lexHint">「情緒」類請選正面／負面，才能算進「心情 vs 文字情緒」的對照；其他類型請填領域（會影響人生領域與時間軸）。</div>
     <div id="lexList"></div>
+
+    <div class="settings-sep"></div>
+    <h4 class="settings-h4">☁ 雲端同步 · Google Sheet</h4>
+    <p class="settings-note">把紀錄同步到你自己的 Google 試算表（需先部署 Apps Script，步驟見 <code>Code.gs</code>）。資料只存在你的試算表裡。</p>
+    <div class="field"><label>Web App 網址 <small>（結尾 /exec）</small></label><input id="cloudUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
+    <div class="field" style="margin-top:8px"><label>Token <small>（要和 Code.gs 裡的完全一致）</small></label><input id="cloudToken" placeholder="你在 Code.gs 設的那串"></div>
+    <label class="cloud-auto"><input id="cloudAuto" type="checkbox"> 儲存 / 刪除時自動同步到雲端</label>
+    <div class="cloud-btns">
+      <button class="btn btn-ghost" id="cloudTest">測試連線</button>
+      <button class="btn btn-ghost" id="cloudUp">⬆ 全部上傳</button>
+      <button class="btn btn-ghost" id="cloudDown">⬇ 從雲端下載（合併）</button>
+    </div>
+    <div class="cloud-status" id="cloudStatus"></div>
   </div>
   <div class="modal-ft"><button class="btn btn-ghost" data-close="settingsOverlay">關閉</button></div>
 </div>
@@ -189,7 +285,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 
 const LS_KEY='for_yourself_journal_v1';
 const LS_LEX='for_yourself_lexicon_v1';
-let entries=[],editingId=null,userLex=[];
+const LS_CLOUD='for_yourself_cloud_v1';
+let entries=[],editingId=null,userLex=[],cloud={url:'',token:'',auto:false};
 
 /* 分型詞庫：type=事件/情緒/議題/行動；domain=顯示用的人生領域。
    結構 LEX_DEF[type][domain]=[詞...]，其中詞可為字串，或 [詞,[陷阱詞...]]。
@@ -237,10 +334,12 @@ function buildLexicon(){
 function load(){
   try{entries=JSON.parse(localStorage.getItem(LS_KEY)||'[]')||[]}catch(e){entries=[]}
   try{userLex=JSON.parse(localStorage.getItem(LS_LEX)||'[]')||[]}catch(e){userLex=[]}
+  try{cloud=Object.assign({url:'',token:'',auto:false},JSON.parse(localStorage.getItem(LS_CLOUD)||'{}'))}catch(e){cloud={url:'',token:'',auto:false}}
   buildLexicon();
 }
 function save(){localStorage.setItem(LS_KEY,JSON.stringify(entries))}
 function saveLex(){localStorage.setItem(LS_LEX,JSON.stringify(userLex))}
+function saveCloud(){localStorage.setItem(LS_CLOUD,JSON.stringify(cloud))}
 function id(){return 'j_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
 function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function today(){return localDate(new Date())}
@@ -274,10 +373,10 @@ function analyze(content,customTags=[]){
 }
 const _anaCache=new Map();
 function ensureAnalysis(e){
-  const sig=(e.updated||0)+'|'+((e.content||'').length)+'|'+((e.customTags||[]).join(','));
+  const sig=(e.updated||0)+'|'+((e.content||'').length)+'|'+((e.selfNote||'').length)+'|'+((e.customTags||[]).join(','));
   const hit=_anaCache.get(e.id);
   if(hit&&hit.sig===sig){Object.assign(e,hit.res);return e;}
-  const {counts,kwType,kwDomain}=analyze(e.content||'',e.customTags||[]);
+  const {counts,kwType,kwDomain}=analyze((e.content||'')+' '+esc(e.selfNote||''),e.customTags||[]);
   const domainCount={},typeCount={event:0,emotion:0,theme:0,action:0};
   for(const [w,n] of Object.entries(counts)){
     domainCount[kwDomain[w]]=(domainCount[kwDomain[w]]||0)+n;
@@ -308,6 +407,7 @@ function openEdit(e=null){
   document.getElementById('fEnergy').value=e?.energy||5;
   document.getElementById('fStress').value=e?.stress||5;
   document.getElementById('fTags').value=(e?.customTags||[]).join(', ');
+  document.getElementById('fNote').value=e?.selfNote||'';
   document.getElementById('fStar').checked=!!e?.star;
   syncRanges();document.getElementById('editOverlay').classList.add('open');
 }
@@ -325,8 +425,8 @@ document.getElementById('saveBtn').onclick=()=>{
   if(!e){e={id:id(),created:Date.now()};entries.push(e)}
   Object.assign(e,{date,title:document.getElementById('fTitle').value.trim()||'今天的我',content,
     mood:+document.getElementById('fMood').value,energy:+document.getElementById('fEnergy').value,
-    stress:+document.getElementById('fStress').value,customTags:custom,star:document.getElementById('fStar').checked,updated:Date.now()});
-  ensureAnalysis(e);save();closeEdit();renderAll();toast(editingId?'已更新這一天':'今天已記錄');
+    stress:+document.getElementById('fStress').value,customTags:custom,selfNote:document.getElementById('fNote').value.trim(),star:document.getElementById('fStar').checked,updated:Date.now()});
+  ensureAnalysis(e);save();closeEdit();renderAll();autoPush(e);toast(editingId?'已更新這一天':'今天已記錄');
 };
 document.querySelectorAll('[data-close]').forEach(x=>x.onclick=()=>document.getElementById(x.dataset.close).classList.remove('open'));
 document.getElementById('editOverlay').onclick=e=>{if(e.target.id==='editOverlay')closeEdit()}
@@ -336,7 +436,14 @@ document.getElementById('newBtn').onclick=()=>openEdit();
 document.getElementById('mNew').onclick=()=>openEdit();
 
 /* ---- 設定：我的詞庫 ---- */
-function openSettings(){renderLexList();document.getElementById('settingsOverlay').classList.add('open')}
+function openSettings(){
+  renderLexList();
+  document.getElementById('cloudUrl').value=cloud.url||'';
+  document.getElementById('cloudToken').value=cloud.token||'';
+  document.getElementById('cloudAuto').checked=!!cloud.auto;
+  cloudStatus('');
+  document.getElementById('settingsOverlay').classList.add('open');
+}
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open')}
 function lexDomains(){
   const s=new Set(BUILTIN_LEX.map(x=>x.domain));userLex.forEach(x=>s.add(x.domain));
@@ -381,6 +488,65 @@ document.getElementById('lexType').onchange=function(){
 document.getElementById('lexAdd').onclick=addLex;
 document.getElementById('lexWord').addEventListener('keydown',e=>{if(e.key==='Enter')addLex()});
 
+/* ---- 雲端同步 ---- */
+function slimEntry(e){return {id:e.id,date:e.date,title:e.title,content:e.content,mood:e.mood,energy:e.energy,stress:e.stress,customTags:e.customTags||[],selfNote:e.selfNote||'',star:!!e.star,created:e.created,updated:e.updated};}
+function readCloudInputs(){
+  cloud.url=document.getElementById('cloudUrl').value.trim();
+  cloud.token=document.getElementById('cloudToken').value.trim();
+  cloud.auto=document.getElementById('cloudAuto').checked;
+  saveCloud();
+}
+function cloudStatus(msg,kind){const el=document.getElementById('cloudStatus');if(el){el.textContent=msg;el.className='cloud-status '+(kind||'');}}
+async function cloudPost(payload){
+  if(!cloud.url)throw new Error('尚未設定 Web App 網址');
+  const res=await fetch(cloud.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({token:cloud.token},payload))});
+  const data=await res.json();
+  if(!data.ok)throw new Error(data.error||'雲端回應失敗');
+  return data;
+}
+async function cloudGet(action){
+  if(!cloud.url)throw new Error('尚未設定 Web App 網址');
+  const u=cloud.url+(cloud.url.includes('?')?'&':'?')+'action='+encodeURIComponent(action)+'&token='+encodeURIComponent(cloud.token);
+  const res=await fetch(u);
+  const data=await res.json();
+  if(!data.ok)throw new Error(data.error||'雲端回應失敗');
+  return data;
+}
+/* 儲存 / 刪除時的自動同步（fire-and-forget，不阻擋 UI） */
+function autoPush(e){if(!cloud.auto||!cloud.url)return;cloudPost({action:'upsert',entry:slimEntry(e)}).catch(err=>toast('雲端同步失敗：'+err.message));}
+function autoDelete(id){if(!cloud.auto||!cloud.url)return;cloudPost({action:'delete',id}).catch(err=>toast('雲端刪除失敗：'+err.message));}
+/* 合併雲端資料進本地：同 id 取 updated 較新者，不刪除本地 */
+function mergeEntries(incoming){
+  const byId=new Map(entries.map(e=>[e.id,e]));let added=0,updated=0;
+  incoming.forEach(raw=>{
+    if(!raw||!raw.id||!raw.date)return;
+    const cur=byId.get(raw.id);
+    if(!cur){byId.set(raw.id,raw);added++;}
+    else if((raw.updated||0)>(cur.updated||0)){byId.set(raw.id,raw);updated++;}
+  });
+  entries=[...byId.values()];entries.forEach(ensureAnalysis);save();renderAll();
+  return {added,updated};
+}
+document.getElementById('cloudTest').onclick=async()=>{
+  readCloudInputs();cloudStatus('測試中…');
+  try{await cloudGet('ping');cloudStatus('✓ 連線成功','ok');toast('雲端連線成功');}
+  catch(err){cloudStatus('✗ '+err.message,'err');}
+};
+document.getElementById('cloudUp').onclick=async()=>{
+  readCloudInputs();if(!entries.length)return toast('目前沒有紀錄可上傳');
+  cloudStatus('上傳中…');
+  try{const r=await cloudPost({action:'bulkUpsert',entries:entries.map(slimEntry)});cloudStatus(`✓ 已上傳 ${r.count} 筆`,'ok');toast(`已上傳 ${r.count} 筆到雲端`);}
+  catch(err){cloudStatus('✗ '+err.message,'err');}
+};
+document.getElementById('cloudDown').onclick=async()=>{
+  readCloudInputs();cloudStatus('下載中…');
+  try{const r=await cloudGet('list');const m=mergeEntries(r.entries||[]);cloudStatus(`✓ 下載完成：新增 ${m.added}、更新 ${m.updated}`,'ok');toast(`已從雲端合併：新增 ${m.added}、更新 ${m.updated}`);renderLexList();}
+  catch(err){cloudStatus('✗ '+err.message,'err');}
+};
+document.getElementById('cloudAuto').onchange=readCloudInputs;
+document.getElementById('cloudUrl').addEventListener('change',readCloudInputs);
+document.getElementById('cloudToken').addEventListener('change',readCloudInputs);
+
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
@@ -412,6 +578,17 @@ function renderDashboard(){
   renderThinking(recent,keywords);renderRecent();renderCloud(keywords);
   renderMoodEmotion(recent,avgMood);
   renderTrends();renderCooc(recent);renderTimeline();
+  renderSelfNote(todayE);
+}
+/* 回顧：你曾對自己說過的一句話（今天有寫就顯示今天的，否則從過去挑一則） */
+function renderSelfNote(todayE){
+  const el=document.getElementById('selfNote');if(!el)return;
+  const withNote=entries.filter(e=>e.selfNote&&e.selfNote.trim());
+  if(!withNote.length){el.innerHTML='<div class="empty-note">還沒有寫過給自己的話。下次記錄時，試著留一句給未來的自己。</div>';return;}
+  let pick,lead;
+  if(todayE&&todayE.selfNote&&todayE.selfNote.trim()){pick=todayE;lead='今天你對自己說：';}
+  else{const past=withNote.filter(e=>e.date!==today());const pool=past.length?past:withNote;pick=pool[Math.floor(Math.random()*pool.length)];lead=`${fmtDate(pick.date)}，你曾對自己說：`;}
+  el.innerHTML=`<div class="sn-lead">${lead}</div><div class="sn-quote">${esc(pick.selfNote)}</div>`;
 }
 /* issue 6：心情分數 vs 文字情緒的落差偵測 */
 function renderMoodEmotion(recent,avgMood){
@@ -563,13 +740,13 @@ function renderTable(){
   const q=document.getElementById('mSearch').value.trim().toLowerCase(),cat=document.getElementById('mCategory').value;
   const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).filter(e=>(!q||(e.title+' '+textOf(e.content)+' '+(e.keywords||[]).join(' ')).toLowerCase().includes(q))&&(!cat||(e.categories||[]).includes(cat)));
   document.getElementById('rows').innerHTML=arr.length?arr.map(e=>`<tr>
-    <td>${fmtDate(e.date)}</td><td class="title"><div class="tt">${e.star?'⭐ ':''}${esc(e.title)}</div><div class="row-tags">${(e.keywords||[]).slice(0,6).map(k=>`<span class="row-tag">${esc(k)}</span>`).join('')}</div></td>
-    <td>${e.mood}/10</td><td>${e.energy}/10</td><td>${e.stress}/10</td>
-    <td><button class="btn btn-ghost" onclick="openEditById('${e.id}')">編輯</button> <button class="btn btn-danger" onclick="deleteEntry('${e.id}')">刪除</button></td>
+    <td class="c-date">${fmtDate(e.date)}</td><td class="title"><div class="tt">${e.star?'⭐ ':''}${esc(e.title)}</div>${e.selfNote?`<div class="row-note">✍ ${esc(e.selfNote)}</div>`:''}<div class="row-tags">${(e.keywords||[]).slice(0,6).map(k=>`<span class="row-tag">${esc(k)}</span>`).join('')}</div></td>
+    <td class="c-metric" data-label="心情">${e.mood}/10</td><td class="c-metric" data-label="能量">${e.energy}/10</td><td class="c-metric" data-label="壓力">${e.stress}/10</td>
+    <td class="c-actions"><button class="btn btn-ghost" onclick="openEditById('${e.id}')">編輯</button> <button class="btn btn-danger" onclick="deleteEntry('${e.id}')">刪除</button></td>
   </tr>`).join(''):'<tr><td colspan="6"><div class="empty-note">沒有符合的紀錄</div></td></tr>';
 }
 document.getElementById('mSearch').addEventListener('input',renderTable);document.getElementById('mCategory').addEventListener('change',renderTable);
-function deleteEntry(i){if(!confirm('確定刪除這筆人生紀錄？此操作無法復原。'))return;entries=entries.filter(e=>e.id!==i);save();renderAll();toast('已刪除')}
+function deleteEntry(i){if(!confirm('確定刪除這筆人生紀錄？此操作無法復原。'))return;entries=entries.filter(e=>e.id!==i);save();renderAll();autoDelete(i);toast('已刪除')}
 document.getElementById('exportBtn').onclick=()=>{
   const blob=new Blob([JSON.stringify({version:2,exported:new Date().toISOString(),entries,lexicon:userLex},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='For自己_人生紀錄_'+today()+'.json';a.click();URL.revokeObjectURL(a.href);toast('已匯出人生資料');
