@@ -70,21 +70,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .article-meta-row{display:flex;gap:12px;font-size:13px;color:var(--text-dim);align-items:center;flex-wrap:wrap}
 .article-meta-row .badges{display:flex;gap:6px;margin-left:auto}
 
-.article-body h1{font-size:1.8em;margin:0 0 .6em;color:#fff;font-weight:700}
-.article-body h2{font-size:1.4em;margin:1.4em 0 .5em;border-bottom:2px solid #272d42;padding-bottom:.3em;color:#fff;font-weight:700}
-.article-body h3{font-size:1.15em;margin:1.3em 0 .5em;color:var(--accent);font-weight:600}
-.article-body p{margin:0 0 1em}
-.article-body ul,.article-body ol{margin:0 0 1em 1.5em}
-.article-body li{margin-bottom:4px}
-.article-body blockquote{border-left:4px solid #6c8cff;margin:1.2em 0;padding:.8em 1.2em;background:rgba(108,140,255,.08);border-radius:0 8px 8px 0;color:#c5ccee}
-.article-body blockquote p:last-child{margin-bottom:0}
-.article-body pre{background:#11131a;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;margin:1.2em 0;border:1px solid var(--border)}
-.article-body :not(pre)>code{background:rgba(108,140,255,.12);padding:2px 7px;border-radius:4px;color:#f472b6;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-.article-body img{max-width:100%;border-radius:8px;margin:1em 0}
-.article-body table{width:100%;border-collapse:collapse;margin:1.4em 0;border:1px solid var(--border);background:var(--bg-card)}
-.article-body th,.article-body td{border:1px solid var(--border);padding:10px 14px;text-align:left}
-.article-body th,.article-body thead td{background:#1c2130;color:#fff;font-weight:700}
-.article-body tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+.article-body h1,.wed-area h1{font-size:1.8em;margin:0 0 .6em;color:#fff;font-weight:700}
+.article-body h2,.wed-area h2{font-size:1.4em;margin:1.4em 0 .5em;border-bottom:2px solid #272d42;padding-bottom:.3em;color:#fff;font-weight:700}
+.article-body h3,.wed-area h3{font-size:1.15em;margin:1.3em 0 .5em;color:var(--accent);font-weight:600}
+.article-body p,.wed-area p{margin:0 0 1em}
+.article-body ul,.wed-area ul,.article-body ol,.wed-area ol{margin:0 0 1em 1.5em}
+.article-body li,.wed-area li{margin-bottom:4px}
+.article-body blockquote,.wed-area blockquote{border-left:4px solid #6c8cff;margin:1.2em 0;padding:.8em 1.2em;background:rgba(108,140,255,.08);border-radius:0 8px 8px 0;color:#c5ccee}
+.article-body blockquote p:last-child,.wed-area blockquote p:last-child{margin-bottom:0}
+.article-body pre,.wed-area pre{background:#11131a;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;margin:1.2em 0;border:1px solid var(--border)}
+.article-body :not(pre)>code,.wed-area :not(pre)>code{background:rgba(108,140,255,.12);padding:2px 7px;border-radius:4px;color:#f472b6;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.article-body img,.wed-area img{max-width:100%;border-radius:8px;margin:1em 0}
+.article-body table,.wed-area table{width:100%;border-collapse:collapse;margin:1.4em 0;border:1px solid var(--border);background:var(--bg-card)}
+.article-body th,.article-body td,.wed-area th,.wed-area td{border:1px solid var(--border);padding:10px 14px;text-align:left}
+.article-body th,.article-body thead td,.wed-area th,.wed-area thead td{background:#1c2130;color:#fff;font-weight:700}
+.article-body tbody tr:nth-child(even),.wed-area tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
 
 /* ============ 鎖定未授權提示樣式 ============ */
 .locked-box{
@@ -99,7 +99,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .modal-hd{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}.modal-hd h3{font-size:15px}.x{background:none;border:0;color:var(--text-dim);font-size:18px;cursor:pointer}
 .modal-bd{padding:20px;overflow:auto}.modal-ft{display:flex;justify-content:flex-end;gap:8px;padding:13px 20px;border-top:1px solid var(--border)}
 .field{margin-bottom:12px}.field label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:5px;font-weight:600}.field input,.field textarea{width:100%;padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none}.field input:focus,.field textarea:focus{border-color:var(--accent)}
-.wtoolbar{display:flex;flex-wrap:wrap;gap:2px;padding:6px 8px;border:1px solid var(--border);border-bottom:0;border-radius:6px 6px 0 0;background:var(--bg)}.wtoolbar button,.wtoolbar select{height:27px;background:none;border:1px solid transparent;color:var(--text-dim);border-radius:4px;cursor:pointer}.wtoolbar button{min-width:27px}.wtoolbar button:hover,.wtoolbar select:hover{background:var(--bg-hover);color:var(--text)}.wtoolbar select{background:var(--bg-card);font-size:11px}.wsep{width:1px;height:18px;background:var(--border);margin:4px}.wed-area{border:1px solid var(--border);border-radius:0 0 6px 6px;min-height:260px;max-height:45vh;overflow:auto;padding:12px 14px;background:var(--bg);outline:none;font-size:13.5px;line-height:1.8}.wed-area:empty:before{content:'寫下今天的你……';color:var(--text-dim)}
+.wtoolbar{display:flex;flex-wrap:wrap;align-items:center;gap:3px;padding:6px 8px;border:1px solid var(--border);border-bottom:0;border-radius:6px 6px 0 0;background:var(--bg)}.wtoolbar button,.wtoolbar select{height:28px;background:none;border:1px solid transparent;color:var(--text-dim);border-radius:4px;cursor:pointer;font-size:12px}.wtoolbar button{min-width:28px;padding:0 6px}.wtoolbar button:hover,.wtoolbar select:hover{background:var(--bg-hover);color:var(--text)}.wtoolbar select{background:var(--bg-card);font-size:11px}.wsep{width:1px;height:18px;background:var(--border);margin:2px 4px}.wed-area{border:1px solid var(--border);border-radius:0 0 6px 6px;min-height:280px;max-height:48vh;overflow:auto;padding:14px 16px;background:var(--bg);outline:none;font-size:14px;line-height:1.8}.wed-area:empty:before{content:'寫下今天的你……或點擊上方「🪄 模板排版」套用規格結構';color:var(--text-dim)}
+.btn-template{color:var(--accent) !important;font-weight:700;display:inline-flex;align-items:center;gap:4px;border-color:rgba(108,140,255,.3) !important;background:var(--accent-glow) !important;padding:0 9px !important}
+.btn-template:hover{background:rgba(108,140,255,.25) !important;color:#fff !important}
 .range-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.range-grid label{font-size:11px;color:var(--text-dim)}.range-grid input{width:100%;accent-color:var(--accent)}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(15px);background:var(--bg-card);color:var(--text);padding:9px 22px;border-radius:10px;border:1px solid var(--border);font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .trend-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px}.trend-row:last-child{border-bottom:0}.trend-k{flex:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trend-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap}.tr-up{background:rgba(52,211,153,.14);color:var(--green)}.tr-down{background:var(--danger-bg);color:var(--danger)}.tr-flat{background:var(--tag-bg);color:var(--tag-text)}.trend-meta{font-size:10.5px;color:var(--text-dim);width:56px;text-align:right;white-space:nowrap}
@@ -158,7 +160,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
   .modal-hd{padding:13px 16px}.modal-ft{padding:11px 16px}
   .modal-ft .btn{flex:1}
   .wtoolbar button,.wtoolbar select{height:34px}.wtoolbar button{min-width:34px}
-  .wed-area{min-height:200px;max-height:none;line-height:2}
+  .wed-area{min-height:220px;max-height:none;line-height:2}
   .range-grid{gap:10px}
   .lex-form>input,.lex-form>.sel{flex:1 1 100%}
   .lex-item{flex-wrap:wrap}
@@ -255,7 +257,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
   </div>
 </div>
 
-<!-- 純文章內容獨立展示頁 (僅在新視窗開啟時單獨呈現) -->
+<!-- 純文章內容獨立展示頁 (僅在新視窗開啟時呈現) -->
 <main id="standaloneArticleView">
   <div class="article-header">
     <h1 id="saTitle"></h1>
@@ -275,12 +277,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
   <div class="modal-hd"><h3 id="editTitle">今天的我</h3><button class="x" data-close="editOverlay">✕</button></div>
   <div class="modal-bd">
     <div class="field"><label>日期</label><input id="fDate" type="date"></div>
-    <div class="field"><label>標題</label><input id="fTitle" placeholder="例如：今天突然想明白了一件事"></div>
+    <div class="field"><label>標題</label><input id="fTitle" placeholder="例如：人類的工具已入 21 世紀，但心智仍停在石器時代"></div>
     <div class="field"><label>今天發生了什麼？</label>
       <div class="wtoolbar" id="toolbar">
         <button data-cmd="bold"><b>B</b></button><button data-cmd="italic"><i>I</i></button><button data-cmd="underline"><u>U</u></button>
         <span class="wsep"></span><button data-cmd="insertUnorderedList">• 清單</button><button data-cmd="insertOrderedList">1. 清單</button>
-        <button data-cmd="formatBlock" data-val="H2">H2</button><button data-cmd="formatBlock" data-val="BLOCKQUOTE">引用</button>
+        <button data-cmd="formatBlock" data-val="H2">H2</button><button data-cmd="formatBlock" data-val="H3">H3</button><button data-cmd="formatBlock" data-val="BLOCKQUOTE">引用</button>
+        <span class="wsep"></span>
+        <button type="button" class="btn-template" id="applyTemplateBtn">🪄 模板排版</button>
       </div>
       <div id="edArea" class="wed-area" contenteditable="true"></div>
     </div>
@@ -427,7 +431,6 @@ function updateTokenGuardUI(){
     }else{
       mgmtContent.style.display = 'none';
       mgmtNotice.style.display = 'block';
-      // 若當前停留在管理頁但已被鎖定，自動跳回「我的人生」
       const activeTab = document.querySelector('.tab.active');
       if(activeTab && activeTab.dataset.view === 'mgmtView'){
         setViewTab('dashView');
@@ -450,6 +453,95 @@ function cleanContentHtml(raw){
   });
   return d.innerHTML;
 }
+
+/* ============ 一鍵排版模板核心邏輯 ============ */
+const STANDARD_TEMPLATE = `<h3>1. 現狀洞察與核心議題</h3>
+<p>在此記錄今天的核心觀察與事件背景，點出最主要的現象或問題本質：</p>
+<ul>
+  <li><b>過往模式：</b> 描述以前面對類似事件的慣性或思維方式。</li>
+  <li><b>今日變化：</b> 描述客觀條件發生的改變或新的衝擊。</li>
+</ul>
+
+<blockquote>
+  <p>生活沒有標準答案，只有更適合當下自己的座標與節奏。</p>
+</blockquote>
+
+<h3>2. 關鍵對比與數據盤點</h3>
+<p>將腦海中混亂的思維拆解成條理化的對比表格：</p>
+<table>
+  <thead>
+    <tr>
+      <th>維度／要素</th>
+      <th>原本的想法</th>
+      <th>更新後的認知</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>心態與能量</b></td>
+      <td>容易受到外界環境與比較牽動</td>
+      <td>將注意力收回自身，專注可控事項</td>
+    </tr>
+    <tr>
+      <td><b>具體行動</b></td>
+      <td>被動應付當下的情緒與焦慮</td>
+      <td>落實系統化記錄與階段性復盤</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>3. 下一步的具體行動</h3>
+<p>寫下 1 到 2 項能立即落實的行動綱領：</p>
+<ol>
+  <li>調整生活習慣與日常優先級。</li>
+  <li>在未來的決策中落實新的思考模型。</li>
+</ol>`;
+
+function applyFormattingTemplate(){
+  const ed = document.getElementById('edArea');
+  const curHtml = ed.innerHTML.trim();
+  const curText = textOf(curHtml).trim();
+
+  if(!curText){
+    ed.innerHTML = STANDARD_TEMPLATE;
+    if(!document.getElementById('fTitle').value.trim()){
+      document.getElementById('fTitle').value = '思考隨筆：關於近期的體悟與轉變';
+    }
+    toast('已填入標準排版模板架構');
+    return;
+  }
+
+  // 若已有文字，將內容自動結構化為統一模板
+  const paras = curText.split(/\n+/).map(p => p.trim()).filter(Boolean);
+  let structured = '';
+  
+  structured += `<h3>1. 核心觀點與觀察</h3>\n`;
+  if(paras.length > 0) structured += `<p>${esc(paras[0])}</p>\n`;
+  if(paras.length > 1) structured += `<p>${esc(paras[1])}</p>\n`;
+
+  if(paras.length > 2){
+    structured += `<blockquote>\n  <p>${esc(paras[2])}</p>\n</blockquote>\n`;
+  }
+
+  if(paras.length > 3){
+    structured += `<h3>2. 重點梳理與細節</h3>\n<ul>\n`;
+    for(let i = 3; i < Math.min(paras.length, 7); i++){
+      structured += `  <li>${esc(paras[i])}</li>\n`;
+    }
+    structured += `</ul>\n`;
+  }
+
+  if(paras.length > 7){
+    structured += `<h3>3. 總結與後續行動</h3>\n`;
+    for(let i = 7; i < paras.length; i++){
+      structured += `<p>${esc(paras[i])}</p>\n`;
+    }
+  }
+
+  ed.innerHTML = structured;
+  toast('已套用結構化排版樣式');
+}
+document.getElementById('applyTemplateBtn').onclick = applyFormattingTemplate;
 
 function countWord(text,word,traps){
   let masked=text;
@@ -868,7 +960,6 @@ function searchKeyword(k){
   renderJournal();
 }
 
-/* ============ 每日日誌列表渲染 (點擊開啟獨立視窗) ============ */
 function renderJournal(){
   const q=document.getElementById('journalSearch').value.trim().toLowerCase();
   const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).filter(e=>!q||(e.title+' '+textOf(e.content)+' '+(e.keywords||[]).join(' ')).toLowerCase().includes(q));
@@ -954,7 +1045,7 @@ document.getElementById('importFile').onchange=ev=>{
   reader.onerror=()=>{toast('讀取檔案失敗');ev.target.value='';};
   reader.readAsText(file);
 };
-document.querySelectorAll('#toolbar button').forEach(b=>b.onclick=()=>{document.getElementById('edArea').focus();document.execCommand(b.dataset.cmd,false,b.dataset.val||null)});
+document.querySelectorAll('#toolbar button:not(#applyTemplateBtn)').forEach(b=>b.onclick=()=>{document.getElementById('edArea').focus();document.execCommand(b.dataset.cmd,false,b.dataset.val||null)});
 
 function renderAll(){
   ensureEntriesAnalyzed();
