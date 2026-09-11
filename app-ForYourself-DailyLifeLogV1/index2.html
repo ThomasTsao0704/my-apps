@@ -37,7 +37,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .mgmt-bar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.sel{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;padding:9px}.btn{padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid transparent}.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover)}.btn-ghost{background:none;color:var(--text-dim);border-color:var(--border)}.btn-ghost:hover{background:var(--bg-hover);color:var(--text)}.btn-danger{background:var(--danger);color:#fff}
 .table-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}table{width:100%;border-collapse:collapse;font-size:12.5px}th{text-align:left;padding:11px 12px;color:var(--text-dim);font-size:11px;border-bottom:1px solid var(--border)}td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}tbody tr:hover{background:var(--bg-hover)}td.title{font-weight:600;max-width:320px}.tt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}.row-tag{font-size:10px;padding:2px 7px;border-radius:6px;background:var(--tag-bg);color:var(--tag-text)}.tag-cloud{display:flex;flex-wrap:wrap;gap:7px}.cloud-tag{padding:5px 9px;background:var(--tag-bg);border:1px solid var(--border);border-radius:14px;font-size:11px;color:var(--tag-text);cursor:pointer}.cloud-tag:hover{border-color:var(--accent);color:var(--accent)}
 
-/* ============ 優化後的日誌卡片排版 ============ */
+/* ============ 每日日誌卡片流 ============ */
 .journal-stream{display:flex;flex-direction:column;gap:14px;margin-top:14px}
 .j-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;transition:transform var(--fast),border-color var(--fast),box-shadow var(--fast);cursor:pointer;position:relative;overflow:hidden}
 .j-card:hover{transform:translateY(-2px);border-color:var(--border-focus);box-shadow:0 8px 24px rgba(0,0,0,.25)}
@@ -53,16 +53,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .j-card-ft{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.04)}
 .j-card-readmore{font-size:11.5px;color:var(--accent);font-weight:600}
 
-/* ============ 閱讀視窗 Modal ============ */
-.read-modal{max-width:800px}
-.read-meta-box{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);border-radius:8px;margin-bottom:16px;border:1px solid var(--border);flex-wrap:wrap}
-.read-article{font-size:15px;line-height:2.0;color:var(--text);min-height:160px}
-.read-article blockquote{border-left:3px solid var(--accent);padding-left:14px;color:var(--text-dim);margin:12px 0}
-.read-article h2{font-size:18px;margin:16px 0 8px;color:#fff}
-.read-article ul,.read-article ol{padding-left:22px;margin:10px 0}
+/* ============ 統一文章內容樣式模板 ============ */
+.read-modal{max-width:820px}
+.read-meta-box{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);border-radius:8px;margin-bottom:20px;border:1px solid var(--border);flex-wrap:wrap}
 
-/* ============ 一般表單與彈窗通用 ============ */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:200;padding:18px}.overlay.open{display:flex}
+.read-article{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;line-height:1.8;color:#dfe2ed;font-size:15px}
+.read-article h1{font-size:1.8em;margin:0 0 .6em;color:#fff;font-weight:700}
+.read-article h2{font-size:1.4em;margin:1.4em 0 .5em;border-bottom:2px solid var(--border);padding-bottom:.3em;color:#f0f3ff;font-weight:700}
+.read-article h3{font-size:1.15em;margin:1.3em 0 .5em;color:var(--accent);font-weight:600}
+.read-article p{margin:0 0 1em}
+.read-article ul,.read-article ol{margin:0 0 1em 1.5em}
+.read-article li{margin-bottom:4px}
+.read-article blockquote{border-left:4px solid #6c8cff;margin:1.2em 0;padding:.8em 1.2em;background:rgba(108,140,255,.08);border-radius:0 8px 8px 0;color:#c5ccee}
+.read-article blockquote p:last-child{margin-bottom:0}
+.read-article pre{background:#11131a;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;margin:1.2em 0;border:1px solid var(--border)}
+.read-article :not(pre)>code{background:rgba(108,140,255,.12);padding:2px 7px;border-radius:4px;color:#f472b6;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.read-article img{max-width:100%;border-radius:8px;margin:1em 0}
+.read-article table{width:100%;border-collapse:collapse;margin:1.4em 0;border:1px solid var(--border);background:var(--bg)}
+.read-article th,.read-article td{border:1px solid var(--border);padding:10px 14px;text-align:left}
+.read-article th, .read-article thead td{background:#1c2130;color:#fff;font-weight:700}
+.read-article tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+
+/* ============ 表單與彈窗通用 ============ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:18px}.overlay.open{display:flex}
 .modal{background:var(--bg-modal);border:1px solid var(--border);border-radius:14px;width:100%;max-width:760px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
 .modal-hd{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}.modal-hd h3{font-size:15px}.x{background:none;border:0;color:var(--text-dim);font-size:18px;cursor:pointer}
 .modal-bd{padding:20px;overflow:auto}.modal-ft{display:flex;justify-content:flex-end;gap:8px;padding:13px 20px;border-top:1px solid var(--border)}
@@ -70,7 +83,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .wtoolbar{display:flex;flex-wrap:wrap;gap:2px;padding:6px 8px;border:1px solid var(--border);border-bottom:0;border-radius:6px 6px 0 0;background:var(--bg)}.wtoolbar button,.wtoolbar select{height:27px;background:none;border:1px solid transparent;color:var(--text-dim);border-radius:4px;cursor:pointer}.wtoolbar button{min-width:27px}.wtoolbar button:hover,.wtoolbar select:hover{background:var(--bg-hover);color:var(--text)}.wtoolbar select{background:var(--bg-card);font-size:11px}.wsep{width:1px;height:18px;background:var(--border);margin:4px}.wed-area{border:1px solid var(--border);border-radius:0 0 6px 6px;min-height:260px;max-height:45vh;overflow:auto;padding:12px 14px;background:var(--bg);outline:none;font-size:13.5px;line-height:1.8}.wed-area:empty:before{content:'寫下今天的你……';color:var(--text-dim)}
 .range-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.range-grid label{font-size:11px;color:var(--text-dim)}.range-grid input{width:100%;accent-color:var(--accent)}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(15px);background:var(--bg-card);color:var(--text);padding:9px 22px;border-radius:10px;border:1px solid var(--border);font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.trend-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px}.trend-k{flex:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trend-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap}.tr-up{background:rgba(52,211,153,.14);color:var(--green)}.tr-down{background:var(--danger-bg);color:var(--danger)}.tr-flat{background:var(--tag-bg);color:var(--tag-text)}.trend-meta{font-size:10.5px;color:var(--text-dim);width:56px;text-align:right;white-space:nowrap}
+.trend-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px}.trend-row:last-child{border-bottom:0}.trend-k{flex:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trend-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap}.tr-up{background:rgba(52,211,153,.14);color:var(--green)}.tr-down{background:var(--danger-bg);color:var(--danger)}.tr-flat{background:var(--tag-bg);color:var(--tag-text)}.trend-meta{font-size:10.5px;color:var(--text-dim);width:56px;text-align:right;white-space:nowrap}
 .tl-row{display:flex;align-items:center;gap:10px;font-size:12px;margin-bottom:7px}.tl-mon{width:42px;color:var(--tag-text);flex:none}.tl-track{flex:1;height:9px;background:var(--bg);border-radius:5px;overflow:hidden}.tl-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--pink))}.tl-dom{width:64px;color:var(--text);flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tl-n{width:30px;text-align:right;color:var(--text-dim);flex:none}.tl-empty{color:var(--text-dim)}
 .type-line{margin-top:10px;font-size:11px;color:var(--text-dim)}
 .settings-note{font-size:12.5px;line-height:1.8;color:var(--text-dim);margin-bottom:14px}
@@ -211,7 +224,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 </section>
 </div>
 
-<!-- 閱讀單篇文章視窗 (支援網址深層連結) -->
+<!-- 閱讀單篇文章視窗 (統一文章顯示樣式模板) -->
 <div class="overlay" id="readOverlay">
   <div class="modal read-modal">
     <div class="modal-hd">
@@ -368,6 +381,23 @@ function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmtDate(s){if(!s)return '—';const d=new Date(s+'T00:00:00');return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`}
 function ago(s){const d=Math.floor((Date.now()-new Date(s+'T00:00:00'))/86400000);return d<=0?'今天':d===1?'昨天':d+' 天前'}
 
+/* 清理剪貼文字中的冗餘標籤與註釋，確保符合樣式模板 */
+function cleanContentHtml(raw){
+  if(!raw)return '';
+  let h=raw.replace(/<!--[\s\S]*?-->/g,'');
+  const d=document.createElement('div');
+  d.innerHTML=h;
+  // 遞迴清理節點的 data-path-to-node 與 inline style 中的背景/文字色衝突
+  const all=d.querySelectorAll('*');
+  all.forEach(el=>{
+    for(let i=el.attributes.length-1;i>=0;i--){
+      const name=el.attributes[i].name;
+      if(name.startsWith('data-path-to-node')||name.startsWith('data-index-in-node'))el.removeAttribute(name);
+    }
+  });
+  return d.innerHTML;
+}
+
 function countWord(text,word,traps){
   let masked=text;
   if(traps&&traps.length)for(const t of traps)masked=masked.split(t).join('\u0000'.repeat(t.length));
@@ -434,7 +464,7 @@ function openArticle(entryOrId,updateHash=true){
     <span class="j-badge mood">心情 ${e.mood}/10</span>
     <span class="j-badge energy">能量 ${e.energy}/10</span>
     <span class="j-badge stress">壓力 ${e.stress}/10</span>`;
-  document.getElementById('readContent').innerHTML=e.content||'<p style="color:var(--text-dim)">無內容</p>';
+  document.getElementById('readContent').innerHTML=cleanContentHtml(e.content)||'<p style="color:var(--text-dim)">無內容</p>';
   document.getElementById('readTags').innerHTML=(e.keywords||[]).map(k=>`<span class="row-tag">#${esc(k)}</span>`).join('');
   document.getElementById('readOverlay').classList.add('open');
   if(updateHash&&location.hash!==`#/journal/${e.id}`){
@@ -464,7 +494,6 @@ function handleHashChange(){
       }
     }
   }
-  // 若未匹配文章 hash 且閱讀器開著，則關閉
   if(document.getElementById('readOverlay').classList.contains('open')){
     closeArticle(false);
   }
@@ -799,7 +828,6 @@ function searchKeyword(k){
   renderJournal();
 }
 
-/* ============ 每日日誌列表渲染 (精緻版型) ============ */
 function renderJournal(){
   const q=document.getElementById('journalSearch').value.trim().toLowerCase();
   const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).filter(e=>!q||(e.title+' '+textOf(e.content)+' '+(e.keywords||[]).join(' ')).toLowerCase().includes(q));
