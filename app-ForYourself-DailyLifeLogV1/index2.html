@@ -99,10 +99,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .modal-hd{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}.modal-hd h3{font-size:15px}.x{background:none;border:0;color:var(--text-dim);font-size:18px;cursor:pointer}
 .modal-bd{padding:20px;overflow:auto}.modal-ft{display:flex;justify-content:flex-end;gap:8px;padding:13px 20px;border-top:1px solid var(--border)}
 .field{margin-bottom:12px}.field label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:5px;font-weight:600}.field input,.field textarea{width:100%;padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none}.field input:focus,.field textarea:focus{border-color:var(--accent)}
-.wtoolbar{display:flex;flex-wrap:wrap;align-items:center;gap:3px;padding:6px 8px;border:1px solid var(--border);border-bottom:0;border-radius:6px 6px 0 0;background:var(--bg)}.wtoolbar button,.wtoolbar select{height:28px;background:none;border:1px solid transparent;color:var(--text-dim);border-radius:4px;cursor:pointer;font-size:12px}.wtoolbar button{min-width:28px;padding:0 6px}.wtoolbar button:hover,.wtoolbar select:hover{background:var(--bg-hover);color:var(--text)}.wtoolbar select{background:var(--bg-card);font-size:11px}.wsep{width:1px;height:18px;background:var(--border);margin:2px 4px}.wed-area{border:1px solid var(--border);border-radius:0 0 6px 6px;min-height:280px;max-height:48vh;overflow:auto;padding:14px 16px;background:var(--bg);outline:none;font-size:14px;line-height:1.8}.wed-area:empty:before{content:'寫下今天的你……或點擊上方「🪄 模板排版」套用規格結構';color:var(--text-dim)}
+.wtoolbar{display:flex;flex-wrap:wrap;align-items:center;gap:3px;padding:6px 8px;border:1px solid var(--border);border-bottom:0;border-radius:6px 6px 0 0;background:var(--bg)}.wtoolbar button,.wtoolbar select{height:28px;background:none;border:1px solid transparent;color:var(--text-dim);border-radius:4px;cursor:pointer;font-size:12px}.wtoolbar button{min-width:28px;padding:0 6px}.wtoolbar button:hover,.wtoolbar select:hover{background:var(--bg-hover);color:var(--text)}.wtoolbar select{background:var(--bg-card);font-size:11px}.wsep{width:1px;height:18px;background:var(--border);margin:2px 4px}.wed-area{border:1px solid var(--border);border-radius:0 0 6px 6px;min-height:280px;max-height:48vh;overflow:auto;padding:14px 16px;background:var(--bg);outline:none;font-size:14px;line-height:1.8}.wed-area:empty:before{content:'寫下今天的你……輸入時系統會自動評估心情、能量與壓力分數';color:var(--text-dim)}
 .btn-template{color:var(--accent) !important;font-weight:700;display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(108,140,255,.3) !important;background:var(--accent-glow) !important;padding:0 9px !important}
 .btn-template:hover{background:rgba(108,140,255,.25) !important;color:#fff !important}
-.range-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.range-grid label{font-size:11px;color:var(--text-dim)}.range-grid input{width:100%;accent-color:var(--accent)}
+
+/* ============ 自動評估指標區塊 ============ */
+.metrics-panel{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:14px}
+.metrics-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.metrics-title{font-size:11.5px;font-weight:600;color:var(--text-dim);display:flex;align-items:center;gap:6px}
+.auto-chip{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--accent-glow);color:var(--accent);font-weight:600}
+.auto-chip.manual{background:rgba(251,191,36,.12);color:var(--star)}
+.metrics-ctrl{display:flex;align-items:center;gap:10px}
+.btn-calc{font-size:11px;padding:3px 8px;border-radius:4px;background:none;border:1px solid var(--border);color:var(--text-dim);cursor:pointer}
+.btn-calc:hover{background:var(--bg-card);color:var(--text)}
+.range-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.range-grid label{font-size:11px;color:var(--text-dim);display:flex;justify-content:space-between;margin-bottom:4px}
+.range-grid input{width:100%;accent-color:var(--accent)}
+
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(15px);background:var(--bg-card);color:var(--text);padding:9px 22px;border-radius:10px;border:1px solid var(--border);font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .trend-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px}.trend-row:last-child{border-bottom:0}.trend-k{flex:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trend-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap}.tr-up{background:rgba(52,211,153,.14);color:var(--green)}.tr-down{background:var(--danger-bg);color:var(--danger)}.tr-flat{background:var(--tag-bg);color:var(--tag-text)}.trend-meta{font-size:10.5px;color:var(--text-dim);width:56px;text-align:right;white-space:nowrap}
 .tl-row{display:flex;align-items:center;gap:10px;font-size:12px;margin-bottom:7px}.tl-mon{width:42px;color:var(--tag-text);flex:none}.tl-track{flex:1;height:9px;background:var(--bg);border-radius:5px;overflow:hidden}.tl-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--pink))}.tl-dom{width:64px;color:var(--text);flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tl-n{width:30px;text-align:right;color:var(--text-dim);flex:none}.tl-empty{color:var(--text-dim)}
@@ -161,7 +174,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
   .modal-ft .btn{flex:1}
   .wtoolbar button,.wtoolbar select{height:34px}.wtoolbar button{min-width:34px}
   .wed-area{min-height:220px;max-height:none;line-height:2}
-  .range-grid{gap:10px}
+  .range-grid{gap:10px;grid-template-columns:1fr}
   .lex-form>input,.lex-form>.sel{flex:1 1 100%}
   .lex-item{flex-wrap:wrap}
   .lex-dom{flex:1 1 100%;order:5}
@@ -294,11 +307,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
       </div>
       <div id="edArea" class="wed-area" contenteditable="true"></div>
     </div>
-    <div class="range-grid">
-      <div><label>心情 <b id="moodVal">5</b>/10</label><input id="fMood" type="range" min="1" max="10" value="5"></div>
-      <div><label>能量 <b id="energyVal">5</b>/10</label><input id="fEnergy" type="range" min="1" max="10" value="5"></div>
-      <div><label>壓力 <b id="stressVal">5</b>/10</label><input id="fStress" type="range" min="1" max="10" value="5"></div>
+
+    <!-- 關鍵字自動評估狀態與滑桿控制 -->
+    <div class="metrics-panel">
+      <div class="metrics-hd">
+        <span class="metrics-title">
+          狀態評估 
+          <span class="auto-chip" id="autoStatusChip">機器自動評估中</span>
+        </span>
+        <div class="metrics-ctrl">
+          <button type="button" class="btn-calc" id="recalcBtn">重新自動分析</button>
+        </div>
+      </div>
+      <div class="range-grid">
+        <div>
+          <label><span>心情</span> <b id="moodVal">5</b>/10</label>
+          <input id="fMood" type="range" min="1" max="10" value="5">
+        </div>
+        <div>
+          <label><span>能量</span> <b id="energyVal">5</b>/10</label>
+          <input id="fEnergy" type="range" min="1" max="10" value="5">
+        </div>
+        <div>
+          <label><span>壓力</span> <b id="stressVal">5</b>/10</label>
+          <input id="fStress" type="range" min="1" max="10" value="5">
+        </div>
+      </div>
     </div>
+
     <div class="field" style="margin-top:14px"><label>自訂關鍵字 <small>（可選；系統也會自動分析）</small></label><input id="fTags" placeholder="工作, 自由, 未來"></div>
     <label style="font-size:12px"><input id="fStar" type="checkbox"> ⭐ 重要的一天</label>
   </div>
@@ -361,6 +397,7 @@ const LS_KEY='for_yourself_journal_v1';
 const LS_LEX='for_yourself_lexicon_v1';
 const LS_CLOUD='for_yourself_cloud_v1';
 let entries=[],editingId=null,userLex=[],cloud={url:'',token:'',auto:false};
+let isManualMetric = false; // 是否進入手動指定分數模式
 
 const LEX_DEF={
   event:{
@@ -382,7 +419,39 @@ const LEX_DEF={
     '行動':['開始','停止','改變','決定','嘗試','放棄','離職','換工作','投資','購買','戒掉','戒菸','戒酒','報名','規劃','計畫','堅持','努力']
   }
 };
-const TYPE_LABEL={event:'事件',emotion:'情緒',theme:'議題',action:'行動'};
+
+/* 語意權重辭典：用於從關鍵字自動評估 心情、能量、壓力 分數 */
+const SENTIMENT_WEIGHTS = {
+  // 正面心情詞 (Mood +)
+  '開心':{m:2.2,e:1.0,s:-1.2}, '快樂':{m:2.2,e:1.0,s:-1.2}, '幸福':{m:2.5,e:0.8,s:-1.5},
+  '平靜':{m:1.5,e:0.2,s:-2.2}, '放鬆':{m:1.8,e:-0.2,s:-2.5}, '滿足':{m:1.8,e:0.5,s:-1.5},
+  '感動':{m:1.6,e:0.8,s:-0.8}, '踏實':{m:1.5,e:0.8,s:-1.2}, '自在':{m:1.8,e:0.5,s:-1.8},
+  '充實':{m:1.6,e:1.5,s:-0.5}, '期待':{m:1.4,e:1.6,s:0.2},  '興奮':{m:1.8,e:2.5,s:0.5},
+  '旅行':{m:1.5,e:1.2,s:-1.5}, '閱讀':{m:1.0,e:0.3,s:-1.0}, '健身':{m:1.2,e:2.0,s:-1.0},
+
+  // 負面情緒詞 (Mood -, Stress +)
+  '焦慮':{m:-2.2,e:-0.5,s:2.5}, '煩躁':{m:-2.0,e:0.8,s:2.4},  '心煩':{m:-1.8,e:0.2,s:2.0},
+  '生氣':{m:-2.0,e:1.5,s:2.4},  '憤怒':{m:-2.5,e:2.0,s:2.8},  '難過':{m:-2.2,e:-1.5,s:1.5},
+  '悲傷':{m:-2.5,e:-2.0,s:1.8}, '失望':{m:-2.0,e:-1.2,s:1.5}, '沮喪':{m:-2.2,e:-2.0,s:1.6},
+  '厭倦':{m:-1.6,e:-1.8,s:1.4}, '委屈':{m:-1.8,e:-0.8,s:1.8}, '害怕':{m:-2.0,e:-0.8,s:2.4},
+  '恐懼':{m:-2.5,e:-0.5,s:2.8}, '緊張':{m:-1.2,e:1.2,s:2.5},  '孤單':{m:-1.6,e:-1.2,s:1.2},
+  '吵架':{m:-2.2,e:1.2,s:2.6},  '崩潰':{m:-3.0,e:-1.5,s:3.2},
+
+  // 能量詞 (Energy + / -)
+  '運動':{m:1.2,e:2.4,s:-0.8}, '有精神':{m:1.5,e:2.8,s:-0.5}, '堅持':{m:0.8,e:1.8,s:0.8},
+  '努力':{m:0.6,e:1.6,s:0.8},  '突破':{m:1.8,e:2.4,s:0.5},   '開始':{m:0.8,e:1.4,s:0.2},
+  '失眠':{m:-1.8,e:-2.8,s:2.2},'疲勞':{m:-1.2,e:-2.5,s:1.4}, '疲累':{m:-1.5,e:-2.5,s:1.5},
+  '累':{m:-1.0,e:-2.2,s:1.2},  '生病':{m:-1.8,e:-3.0,s:2.0}, '無力':{m:-1.8,e:-2.6,s:1.5},
+  '空虛':{m:-1.5,e:-2.0,s:0.8},'頭痛':{m:-1.5,e:-2.0,s:1.8},
+
+  // 壓力情境詞 (Stress + / -)
+  '加班':{m:-1.2,e:-1.5,s:2.8}, '任務':{m:-0.2,e:0.5,s:1.4},  '專案':{m:-0.2,e:0.6,s:1.5},
+  '會議':{m:-0.5,e:-0.2,s:1.2}, '主管':{m:-0.5,e:0.0,s:1.5},  '老闆':{m:-0.5,e:0.0,s:1.5},
+  '面試':{m:-0.5,e:0.8,s:2.5},  '債務':{m:-2.0,e:-1.0,s:3.0}, '貸款':{m:-1.2,e:-0.5,s:2.2},
+  '帳單':{m:-1.0,e:-0.2,s:1.8}, '股票':{m:0.2,e:0.8,s:1.2},   '冥想':{m:1.5,e:0.5,s:-2.2}
+};
+
+const TYPE_LABEL={event:'event',emotion:'情緒',theme:'議題',action:'行動'};
 const BUILTIN_LEX=(()=>{
   const out=[];
   for(const type in LEX_DEF)for(const domain in LEX_DEF[type])for(const item of LEX_DEF[type][domain]){
@@ -460,7 +529,63 @@ function cleanContentHtml(raw){
   return d.innerHTML;
 }
 
-/* ============ 一鍵排版模板核心邏輯 (修正事件綁定與段落提取) ============ */
+/* ============ 關鍵字智慧評估演算法 (自動產出 心情/能量/壓力) ============ */
+function evaluateMetricsFromText(text){
+  let moodScore = 5.0, energyScore = 5.0, stressScore = 5.0;
+  if(!text || !text.trim()) return { mood:5, energy:5, stress:5 };
+
+  let matched = 0;
+  for(const [w, weights] of Object.entries(SENTIMENT_WEIGHTS)){
+    const n = countWord(text, w, []);
+    if(n > 0){
+      matched += n;
+      moodScore += (weights.m || 0) * n;
+      energyScore += (weights.e || 0) * n;
+      stressScore += (weights.s || 0) * n;
+    }
+  }
+
+  // 自訂詞庫延伸分析：如果是負面情緒則扣心情、增壓力
+  for(const it of userLex){
+    if(it && it.w && countWord(text, it.w, []) > 0){
+      const count = countWord(text, it.w, []);
+      if(it.type === 'emotion'){
+        if(it.domain === '正面'){ moodScore += 1.5 * count; stressScore -= 1.0 * count; }
+        else if(it.domain === '負面'){ moodScore -= 1.5 * count; stressScore += 1.5 * count; }
+      }
+    }
+  }
+
+  // 區間收斂與防極端飽和
+  const clamp = (val) => Math.max(1, Math.min(10, Math.round(val)));
+  return {
+    mood: clamp(moodScore),
+    energy: clamp(energyScore),
+    stress: clamp(stressScore),
+    matched
+  };
+}
+
+function applyAutoMetrics(force = false){
+  if(isManualMetric && !force) return;
+  const ed = document.getElementById('edArea');
+  if(!ed) return;
+  const plainText = textOf(ed.innerHTML);
+  const result = evaluateMetricsFromText(plainText);
+
+  document.getElementById('fMood').value = result.mood;
+  document.getElementById('fEnergy').value = result.energy;
+  document.getElementById('fStress').value = result.stress;
+  syncRanges();
+
+  const chip = document.getElementById('autoStatusChip');
+  if(chip){
+    chip.textContent = '自動評估 (' + result.matched + ' 個關鍵字)';
+    chip.className = 'auto-chip';
+  }
+}
+
+/* ============ 一鍵排版模板核心邏輯 ============ */
 const STANDARD_TEMPLATE = `<h3>1. 現狀洞察與核心議題</h3>
 <p>在此記錄今天的核心觀察與事件背景，點出最主要的現象或問題本質：</p>
 <ul>
@@ -511,12 +636,10 @@ function applyFormattingTemplate(e){
   const ed = document.getElementById('edArea');
   if(!ed) return;
 
-  // 乾淨取出換行與段落文字
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = ed.innerHTML.replace(/<br\s*[\/]?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<\/div>/gi, '\n');
   const plainText = (tempDiv.innerText || tempDiv.textContent || '').trim();
 
-  // 若目前無內容，直接塞入標準骨架
   if(!plainText){
     ed.innerHTML = STANDARD_TEMPLATE;
     const titleInput = document.getElementById('fTitle');
@@ -524,10 +647,10 @@ function applyFormattingTemplate(e){
       titleInput.value = '思考隨筆：關於近期的體悟與轉變';
     }
     toast('已填入標準排版模板架構');
+    applyAutoMetrics();
     return;
   }
 
-  // 若已有草稿內容，依段落結構化排版
   const lines = plainText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   let out = '';
   
@@ -557,6 +680,7 @@ function applyFormattingTemplate(e){
 
   ed.innerHTML = out;
   toast('已套用結構化排版樣式');
+  applyAutoMetrics();
 }
 
 function countWord(text,word,traps){
@@ -664,6 +788,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setViewTab(t.dataset.
 /* ============ 編輯紀錄 ============ */
 function openEdit(e=null){
   editingId=e?.id||null;
+  isManualMetric = !!e; // 編輯既有紀錄時預設保留使用者原先分數
   document.getElementById('editTitle').textContent=e?'編輯人生紀錄':'今天的我';
   document.getElementById('fDate').value=e?.date||today();
   document.getElementById('fTitle').value=e?.title||'';
@@ -673,13 +798,55 @@ function openEdit(e=null){
   document.getElementById('fStress').value=e?.stress||5;
   document.getElementById('fTags').value=(e?.customTags||[]).join(', ');
   document.getElementById('fStar').checked=!!e?.star;
-  syncRanges();document.getElementById('editOverlay').classList.add('open');
+
+  const chip = document.getElementById('autoStatusChip');
+  if(chip){
+    chip.textContent = isManualMetric ? '手動鎖定模式' : '自動評估中';
+    chip.className = 'auto-chip' + (isManualMetric ? ' manual' : '');
+  }
+
+  syncRanges();
+  if(!e){
+    applyAutoMetrics();
+  }
+  document.getElementById('editOverlay').classList.add('open');
 }
 function closeEdit(){document.getElementById('editOverlay').classList.remove('open')}
 function syncRanges(){
   ['Mood','Energy','Stress'].forEach(x=>document.getElementById(x.toLowerCase()+'Val').textContent=document.getElementById('f'+x).value)
 }
-document.querySelectorAll('input[type=range]').forEach(x=>x.addEventListener('input',syncRanges));
+
+// 當使用者主動調整滑桿時，轉為手動模式
+document.querySelectorAll('.range-grid input[type=range]').forEach(x=>{
+  x.addEventListener('input',()=>{
+    isManualMetric = true;
+    const chip = document.getElementById('autoStatusChip');
+    if(chip){
+      chip.textContent = '手動指定模式';
+      chip.className = 'auto-chip manual';
+    }
+    syncRanges();
+  });
+});
+
+// 當編輯器輸入內容時，即時運算
+let typeDebounceTimer = null;
+document.getElementById('edArea').addEventListener('input',()=>{
+  clearTimeout(typeDebounceTimer);
+  typeDebounceTimer = setTimeout(()=>{
+    if(!isManualMetric){
+      applyAutoMetrics();
+    }
+  }, 350);
+});
+
+// 手動點擊「重新自動分析」按鈕
+document.getElementById('recalcBtn').onclick = () => {
+  isManualMetric = false;
+  applyAutoMetrics(true);
+  toast('已依全文關鍵字重算心情、能量與壓力');
+};
+
 document.getElementById('saveBtn').onclick=()=>{
   const content=document.getElementById('edArea').innerHTML.trim();
   if(!content)return toast('請先寫下今天的內容');
