@@ -100,7 +100,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .modal-bd{padding:20px;overflow:auto}.modal-ft{display:flex;justify-content:flex-end;gap:8px;padding:13px 20px;border-top:1px solid var(--border)}
 .field{margin-bottom:12px}.field label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:5px;font-weight:600}.field input,.field textarea{width:100%;padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none}.field input:focus,.field textarea:focus{border-color:var(--accent)}
 .wtoolbar{display:flex;flex-wrap:wrap;align-items:center;gap:3px;padding:6px 8px;border:1px solid var(--border);border-bottom:0;border-radius:6px 6px 0 0;background:var(--bg)}.wtoolbar button,.wtoolbar select{height:28px;background:none;border:1px solid transparent;color:var(--text-dim);border-radius:4px;cursor:pointer;font-size:12px}.wtoolbar button{min-width:28px;padding:0 6px}.wtoolbar button:hover,.wtoolbar select:hover{background:var(--bg-hover);color:var(--text)}.wtoolbar select{background:var(--bg-card);font-size:11px}.wsep{width:1px;height:18px;background:var(--border);margin:2px 4px}.wed-area{border:1px solid var(--border);border-radius:0 0 6px 6px;min-height:280px;max-height:48vh;overflow:auto;padding:14px 16px;background:var(--bg);outline:none;font-size:14px;line-height:1.8}.wed-area:empty:before{content:'寫下今天的你……或點擊上方「🪄 模板排版」套用規格結構';color:var(--text-dim)}
-.btn-template{color:var(--accent) !important;font-weight:700;display:inline-flex;align-items:center;gap:4px;border-color:rgba(108,140,255,.3) !important;background:var(--accent-glow) !important;padding:0 9px !important}
+.btn-template{color:var(--accent) !important;font-weight:700;display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(108,140,255,.3) !important;background:var(--accent-glow) !important;padding:0 9px !important}
 .btn-template:hover{background:rgba(108,140,255,.25) !important;color:#fff !important}
 .range-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.range-grid label{font-size:11px;color:var(--text-dim)}.range-grid input{width:100%;accent-color:var(--accent)}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(15px);background:var(--bg-card);color:var(--text);padding:9px 22px;border-radius:10px;border:1px solid var(--border);font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -280,9 +280,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
     <div class="field"><label>標題</label><input id="fTitle" placeholder="例如：人類的工具已入 21 世紀，但心智仍停在石器時代"></div>
     <div class="field"><label>今天發生了什麼？</label>
       <div class="wtoolbar" id="toolbar">
-        <button data-cmd="bold"><b>B</b></button><button data-cmd="italic"><i>I</i></button><button data-cmd="underline"><u>U</u></button>
-        <span class="wsep"></span><button data-cmd="insertUnorderedList">• 清單</button><button data-cmd="insertOrderedList">1. 清單</button>
-        <button data-cmd="formatBlock" data-val="H2">H2</button><button data-cmd="formatBlock" data-val="H3">H3</button><button data-cmd="formatBlock" data-val="BLOCKQUOTE">引用</button>
+        <button type="button" data-cmd="bold"><b>B</b></button>
+        <button type="button" data-cmd="italic"><i>I</i></button>
+        <button type="button" data-cmd="underline"><u>U</u></button>
+        <span class="wsep"></span>
+        <button type="button" data-cmd="insertUnorderedList">• 清單</button>
+        <button type="button" data-cmd="insertOrderedList">1. 清單</button>
+        <button type="button" data-cmd="formatBlock" data-val="H2">H2</button>
+        <button type="button" data-cmd="formatBlock" data-val="H3">H3</button>
+        <button type="button" data-cmd="formatBlock" data-val="BLOCKQUOTE">引用</button>
         <span class="wsep"></span>
         <button type="button" class="btn-template" id="applyTemplateBtn">🪄 模板排版</button>
       </div>
@@ -454,7 +460,7 @@ function cleanContentHtml(raw){
   return d.innerHTML;
 }
 
-/* ============ 一鍵排版模板核心邏輯 ============ */
+/* ============ 一鍵排版模板核心邏輯 (修正事件綁定與段落提取) ============ */
 const STANDARD_TEMPLATE = `<h3>1. 現狀洞察與核心議題</h3>
 <p>在此記錄今天的核心觀察與事件背景，點出最主要的現象或問題本質：</p>
 <ul>
@@ -497,51 +503,61 @@ const STANDARD_TEMPLATE = `<h3>1. 現狀洞察與核心議題</h3>
   <li>在未來的決策中落實新的思考模型。</li>
 </ol>`;
 
-function applyFormattingTemplate(){
+function applyFormattingTemplate(e){
+  if(e){
+    e.preventDefault();
+    e.stopPropagation();
+  }
   const ed = document.getElementById('edArea');
-  const curHtml = ed.innerHTML.trim();
-  const curText = textOf(curHtml).trim();
+  if(!ed) return;
 
-  if(!curText){
+  // 乾淨取出換行與段落文字
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = ed.innerHTML.replace(/<br\s*[\/]?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<\/div>/gi, '\n');
+  const plainText = (tempDiv.innerText || tempDiv.textContent || '').trim();
+
+  // 若目前無內容，直接塞入標準骨架
+  if(!plainText){
     ed.innerHTML = STANDARD_TEMPLATE;
-    if(!document.getElementById('fTitle').value.trim()){
-      document.getElementById('fTitle').value = '思考隨筆：關於近期的體悟與轉變';
+    const titleInput = document.getElementById('fTitle');
+    if(titleInput && !titleInput.value.trim()){
+      titleInput.value = '思考隨筆：關於近期的體悟與轉變';
     }
     toast('已填入標準排版模板架構');
     return;
   }
 
-  // 若已有文字，將內容自動結構化為統一模板
-  const paras = curText.split(/\n+/).map(p => p.trim()).filter(Boolean);
-  let structured = '';
+  // 若已有草稿內容，依段落結構化排版
+  const lines = plainText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  let out = '';
   
-  structured += `<h3>1. 核心觀點與觀察</h3>\n`;
-  if(paras.length > 0) structured += `<p>${esc(paras[0])}</p>\n`;
-  if(paras.length > 1) structured += `<p>${esc(paras[1])}</p>\n`;
+  out += `<h3>1. 核心觀點與觀察</h3>\n`;
+  if(lines.length > 0) out += `<p>${esc(lines[0])}</p>\n`;
+  if(lines.length > 1) out += `<p>${esc(lines[1])}</p>\n`;
 
-  if(paras.length > 2){
-    structured += `<blockquote>\n  <p>${esc(paras[2])}</p>\n</blockquote>\n`;
+  if(lines.length > 2){
+    out += `<blockquote>\n  <p>${esc(lines[2])}</p>\n</blockquote>\n`;
   }
 
-  if(paras.length > 3){
-    structured += `<h3>2. 重點梳理與細節</h3>\n<ul>\n`;
-    for(let i = 3; i < Math.min(paras.length, 7); i++){
-      structured += `  <li>${esc(paras[i])}</li>\n`;
+  if(lines.length > 3){
+    out += `<h3>2. 重點梳理與細節</h3>\n<ul>\n`;
+    const subEnd = Math.min(lines.length, 7);
+    for(let i = 3; i < subEnd; i++){
+      out += `  <li>${esc(lines[i])}</li>\n`;
     }
-    structured += `</ul>\n`;
+    out += `</ul>\n`;
   }
 
-  if(paras.length > 7){
-    structured += `<h3>3. 總結與後續行動</h3>\n`;
-    for(let i = 7; i < paras.length; i++){
-      structured += `<p>${esc(paras[i])}</p>\n`;
+  if(lines.length > 7){
+    out += `<h3>3. 總結與後續行動</h3>\n`;
+    for(let i = 7; i < lines.length; i++){
+      out += `<p>${esc(lines[i])}</p>\n`;
     }
   }
 
-  ed.innerHTML = structured;
+  ed.innerHTML = out;
   toast('已套用結構化排版樣式');
 }
-document.getElementById('applyTemplateBtn').onclick = applyFormattingTemplate;
 
 function countWord(text,word,traps){
   let masked=text;
@@ -960,6 +976,7 @@ function searchKeyword(k){
   renderJournal();
 }
 
+/* ============ 每日日誌列表渲染 (點擊開啟獨立視窗) ============ */
 function renderJournal(){
   const q=document.getElementById('journalSearch').value.trim().toLowerCase();
   const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).filter(e=>!q||(e.title+' '+textOf(e.content)+' '+(e.keywords||[]).join(' ')).toLowerCase().includes(q));
@@ -1045,7 +1062,18 @@ document.getElementById('importFile').onchange=ev=>{
   reader.onerror=()=>{toast('讀取檔案失敗');ev.target.value='';};
   reader.readAsText(file);
 };
-document.querySelectorAll('#toolbar button:not(#applyTemplateBtn)').forEach(b=>b.onclick=()=>{document.getElementById('edArea').focus();document.execCommand(b.dataset.cmd,false,b.dataset.val||null)});
+
+/* 格式按鈕事件綁定（排除模板排版按鈕） */
+document.querySelectorAll('#toolbar button[data-cmd]').forEach(b=>{
+  b.onclick = (e) => {
+    e.preventDefault();
+    document.getElementById('edArea').focus();
+    document.execCommand(b.dataset.cmd, false, b.dataset.val || null);
+  };
+});
+
+/* 模板排版按鈕獨立綁定 */
+document.getElementById('applyTemplateBtn').addEventListener('click', applyFormattingTemplate);
 
 function renderAll(){
   ensureEntriesAnalyzed();
