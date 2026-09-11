@@ -53,28 +53,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .j-card-ft{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.04)}
 .j-card-readmore{font-size:11.5px;color:var(--accent);font-weight:600}
 
-/* ============ 統一文章內容樣式模板 ============ */
-.read-modal{max-width:820px}
-.read-meta-box{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);border-radius:8px;margin-bottom:20px;border:1px solid var(--border);flex-wrap:wrap}
+/* ============ 純文章專屬獨立閱讀樣式模板 ============ */
+#standaloneArticleView{
+  display:none;
+  max-width:760px;
+  margin:0 auto;
+  padding:40px 24px 80px;
+  line-height:1.8;
+  color:#dfe2ed;
+  font-size:15px;
+}
+#standaloneArticleView.active{display:block}
 
-.read-article{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;line-height:1.8;color:#dfe2ed;font-size:15px}
-.read-article h1{font-size:1.8em;margin:0 0 .6em;color:#fff;font-weight:700}
-.read-article h2{font-size:1.4em;margin:1.4em 0 .5em;border-bottom:2px solid var(--border);padding-bottom:.3em;color:#f0f3ff;font-weight:700}
-.read-article h3{font-size:1.15em;margin:1.3em 0 .5em;color:var(--accent);font-weight:600}
-.read-article p{margin:0 0 1em}
-.read-article ul,.read-article ol{margin:0 0 1em 1.5em}
-.read-article li{margin-bottom:4px}
-.read-article blockquote{border-left:4px solid #6c8cff;margin:1.2em 0;padding:.8em 1.2em;background:rgba(108,140,255,.08);border-radius:0 8px 8px 0;color:#c5ccee}
-.read-article blockquote p:last-child{margin-bottom:0}
-.read-article pre{background:#11131a;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;margin:1.2em 0;border:1px solid var(--border)}
-.read-article :not(pre)>code{background:rgba(108,140,255,.12);padding:2px 7px;border-radius:4px;color:#f472b6;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-.read-article img{max-width:100%;border-radius:8px;margin:1em 0}
-.read-article table{width:100%;border-collapse:collapse;margin:1.4em 0;border:1px solid var(--border);background:var(--bg)}
-.read-article th,.read-article td{border:1px solid var(--border);padding:10px 14px;text-align:left}
-.read-article th, .read-article thead td{background:#1c2130;color:#fff;font-weight:700}
-.read-article tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+.article-header{margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.article-header h1{font-size:2em;margin:0 0 .4em;color:#fff;font-weight:700;line-height:1.3}
+.article-meta-row{display:flex;gap:12px;font-size:13px;color:var(--text-dim);align-items:center;flex-wrap:wrap}
+.article-meta-row .badges{display:flex;gap:6px;margin-left:auto}
 
-/* ============ 表單與彈窗通用 ============ */
+.article-body h1{font-size:1.8em;margin:0 0 .6em;color:#fff;font-weight:700}
+.article-body h2{font-size:1.4em;margin:1.4em 0 .5em;border-bottom:2px solid #272d42;padding-bottom:.3em;color:#fff;font-weight:700}
+.article-body h3{font-size:1.15em;margin:1.3em 0 .5em;color:var(--accent);font-weight:600}
+.article-body p{margin:0 0 1em}
+.article-body ul,.article-body ol{margin:0 0 1em 1.5em}
+.article-body li{margin-bottom:4px}
+.article-body blockquote{border-left:4px solid #6c8cff;margin:1.2em 0;padding:.8em 1.2em;background:rgba(108,140,255,.08);border-radius:0 8px 8px 0;color:#c5ccee}
+.article-body blockquote p:last-child{margin-bottom:0}
+.article-body pre{background:#11131a;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;margin:1.2em 0;border:1px solid var(--border)}
+.article-body :not(pre)>code{background:rgba(108,140,255,.12);padding:2px 7px;border-radius:4px;color:#f472b6;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.article-body img{max-width:100%;border-radius:8px;margin:1em 0}
+.article-body table{width:100%;border-collapse:collapse;margin:1.4em 0;border:1px solid var(--border);background:var(--bg-card)}
+.article-body th,.article-body td{border:1px solid var(--border);padding:10px 14px;text-align:left}
+.article-body th,.article-body thead td{background:#1c2130;color:#fff;font-weight:700}
+.article-body tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+
+/* ============ 鎖定未授權提示樣式 ============ */
+.locked-box{
+  text-align:center;padding:50px 20px;background:var(--bg-card);border:1px dashed var(--border);border-radius:var(--radius);
+}
+.locked-box h3{font-size:17px;color:var(--text);margin-bottom:8px}
+.locked-box p{font-size:13px;color:var(--text-dim);margin-bottom:16px}
+
+/* ============ 表單與通用彈窗 ============ */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:18px}.overlay.open{display:flex}
 .modal{background:var(--bg-modal);border:1px solid var(--border);border-radius:14px;width:100%;max-width:760px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
 .modal-hd{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}.modal-hd h3{font-size:15px}.x{background:none;border:0;color:var(--text-dim);font-size:18px;cursor:pointer}
@@ -112,6 +131,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
   .tabs{order:4;width:100%;margin-left:0;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px}
   .tab{padding:9px 13px;font-size:13px;white-space:nowrap;flex:none}
   .page{padding:16px 12px 40px}
+  #standaloneArticleView{padding:24px 16px 60px}
   .btn{padding:10px 15px}
   .chips{gap:10px}.chip{padding:12px 12px}.chip .n{font-size:22px}
   .panel{padding:15px 15px}
@@ -153,100 +173,101 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 </style>
 </head>
 <body>
-<div class="top">
-  <div class="brand"><span class="logo">🧠</span> For Yourself</div>
-  <div class="tabs">
-    <button class="tab active" data-view="dashView">📊 我的人生</button>
-    <button class="tab" data-view="journalView">📖 每日日誌</button>
-    <button class="tab" data-view="mgmtView">🗂 紀錄管理</button>
-  </div>
-  <div class="spacer"></div><span class="date-now" id="now"></span>
-  <button class="btn btn-ghost" id="settingsBtn">⚙ 設定</button>
-  <button class="btn btn-primary" id="newBtn">＋ 今天</button>
-</div>
 
-<div class="page">
-<section id="dashView" class="view active">
-  <div class="chips" id="chips"></div>
-  <div class="hero-grid">
-    <div class="panel">
-      <div class="panel-hd"><h3>最近 30 天的我</h3><span class="sub">心情趨勢</span></div>
-      <svg class="chart-svg" id="moodChart" viewBox="0 0 700 190" preserveAspectRatio="none"></svg>
-      <div class="axis" id="moodAxis"></div>
+<!-- 主應用介面容器 -->
+<div id="mainApp">
+  <div class="top">
+    <div class="brand"><span class="logo">🧠</span> For Yourself</div>
+    <div class="tabs">
+      <button class="tab active" data-view="dashView">📊 我的人生</button>
+      <button class="tab" data-view="journalView">📖 每日日誌</button>
+      <button class="tab" id="mgmtTabBtn" data-view="mgmtView" style="display:none">🗂 紀錄管理</button>
     </div>
-    <div class="panel">
-      <div class="panel-hd"><h3>今日狀態</h3><span class="sub" id="todayLabel"></span></div>
-      <div class="mood-row">
-        <div class="mood-box"><div class="v" id="todayMood">—</div><div class="k">心情</div></div>
-        <div class="mood-box"><div class="v" id="todayEnergy">—</div><div class="k">能量</div></div>
-        <div class="mood-box"><div class="v" id="todayStress">—</div><div class="k">壓力</div></div>
+    <div class="spacer"></div><span class="date-now" id="now"></span>
+    <button class="btn btn-ghost" id="settingsBtn">⚙ 設定</button>
+    <button class="btn btn-primary" id="newBtn">＋ 今天</button>
+  </div>
+
+  <div class="page">
+  <section id="dashView" class="view active">
+    <div class="chips" id="chips"></div>
+    <div class="hero-grid">
+      <div class="panel">
+        <div class="panel-hd"><h3>最近 30 天的我</h3><span class="sub">心情趨勢</span></div>
+        <svg class="chart-svg" id="moodChart" viewBox="0 0 700 190" preserveAspectRatio="none"></svg>
+        <div class="axis" id="moodAxis"></div>
       </div>
-      <div style="height:14px"></div><div class="insight" id="dailyInsight">寫下今天，系統才有資料可以認識你。</div>
-    </div>
-  </div>
-  <div class="cols2">
-    <div class="panel"><div class="panel-hd"><h3>🔥 最近高頻關鍵字</h3><span class="sub">近 90 天</span></div><div id="keywordBars"></div></div>
-    <div class="panel"><div class="panel-hd"><h3>🧩 人生領域</h3><span class="sub">事件分布</span></div><div id="categoryBars"></div></div>
-  </div>
-  <div class="panel"><div class="panel-hd"><h3>🎭 心情分數 vs 文字情緒</h3><span class="sub">近 90 天</span></div><div id="moodEmotion"></div></div>
-  <div class="cols2">
-    <div class="panel"><div class="panel-hd"><h3>📈 主題趨勢</h3><span class="sub">近 30 天 vs 前 30 天</span></div><div id="trends"></div></div>
-    <div class="panel"><div class="panel-hd"><h3>🔗 常一起出現的主題</h3><span class="sub">近 90 天</span></div><div id="cooc"></div></div>
-  </div>
-  <div class="panel"><div class="panel-hd"><h3>🗓 人生時間軸</h3><span class="sub">近 12 個月，每月注意力重心</span></div><div id="timeline"></div></div>
-  <div class="cols2">
-    <div class="panel"><div class="panel-hd"><h3>💭 最近正在想什麼</h3></div><div id="thinking"></div></div>
-    <div class="panel"><div class="panel-hd"><h3>📌 最近紀錄</h3></div><div class="mini-list" id="recentList"></div></div>
-  </div>
-  <div class="panel"><div class="panel-hd"><h3>關鍵字雲</h3><span class="sub">點擊可搜尋</span></div><div class="tag-cloud" id="cloud"></div></div>
-</section>
-
-<section id="journalView" class="view">
-  <div class="panel" style="margin-bottom:0">
-    <div class="panel-hd"><h3>📖 每日日誌</h3><span class="sub">留住時光，傾聽內心的回音</span></div>
-    <div class="search-box" style="max-width:100%"><span>🔍</span><input id="journalSearch" placeholder="搜尋標題、內文關鍵字、情緒……"></div>
-  </div>
-  <div class="journal-stream" id="journalList"></div>
-</section>
-
-<section id="mgmtView" class="view">
-  <div class="mgmt-bar">
-    <div class="search-box"><span>🔍</span><input id="mSearch" placeholder="搜尋內容、標題、關鍵字、領域……"></div>
-    <select id="mCategory" class="sel"><option value="">全部領域</option></select>
-    <button class="btn btn-primary" id="mNew">＋ 新增紀錄</button>
-    <button class="btn btn-ghost" id="exportBtn">匯出 JSON</button>
-    <button class="btn btn-ghost" id="importBtn">匯入 JSON</button>
-    <input type="file" id="importFile" accept="application/json,.json" style="display:none">
-  </div>
-  <div class="table-wrap">
-    <table><thead><tr><th>日期</th><th>標題 / 關鍵字</th><th>心情</th><th>能量</th><th>壓力</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table>
-  </div>
-</section>
-</div>
-
-<!-- 閱讀單篇文章視窗 (統一文章顯示樣式模板) -->
-<div class="overlay" id="readOverlay">
-  <div class="modal read-modal">
-    <div class="modal-hd">
-      <h3 id="readTitle">日誌檢視</h3>
-      <button class="x" id="readClose">✕</button>
-    </div>
-    <div class="modal-bd">
-      <div class="read-meta-box">
-        <span id="readDate" style="font-weight:600;font-size:13px;color:var(--text)"></span>
-        <span id="readStar" style="color:var(--star);font-size:12px;display:none">⭐ 重要</span>
-        <div style="flex:1"></div>
-        <div id="readMetrics" style="display:flex;gap:6px"></div>
+      <div class="panel">
+        <div class="panel-hd"><h3>今日狀態</h3><span class="sub" id="todayLabel"></span></div>
+        <div class="mood-row">
+          <div class="mood-box"><div class="v" id="todayMood">—</div><div class="k">心情</div></div>
+          <div class="mood-box"><div class="v" id="todayEnergy">—</div><div class="k">能量</div></div>
+          <div class="mood-box"><div class="v" id="todayStress">—</div><div class="k">壓力</div></div>
+        </div>
+        <div style="height:14px"></div><div class="insight" id="dailyInsight">寫下今天，系統才有資料可以認識你。</div>
       </div>
-      <article class="read-article" id="readContent"></article>
-      <div class="row-tags" id="readTags" style="margin-top:24px"></div>
     </div>
-    <div class="modal-ft">
-      <button class="btn btn-ghost" id="readCloseBtn">返回列表</button>
-      <button class="btn btn-primary" id="readEditBtn">編輯此篇</button>
+    <div class="cols2">
+      <div class="panel"><div class="panel-hd"><h3>🔥 最近高頻關鍵字</h3><span class="sub">近 90 天</span></div><div id="keywordBars"></div></div>
+      <div class="panel"><div class="panel-hd"><h3>🧩 人生領域</h3><span class="sub">事件分布</span></div><div id="categoryBars"></div></div>
     </div>
+    <div class="panel"><div class="panel-hd"><h3>🎭 心情分數 vs 文字情緒</h3><span class="sub">近 90 天</span></div><div id="moodEmotion"></div></div>
+    <div class="cols2">
+      <div class="panel"><div class="panel-hd"><h3>📈 主題趨勢</h3><span class="sub">近 30 天 vs 前 30 天</span></div><div id="trends"></div></div>
+      <div class="panel"><div class="panel-hd"><h3>🔗 常一起出現的主題</h3><span class="sub">近 90 天</span></div><div id="cooc"></div></div>
+    </div>
+    <div class="panel"><div class="panel-hd"><h3>🗓 人生時間軸</h3><span class="sub">近 12 個月，每月注意力重心</span></div><div id="timeline"></div></div>
+    <div class="cols2">
+      <div class="panel"><div class="panel-hd"><h3>💭 最近正在想什麼</h3></div><div id="thinking"></div></div>
+      <div class="panel"><div class="panel-hd"><h3>📌 最近紀錄</h3></div><div class="mini-list" id="recentList"></div></div>
+    </div>
+    <div class="panel"><div class="panel-hd"><h3>關鍵字雲</h3><span class="sub">點擊可搜尋</span></div><div class="tag-cloud" id="cloud"></div></div>
+  </section>
+
+  <section id="journalView" class="view">
+    <div class="panel" style="margin-bottom:0">
+      <div class="panel-hd"><h3>📖 每日日誌</h3><span class="sub">留住時光，傾聽內心的回音</span></div>
+      <div class="search-box" style="max-width:100%"><span>🔍</span><input id="journalSearch" placeholder="搜尋標題、內文關鍵字、情緒……"></div>
+    </div>
+    <div class="journal-stream" id="journalList"></div>
+  </section>
+
+  <section id="mgmtView" class="view">
+    <div id="mgmtLockedNotice" class="locked-box" style="display:none">
+      <h3>🔒 紀錄管理已被鎖定</h3>
+      <p>請先前往「⚙ 設定」輸入與 Code.gs 完全一致的 Token 驗證身份後使用。</p>
+      <button class="btn btn-primary" onclick="openSettings()">前往設定</button>
+    </div>
+    <div id="mgmtContent">
+      <div class="mgmt-bar">
+        <div class="search-box"><span>🔍</span><input id="mSearch" placeholder="搜尋內容、標題、關鍵字、領域……"></div>
+        <select id="mCategory" class="sel"><option value="">全部領域</option></select>
+        <button class="btn btn-primary" id="mNew">＋ 新增紀錄</button>
+        <button class="btn btn-ghost" id="exportBtn">匯出 JSON</button>
+        <button class="btn btn-ghost" id="importBtn">匯入 JSON</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>日期</th><th>標題 / 關鍵字</th><th>心情</th><th>能量</th><th>壓力</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table>
+      </div>
+    </div>
+  </section>
   </div>
 </div>
+
+<!-- 純文章內容獨立展示頁 (僅在新視窗開啟時單獨呈現) -->
+<main id="standaloneArticleView">
+  <div class="article-header">
+    <h1 id="saTitle"></h1>
+    <div class="article-meta-row">
+      <span id="saDate"></span>
+      <span id="saStar" style="color:var(--star);display:none">⭐ 重要的一天</span>
+      <div class="badges" id="saMetrics"></div>
+    </div>
+  </div>
+  <div class="article-body" id="saContent"></div>
+  <div class="row-tags" id="saTags" style="margin-top:30px"></div>
+</main>
 
 <!-- 編輯視窗 -->
 <div class="overlay" id="editOverlay">
@@ -321,10 +342,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 <script>
 'use strict';
 
+/* =========================================================
+   安全密鑰設定：請在此處填寫與 Code.gs 完全一致的 Token
+   ========================================================= */
+const CORRECT_TOKEN = 'your_secret_token_here';
+
 const LS_KEY='for_yourself_journal_v1';
 const LS_LEX='for_yourself_lexicon_v1';
 const LS_CLOUD='for_yourself_cloud_v1';
-let entries=[],editingId=null,viewingId=null,userLex=[],cloud={url:'',token:'',auto:false};
+let entries=[],editingId=null,userLex=[],cloud={url:'',token:'',auto:false};
 
 const LEX_DEF={
   event:{
@@ -381,13 +407,40 @@ function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmtDate(s){if(!s)return '—';const d=new Date(s+'T00:00:00');return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`}
 function ago(s){const d=Math.floor((Date.now()-new Date(s+'T00:00:00'))/86400000);return d<=0?'今天':d===1?'昨天':d+' 天前'}
 
-/* 清理剪貼文字中的冗餘標籤與註釋，確保符合樣式模板 */
+function isTokenValid(){
+  return (cloud.token || '').trim() !== '' && (cloud.token || '').trim() === CORRECT_TOKEN;
+}
+
+function updateTokenGuardUI(){
+  const valid = isTokenValid();
+  const mgmtBtn = document.getElementById('mgmtTabBtn');
+  const mgmtContent = document.getElementById('mgmtContent');
+  const mgmtNotice = document.getElementById('mgmtLockedNotice');
+
+  if(mgmtBtn){
+    mgmtBtn.style.display = valid ? 'inline-block' : 'none';
+  }
+  if(mgmtContent && mgmtNotice){
+    if(valid){
+      mgmtContent.style.display = 'block';
+      mgmtNotice.style.display = 'none';
+    }else{
+      mgmtContent.style.display = 'none';
+      mgmtNotice.style.display = 'block';
+      // 若當前停留在管理頁但已被鎖定，自動跳回「我的人生」
+      const activeTab = document.querySelector('.tab.active');
+      if(activeTab && activeTab.dataset.view === 'mgmtView'){
+        setViewTab('dashView');
+      }
+    }
+  }
+}
+
 function cleanContentHtml(raw){
   if(!raw)return '';
   let h=raw.replace(/<!--[\s\S]*?-->/g,'');
   const d=document.createElement('div');
   d.innerHTML=h;
-  // 遞迴清理節點的 data-path-to-node 與 inline style 中的背景/文字色衝突
   const all=d.querySelectorAll('*');
   all.forEach(el=>{
     for(let i=el.attributes.length-1;i>=0;i--){
@@ -443,8 +496,54 @@ function ensureAnalysis(e){
   return e;
 }
 
-/* ============ 網址 Hash Routing & 文章獨立閱讀 ============ */
+/* ============ 開啟新視窗 & 純文章模式路由 ============ */
+function openArticleInNewTab(id){
+  const url = `${location.origin}${location.pathname}#/journal/${id}`;
+  window.open(url, '_blank');
+}
+
+function renderStandaloneArticle(e){
+  document.title = (e.title || '人生誌') + '｜純讀模式';
+  document.getElementById('mainApp').style.display = 'none';
+  const sa = document.getElementById('standaloneArticleView');
+  sa.classList.add('active');
+
+  document.getElementById('saTitle').textContent = e.title || '無標題';
+  document.getElementById('saDate').textContent = `${fmtDate(e.date)} · ${ago(e.date)}`;
+  document.getElementById('saStar').style.display = e.star ? 'inline' : 'none';
+  document.getElementById('saMetrics').innerHTML = `
+    <span class="j-badge mood">心情 ${e.mood}/10</span>
+    <span class="j-badge energy">能量 ${e.energy}/10</span>
+    <span class="j-badge stress">壓力 ${e.stress}/10</span>
+  `;
+  document.getElementById('saContent').innerHTML = cleanContentHtml(e.content);
+  document.getElementById('saTags').innerHTML = (e.keywords || []).map(k => `<span class="row-tag">#${esc(k)}</span>`).join('');
+}
+
+function handleRoute(){
+  const h = location.hash;
+  if(h.startsWith('#/journal/')){
+    const jId = h.replace('#/journal/', '').trim();
+    if(jId){
+      ensureEntriesAnalyzed();
+      const e = entries.find(x => x.id === jId);
+      if(e){
+        renderStandaloneArticle(e);
+        return;
+      }
+    }
+  }
+  document.getElementById('standaloneArticleView').classList.remove('active');
+  document.getElementById('mainApp').style.display = 'block';
+}
+window.addEventListener('hashchange', handleRoute);
+
+/* ============ 分頁切換 ============ */
 function setViewTab(viewId){
+  if(viewId === 'mgmtView' && !isTokenValid()){
+    toast('請先在設定中輸入正確的 Token');
+    return;
+  }
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
   const t=document.querySelector(`.tab[data-view="${viewId}"]`);
@@ -452,65 +551,9 @@ function setViewTab(viewId){
   const v=document.getElementById(viewId);
   if(v)v.classList.add('active');
 }
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setViewTab(t.dataset.view));
 
-function openArticle(entryOrId,updateHash=true){
-  const e=typeof entryOrId==='string'?entries.find(x=>x.id===entryOrId):entryOrId;
-  if(!e)return;
-  viewingId=e.id;
-  document.getElementById('readTitle').textContent=e.title||'日誌詳情';
-  document.getElementById('readDate').textContent=fmtDate(e.date)+' ('+ago(e.date)+')';
-  document.getElementById('readStar').style.display=e.star?'inline':'none';
-  document.getElementById('readMetrics').innerHTML=`
-    <span class="j-badge mood">心情 ${e.mood}/10</span>
-    <span class="j-badge energy">能量 ${e.energy}/10</span>
-    <span class="j-badge stress">壓力 ${e.stress}/10</span>`;
-  document.getElementById('readContent').innerHTML=cleanContentHtml(e.content)||'<p style="color:var(--text-dim)">無內容</p>';
-  document.getElementById('readTags').innerHTML=(e.keywords||[]).map(k=>`<span class="row-tag">#${esc(k)}</span>`).join('');
-  document.getElementById('readOverlay').classList.add('open');
-  if(updateHash&&location.hash!==`#/journal/${e.id}`){
-    history.pushState(null,'',`#/journal/${e.id}`);
-  }
-}
-
-function closeArticle(updateHash=true){
-  document.getElementById('readOverlay').classList.remove('open');
-  viewingId=null;
-  if(updateHash&&location.hash.startsWith('#/journal/')){
-    history.pushState(null,'',location.pathname+location.search);
-  }
-}
-
-function handleHashChange(){
-  const h=location.hash;
-  if(h.startsWith('#/journal/')){
-    const jId=h.replace('#/journal/','').trim();
-    if(jId){
-      ensureEntriesAnalyzed();
-      const e=entries.find(x=>x.id===jId);
-      if(e){
-        setViewTab('journalView');
-        openArticle(e,false);
-        return;
-      }
-    }
-  }
-  if(document.getElementById('readOverlay').classList.contains('open')){
-    closeArticle(false);
-  }
-}
-window.addEventListener('hashchange',handleHashChange);
-
-document.getElementById('readClose').onclick=()=>closeArticle(true);
-document.getElementById('readCloseBtn').onclick=()=>closeArticle(true);
-document.getElementById('readEditBtn').onclick=()=>{
-  const targetId=viewingId;
-  closeArticle(true);
-  const target=entries.find(x=>x.id===targetId);
-  if(target)openEdit(target);
-};
-document.getElementById('readOverlay').onclick=e=>{if(e.target.id==='readOverlay')closeArticle(true);};
-
-/* ============ 編輯對話盒 ============ */
+/* ============ 編輯紀錄 ============ */
 function openEdit(e=null){
   editingId=e?.id||null;
   document.getElementById('editTitle').textContent=e?'編輯人生紀錄':'今天的我';
@@ -608,6 +651,7 @@ function readCloudInputs(){
   cloud.token=document.getElementById('cloudToken').value.trim();
   cloud.auto=document.getElementById('cloudAuto').checked;
   saveCloud();
+  updateTokenGuardUI();
 }
 function cloudStatus(msg,kind){const el=document.getElementById('cloudStatus');if(el){el.textContent=msg;el.className='cloud-status '+(kind||'');}}
 async function cloudPost(payload){
@@ -656,11 +700,7 @@ document.getElementById('cloudDown').onclick=async()=>{
 };
 document.getElementById('cloudAuto').onchange=readCloudInputs;
 document.getElementById('cloudUrl').addEventListener('change',readCloudInputs);
-document.getElementById('cloudToken').addEventListener('change',readCloudInputs);
-
-document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
-  setViewTab(t.dataset.view);
-});
+document.getElementById('cloudToken').addEventListener('input',readCloudInputs);
 
 function ensureEntriesAnalyzed(){entries.forEach(ensureAnalysis);}
 
@@ -814,7 +854,7 @@ function renderThinking(recent,keywords){
 
 function renderRecent(){
   const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
-  document.getElementById('recentList').innerHTML=arr.length?arr.map(e=>`<div class="mini-item" onclick="openArticle('${e.id}')"><span class="dot"></span><span class="t">${esc(e.title)}</span><span class="meta">${ago(e.date)}</span></div>`).join(''):'<div class="empty-note">還沒有紀錄</div>';
+  document.getElementById('recentList').innerHTML=arr.length?arr.map(e=>`<div class="mini-item" onclick="openArticleInNewTab('${e.id}')"><span class="dot"></span><span class="t">${esc(e.title)}</span><span class="meta">${ago(e.date)}</span></div>`).join(''):'<div class="empty-note">還沒有紀錄</div>';
 }
 
 function renderCloud(keywords){
@@ -828,12 +868,13 @@ function searchKeyword(k){
   renderJournal();
 }
 
+/* ============ 每日日誌列表渲染 (點擊開啟獨立視窗) ============ */
 function renderJournal(){
   const q=document.getElementById('journalSearch').value.trim().toLowerCase();
   const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).filter(e=>!q||(e.title+' '+textOf(e.content)+' '+(e.keywords||[]).join(' ')).toLowerCase().includes(q));
   
   document.getElementById('journalList').innerHTML=arr.length?arr.map(e=>`
-    <div class="j-card" onclick="openArticle('${e.id}')">
+    <div class="j-card" onclick="openArticleInNewTab('${e.id}')">
       <div class="j-card-hd">
         <h3 class="j-card-title">${e.star?'<span style="color:var(--star)">⭐</span>':''}${esc(e.title)}</h3>
         <span class="j-card-date">${fmtDate(e.date)} · ${ago(e.date)}</span>
@@ -846,7 +887,7 @@ function renderJournal(){
       <div class="j-card-preview">${esc(textOf(e.content))}</div>
       <div class="j-card-ft">
         <div class="row-tags">${(e.keywords||[]).slice(0,6).map(k=>`<span class="row-tag">#${esc(k)}</span>`).join('')}</div>
-        <span class="j-card-readmore">閱讀全文 ↗</span>
+        <span class="j-card-readmore">在新視窗開啟 ↗</span>
       </div>
     </div>`).join(''):'<div class="empty-note">沒有找到符合的日誌紀錄</div>';
 }
@@ -862,10 +903,10 @@ function renderTable(){
   const arr=[...entries].sort((a,b)=>b.date.localeCompare(a.date)).filter(e=>(!q||(e.title+' '+textOf(e.content)+' '+(e.keywords||[]).join(' ')).toLowerCase().includes(q))&&(!cat||(e.categories||[]).includes(cat)));
   document.getElementById('rows').innerHTML=arr.length?arr.map(e=>`<tr>
     <td class="c-date">${fmtDate(e.date)}</td>
-    <td class="title"><div class="tt" style="cursor:pointer;color:var(--accent)" onclick="openArticle('${e.id}')">${e.star?'⭐ ':''}${esc(e.title)}</div><div class="row-tags">${(e.keywords||[]).slice(0,6).map(k=>`<span class="row-tag">${esc(k)}</span>`).join('')}</div></td>
+    <td class="title"><div class="tt" style="cursor:pointer;color:var(--accent)" onclick="openArticleInNewTab('${e.id}')">${e.star?'⭐ ':''}${esc(e.title)}</div><div class="row-tags">${(e.keywords||[]).slice(0,6).map(k=>`<span class="row-tag">${esc(k)}</span>`).join('')}</div></td>
     <td class="c-metric" data-label="心情">${e.mood}/10</td><td class="c-metric" data-label="能量">${e.energy}/10</td><td class="c-metric" data-label="壓力">${e.stress}/10</td>
     <td class="c-actions">
-      <button class="btn btn-ghost" onclick="openArticle('${e.id}')">檢視</button>
+      <button class="btn btn-ghost" onclick="openArticleInNewTab('${e.id}')">檢視</button>
       <button class="btn btn-ghost" onclick="openEditById('${e.id}')">編輯</button>
       <button class="btn btn-danger" onclick="deleteEntry('${e.id}')">刪除</button>
     </td>
@@ -921,8 +962,9 @@ function renderAll(){
   renderDashboard();
   renderJournal();
   renderTable();
+  updateTokenGuardUI();
   document.getElementById('now').textContent=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
-  handleHashChange();
+  handleRoute();
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
 
