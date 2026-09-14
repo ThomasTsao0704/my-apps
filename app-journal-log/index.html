@@ -138,6 +138,9 @@
     .chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:500}
 
     .banner{background:#fbf1e4;color:#8a5a1f;border-radius:var(--radius);padding:10px 14px;font-size:13px;margin:12px 16px 0;display:none}
+    .ip{width:100%;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+    .ip:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+    .lab2{font-size:12px;color:var(--ink-soft);margin:0 0 4px}
     .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;
       padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30}
     .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -210,20 +213,29 @@
 
     <!-- ============ 設定 ============ -->
     <section class="view" id="view-settings">
-      <div class="sec-title">網頁應用程式網址</div>
+      <div class="sec-title">連線設定</div>
       <div class="card">
-        <p class="mini" style="margin:0 0 10px">用手機掃下方 QR 直接開，或複製後在瀏覽器選「加到主畫面」，就像一個 App。</p>
-        <input id="urlInput" type="url" placeholder="https://script.google.com/macros/s/.../exec"
-          style="width:100%;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:11px 12px">
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn" id="btnDetect">自動偵測</button>
-          <button class="btn" id="btnCopy">複製</button>
-          <button class="btn primary" id="btnSaveUrl" style="flex:1">儲存</button>
+        <p class="mini" style="margin:0 0 10px">網頁放在 GitHub，資料存取靠 Apps Script API。貼上你的 /exec 網址（存在這台裝置）。</p>
+        <p class="lab2">API 網址（/exec）</p>
+        <input id="apiInput" type="url" class="ip" placeholder="https://script.google.com/macros/s/.../exec">
+        <p class="lab2" style="margin-top:10px">存取權杖 token（選填，需與 Code.gs 相同）</p>
+        <input id="tokenInput" type="text" class="ip" placeholder="留空則不驗證">
+        <button class="btn primary block" id="btnSaveApi" style="margin-top:12px">儲存並重新載入</button>
+        <p class="mini" id="apiStatus" style="margin:10px 0 0"></p>
+      </div>
+
+      <div class="sec-title">這個 App 的網址</div>
+      <div class="card">
+        <p class="mini" style="margin:0 0 10px">用手機掃 QR 開啟，或複製後在瀏覽器「加到主畫面」。</p>
+        <div style="display:flex;gap:8px">
+          <input id="appUrl" type="text" class="ip" readonly style="flex:1">
+          <button class="btn" id="btnCopyApp">複製</button>
         </div>
         <div id="qrBox" style="display:flex;justify-content:center;padding:18px 0 4px"></div>
       </div>
+
       <div class="sec-title">選項管理</div>
-      <div class="card"><p class="mini" style="margin:0">情緒關鍵詞、事件類別、標籤的下拉選項都存在試算表的 <b>_config</b> 分頁，直接在那裡增刪就好，App 下次載入會更新。</p></div>
+      <div class="card"><p class="mini" style="margin:0">情緒關鍵詞、事件類別、標籤的下拉選項存在試算表的 <b>_config</b> 分頁，直接增刪即可，App 下次載入會更新。</p></div>
     </section>
   </div>
 
@@ -262,27 +274,45 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    var PREVIEW = (typeof google === 'undefined' || !google.script || !google.script.run);
-    var CFG = { category: [], mood_label: [], tag: [] };
-    var HOME = null, TODAY = null, SETTINGS = null;
-    var energyVal = null, moodVal = null;
+    /* ====== 連線設定：網頁在 GitHub，資料存取靠 Apps Script /exec API ====== */
+    var CONFIG = {
+      API_URL: '',    // 可直接貼上 /exec 網址；留空則到「設定」分頁輸入（存於這台裝置）
+      API_TOKEN: ''   // 選填：需與 Code.gs 的 API_TOKEN 相同
+    };
+    function getApiUrl(){ return (localStorage.getItem('diary_api_url')||CONFIG.API_URL||'').trim(); }
+    function getApiToken(){ return (localStorage.getItem('diary_api_token')||CONFIG.API_TOKEN||'').trim(); }
 
-    /* ---- 後端呼叫（PREVIEW 用假資料）---- */
-    function call(fn){
-      var args=[].slice.call(arguments,1);
-      return new Promise(function(resolve, reject){
-        if (PREVIEW){ resolve(mock(fn, args)); return; }
-        var r=google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
-        r[fn].apply(r, args);
-      });
+    var READ={getFormConfig:1,getHomeData:1,searchByTag:1,getSettings:1};
+    var PREVIEW = !getApiUrl();                 // 沒設 API 網址就顯示示範資料
+    var CFG = { category: [], mood_label: [], tag: [] };
+    var HOME = null, TODAY = null, energyVal = null, moodVal = null;
+
+    /* ---- 呼叫 API：讀用 GET、寫用 POST(text/plain 避免 CORS 預檢) ---- */
+    async function call(action, payload){
+      payload = payload || {};
+      if (PREVIEW) return mock(action, payload);
+      var url=getApiUrl(), token=getApiToken(), res;
+      try{
+        if (READ[action]){
+          var q=new URLSearchParams(); q.append('action',action); if(token) q.append('token',token);
+          Object.keys(payload).forEach(function(k){ if(payload[k]!=null) q.append(k,payload[k]); });
+          res=await fetch(url+'?'+q.toString(), {method:'GET'});
+        } else {
+          res=await fetch(url, {method:'POST', body: JSON.stringify(Object.assign({action:action,token:token},payload))});
+        }
+      }catch(e){ throw new Error('連不到 API，請確認網址與網路'); }
+      var j;
+      try{ j=await res.json(); }
+      catch(e){ throw new Error('API 回應非預期，通常是部署的存取權限沒設成「任何人」'); }
+      if(!j.ok) throw new Error(j.error||'未知錯誤');
+      return j.data;
     }
-    function mock(fn, args){
+
+    function mock(fn, p){
       if (fn==='setFollowedUp') return {ok:true};
-      if (fn==='getSettings') return {web_app_url:'', _detected_url:'https://script.google.com/macros/s/AKfycbEXAMPLExxxxxxxxxxxxxxxxxxxx/exec'};
-      if (fn==='saveSetting') return {ok:true};
-      if (fn==='addTag'){ var n=String(args[0]||'').replace(/\s+/g,''); if(n.charAt(0)!=='#')n='#'+n; return {ok:true,tag:n,added:true}; }
+      if (fn==='addTag'){ var n=String(p.tag||'').replace(/\s+/g,''); if(n.charAt(0)!=='#')n='#'+n; return {ok:true,tag:n,added:true}; }
       if (fn==='searchByTag'){
-        var t=args[0];
+        var t=p.tag;
         return [
           {id:'s1',category:'人際關係',is_dump:false,fact:'醫院探視包姐',reaction:'心裡一沉',insight:'記住的是為人底色',action:'週末回家陪爸媽',tags:[t,'#生死課題'],time:'21:04',followed:true,date:'2026-09-14'},
           {id:'s2',category:'決策覆盤',is_dump:false,fact:'決定先不接那個案子',reaction:'鬆一口氣',insight:'邊界比機會重要',action:'',tags:[t],time:'19:20',followed:false,date:'2026-07-02'},
@@ -324,14 +354,14 @@
     document.addEventListener('DOMContentLoaded', function(){
       buildSegs();
       bindUI();
-      if (PREVIEW) showBanner('離線預覽：需部署到 Apps Script 才會實際寫入 Google Sheet。');
+      if (PREVIEW) showBanner('尚未設定 API 網址，目前為示範資料。到「設定」分頁貼上 Apps Script 的 /exec 網址即可連線。');
       boot();
     });
 
     async function boot(){
       var c = await call('getFormConfig');
       CFG = c.config; TODAY = c.today;
-      HOME = await call('getHomeData', TODAY);
+      HOME = await call('getHomeData',{date:TODAY});
       renderAll();
     }
 
@@ -437,8 +467,8 @@
       if(HOME.openLoops) HOME.openLoops=HOME.openLoops.filter(function(l){ return l.id!==id; });
       HOME.feed.forEach(function(f){ if(f.id===id) f.followed=followed; });
       renderLoops(HOME.openLoops); renderFeed(HOME.feed);
-      try{ await call('setFollowedUp', id, followed); toast(followed?'已跟進，收起來了':'已取消'); }
-      catch(e){ toast('更新失敗：'+e.message); HOME=await call('getHomeData',TODAY); renderAll(); }
+      try{ await call('setFollowedUp',{eventId:id,followed:followed}); toast(followed?'已跟進，收起來了':'已取消'); }
+      catch(e){ toast('更新失敗：'+e.message); HOME=await call('getHomeData',{date:TODAY}); renderAll(); }
     }
 
     function renderFlash(f){
@@ -476,7 +506,7 @@
       var box=document.getElementById('searchResult'); box.dataset.active='1';
       box.innerHTML='<div class="mini">檢索中…</div>';
       try{
-        var res=await call('searchByTag', tag);
+        var res=await call('searchByTag',{tag:tag});
         if(!res.length){ box.innerHTML='<div class="empty">「'+esc(tag)+'」還沒有相關紀錄。</div>'; return; }
         var html='<div class="sec-title" style="margin-top:2px">「'+esc(tag)+'」· '+res.length+' 筆</div>';
         res.forEach(function(it){ html+=searchCard(it); });
@@ -511,7 +541,7 @@
       try{
         var r=await call('saveBrainDump',{log_date:TODAY,text:t});
         document.getElementById('dumpText').value=''; closeSheets();
-        if(r.item){ HOME.feed.push(r.item); renderFeed(HOME.feed); } else { HOME=await call('getHomeData',TODAY); renderAll(); }
+        if(r.item){ HOME.feed.push(r.item); renderFeed(HOME.feed); } else { HOME=await call('getHomeData',{date:TODAY}); renderAll(); }
         toast('隨筆已存');
       }catch(e){ toast('儲存失敗：'+e.message); }
     }
@@ -562,7 +592,7 @@
       wzCommit();
       if(CFG.tag.indexOf(name)<0){
         CFG.tag.push(name);
-        try{ await call('addTag', name); }catch(e){ toast('標籤儲存失敗：'+e.message); }
+        try{ await call('addTag',{tag:name}); }catch(e){ toast('標籤儲存失敗：'+e.message); }
       }
       if(wz.tags.indexOf(name)<0) wz.tags.push(name);
       inp.value='';
@@ -578,7 +608,7 @@
         var r=await call('addEvent',{log_date:TODAY,category:wz.category,fact_objective:wz.o,
           reaction_subjective:wz.r,insight:wz.i,action_next:wz.d,tags:wz.tags});
         closeSheets();
-        if(r.item){ HOME.feed.push(r.item); renderFeed(HOME.feed); } else { HOME=await call('getHomeData',TODAY); renderAll(); }
+        if(r.item){ HOME.feed.push(r.item); renderFeed(HOME.feed); } else { HOME=await call('getHomeData',{date:TODAY}); renderAll(); }
         toast('事件已存');
       }catch(e){ toast('儲存失敗：'+e.message); }
     }
@@ -597,21 +627,24 @@
           document.querySelectorAll('.nav button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on');
           document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on');});
           document.getElementById('view-'+b.dataset.view).classList.add('on');
-          if(b.dataset.view==='settings' && !SETTINGS) loadSettings();
+          if(b.dataset.view==='settings') loadSettings();
         };
       });
       bindSettings();
     }
 
-    async function loadSettings(){
-      try{ SETTINGS=await call('getSettings'); }catch(e){ SETTINGS={}; }
-      var url=(SETTINGS.web_app_url||SETTINGS._detected_url||'');
-      document.getElementById('urlInput').value=url;
-      renderQR(url);
+    function loadSettings(){
+      document.getElementById('apiInput').value=getApiUrl();
+      document.getElementById('tokenInput').value=getApiToken();
+      var app=location.href.split('#')[0];
+      document.getElementById('appUrl').value=app;
+      document.getElementById('apiStatus').textContent=getApiUrl()
+        ? ('目前 API：'+getApiUrl()) : '尚未設定 API 網址，目前顯示示範資料。';
+      renderQR(app);
     }
     function renderQR(url){
       var box=document.getElementById('qrBox'); box.innerHTML='';
-      if(!url){ box.innerHTML='<div class="mini">輸入並儲存網址後，這裡會出現 QR 碼</div>'; return; }
+      if(!url){ box.innerHTML='<div class="mini">沒有可產生的網址</div>'; return; }
       try{
         if(typeof qrcode==='function'){
           var qr=qrcode(0,'M'); qr.addData(url); qr.make();
@@ -627,23 +660,21 @@
       box.appendChild(im);
     }
     function bindSettings(){
-      document.getElementById('btnDetect').onclick=function(){
-        var u=(SETTINGS&&SETTINGS._detected_url)||'';
-        if(!u){ toast('偵測不到，請先部署或手動貼上'); return; }
-        document.getElementById('urlInput').value=u; renderQR(u);
+      document.getElementById('btnSaveApi').onclick=function(){
+        var u=document.getElementById('apiInput').value.trim();
+        var tk=document.getElementById('tokenInput').value.trim();
+        if(u && u.indexOf('/exec')<0) toast('網址通常以 /exec 結尾，仍會儲存');
+        localStorage.setItem('diary_api_url', u);
+        localStorage.setItem('diary_api_token', tk);
+        toast('已儲存，重新載入…');
+        setTimeout(function(){ location.reload(); }, 600);
       };
-      document.getElementById('btnCopy').onclick=async function(){
-        var u=document.getElementById('urlInput').value.trim(); if(!u){ toast('沒有網址可複製'); return; }
+      document.getElementById('btnCopyApp').onclick=async function(){
+        var u=document.getElementById('appUrl').value.trim(); if(!u) return;
         try{ await navigator.clipboard.writeText(u); toast('已複製'); }
         catch(e){ var t=document.createElement('textarea'); t.value=u; document.body.appendChild(t); t.select();
           try{ document.execCommand('copy'); toast('已複製'); }catch(_){ toast('複製失敗，請長按選取'); }
           document.body.removeChild(t); }
-      };
-      document.getElementById('btnSaveUrl').onclick=async function(){
-        var u=document.getElementById('urlInput').value.trim();
-        if(u && u.indexOf('script.google.com')<0) toast('看起來不像 Apps Script 網址，仍會儲存');
-        try{ await call('saveSetting','web_app_url',u); if(SETTINGS) SETTINGS.web_app_url=u; renderQR(u); toast('已儲存'); }
-        catch(e){ toast('儲存失敗：'+e.message); }
       };
     }
     function openSheet(id){ document.getElementById('scrim').classList.add('on'); document.getElementById(id).classList.add('on'); }
