@@ -141,6 +141,19 @@
     .ip{width:100%;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
     .ip:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
     .lab2{font-size:12px;color:var(--ink-soft);margin:0 0 4px}
+    /* 行事曆 */
+    .cal-head{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 14px}
+    .cal-title{font-size:18px}
+    .cal-nav{border:1px solid var(--line);background:var(--field);border-radius:10px;width:40px;height:40px;font-size:20px;color:var(--ink);cursor:pointer}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .cal-wd{text-align:center;font-size:12px;color:var(--ink-mute);padding:2px 0}
+    .cal-cell{aspect-ratio:1/1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:14px;color:var(--ink-mute);border:1px solid transparent}
+    .cal-cell.empty{visibility:hidden}
+    .cal-cell.has{background:var(--field);border-color:var(--line);color:var(--ink);cursor:pointer}
+    .cal-cell.has:active{background:var(--accent-soft)}
+    .cal-cell.today{border-color:var(--accent);border-width:1.5px}
+    .cal-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+    .day-checkin{font-size:14px;color:var(--ink);margin-bottom:6px}
     .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;
       padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30}
     .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -211,6 +224,18 @@
       <div class="tags-wrap" id="trendTags"></div>
     </section>
 
+    <!-- ============ 行事曆 ============ -->
+    <section class="view" id="view-calendar">
+      <div class="cal-head">
+        <button class="cal-nav" id="calPrev" aria-label="上個月">‹</button>
+        <div class="cal-title serif" id="calTitle">—</div>
+        <button class="cal-nav" id="calNext" aria-label="下個月">›</button>
+      </div>
+      <div class="cal-grid" id="calWeekday"></div>
+      <div class="cal-grid" id="calDays" style="margin-top:6px"></div>
+      <p class="mini" style="margin:14px 2px 0">有圓點的日子代表當天有紀錄，點一下看完整內容。</p>
+    </section>
+
     <!-- ============ 設定 ============ -->
     <section class="view" id="view-settings">
       <div class="sec-title">連線設定</div>
@@ -242,6 +267,7 @@
   <!-- nav -->
   <nav class="nav">
     <button class="on" data-view="home"><i class="ti ti-home"></i><span>首頁</span></button>
+    <button data-view="calendar"><i class="ti ti-calendar"></i><span>行事曆</span></button>
     <button data-view="search"><i class="ti ti-search"></i><span>檢索</span></button>
     <button data-view="trend"><i class="ti ti-chart-line"></i><span>趨勢</span></button>
     <button data-view="settings"><i class="ti ti-settings"></i><span>設定</span></button>
@@ -271,6 +297,12 @@
     </div>
   </div>
 
+  <div class="sheet" id="sheet-day">
+    <h3 class="serif" id="dayTitle">—</h3>
+    <div id="dayBody"></div>
+    <div class="sheet-foot"><button class="btn block" data-close>關閉</button></div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -282,7 +314,7 @@
     function getApiUrl(){ return (localStorage.getItem('diary_api_url')||CONFIG.API_URL||'').trim(); }
     function getApiToken(){ return (localStorage.getItem('diary_api_token')||CONFIG.API_TOKEN||'').trim(); }
 
-    var READ={getFormConfig:1,getHomeData:1,searchByTag:1,getSettings:1};
+    var READ={getFormConfig:1,getHomeData:1,searchByTag:1,getSettings:1,getMonth:1,getDay:1};
     var PREVIEW = !getApiUrl();                 // 沒設 API 網址就顯示示範資料
     var CFG = { category: [], mood_label: [], tag: [] };
     var HOME = null, TODAY = null, energyVal = null, moodVal = null;
@@ -310,6 +342,19 @@
 
     function mock(fn, p){
       if (fn==='setFollowedUp') return {ok:true};
+      if (fn==='getMonth'){
+        var ym=p.ym||todayLocal().slice(0,7), days={};
+        [3,7,9,12,14].forEach(function(dd){ var k=ym+'-'+(dd<10?'0'+dd:dd); days[k]={energy:(dd%5)+1,mood:0,events:dd%3}; });
+        return {ym:ym, days:days};
+      }
+      if (fn==='getDay'){
+        return {date:p.date, exists:true,
+          checkin:{energy:4,mood:0,mood_label:'平靜',raw_brain_dump:'今天整體還算平穩，晚上想起一些舊事。',ai_reflection:''},
+          events:[
+            {id:'d1',category:'人際關係',is_dump:false,fact:'醫院探視包姐',reaction:'心裡一沉',insight:'記住的是為人底色',action:'週末回家陪爸媽',tags:['#長輩','#生死課題'],time:'21:04',followed:false},
+            {id:'d2',category:'隨筆',is_dump:true,fact:'那種踏實感很久沒有了。',reaction:'',insight:'',action:'',tags:[],time:'22:10',followed:false}
+          ]};
+      }
       if (fn==='addTag'){ var n=String(p.tag||'').replace(/\s+/g,''); if(n.charAt(0)!=='#')n='#'+n; return {ok:true,tag:n,added:true}; }
       if (fn==='searchByTag'){
         var t=p.tag;
@@ -645,9 +690,12 @@
           document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on');});
           document.getElementById('view-'+b.dataset.view).classList.add('on');
           if(b.dataset.view==='settings') loadSettings();
+          if(b.dataset.view==='calendar') loadCalendar();
         };
       });
       bindSettings();
+      document.getElementById('calPrev').onclick=function(){ calShift(-1); };
+      document.getElementById('calNext').onclick=function(){ calShift(1); };
     }
 
     function loadSettings(){
@@ -694,6 +742,80 @@
           document.body.removeChild(t); }
       };
     }
+    /* ---- 行事曆 ---- */
+    var calYM=null;
+    function todayLocal(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+    function renderWeekday(){
+      var box=document.getElementById('calWeekday'); if(box.childElementCount) return;
+      ['日','一','二','三','四','五','六'].forEach(function(w){ var e=document.createElement('div'); e.className='cal-wd'; e.textContent=w; box.appendChild(e); });
+    }
+    async function loadCalendar(){
+      if(!calYM) calYM=(TODAY||todayLocal()).slice(0,7);
+      renderWeekday();
+      try{ renderCalendar(await call('getMonth',{ym:calYM})); }
+      catch(e){ document.getElementById('calDays').innerHTML='<div class="empty" style="grid-column:1/8">載入失敗：'+esc(e.message)+'</div>'; }
+    }
+    function calShift(delta){
+      var y=+calYM.slice(0,4), m=+calYM.slice(5,7)-1+delta, dt=new Date(y,m,1);
+      calYM=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2); loadCalendar();
+    }
+    function renderCalendar(data){
+      var ym=data.ym||calYM; calYM=ym;
+      var y=+ym.slice(0,4), m=+ym.slice(5,7);
+      document.getElementById('calTitle').textContent=y+' 年 '+m+' 月';
+      var first=new Date(y,m-1,1).getDay(), dim=new Date(y,m,0).getDate(), today=(TODAY||todayLocal());
+      var box=document.getElementById('calDays'); box.innerHTML='';
+      for(var i=0;i<first;i++){ var b=document.createElement('div'); b.className='cal-cell empty'; box.appendChild(b); }
+      for(var d=1;d<=dim;d++){
+        var ds=ym+'-'+(d<10?'0'+d:d), has=data.days&&data.days[ds];
+        var cell=document.createElement('div');
+        cell.className='cal-cell'+(has?' has':'')+(ds===today?' today':'');
+        cell.innerHTML='<span>'+d+'</span><span class="cal-dot" style="'+(has?'':'visibility:hidden')+'"></span>';
+        if(has){ (function(x){ cell.onclick=function(){ openDay(x); }; })(ds); }
+        box.appendChild(cell);
+      }
+    }
+    async function openDay(date){
+      document.getElementById('dayTitle').textContent=fmtHead(date);
+      document.getElementById('dayBody').innerHTML='<div class="mini">載入中…</div>';
+      openSheet('sheet-day');
+      try{
+        var d=await call('getDay',{date:date});
+        document.getElementById('dayBody').innerHTML=renderDayBody(d);
+        Array.prototype.forEach.call(document.querySelectorAll('#dayBody .feed-item'),function(el){
+          if(el.querySelector('.detail')){ el.style.cursor='pointer'; el.onclick=function(){ el.classList.toggle('open'); }; }
+        });
+      }catch(e){ document.getElementById('dayBody').innerHTML='<div class="empty">載入失敗：'+esc(e.message)+'</div>'; }
+    }
+    function dots5(n){ var s=''; for(var i=1;i<=5;i++) s+=(i<=n?'●':'○'); return s; }
+    function renderDayBody(d){
+      if(!d.exists) return '<div class="empty">這天沒有紀錄。</div>';
+      var c=d.checkin||{}, html='', bits=[];
+      if(c.energy!=null) bits.push('精力 '+dots5(c.energy));
+      if(c.mood!=null) bits.push('情緒 '+(c.mood>0?'+':'')+c.mood+(c.mood_label?('・'+esc(c.mood_label)):''));
+      else if(c.mood_label) bits.push('情緒 '+esc(c.mood_label));
+      if(bits.length) html+='<div class="day-checkin">'+bits.join('　　')+'</div>';
+      if(c.raw_brain_dump) html+='<div class="prev" style="margin:8px 0 0">'+esc(c.raw_brain_dump)+'</div>';
+      if(c.ai_reflection) html+='<div class="prev" style="margin:8px 0 0">AI 洞察：'+esc(c.ai_reflection)+'</div>';
+      (d.events||[]).forEach(function(it){ html+=dayCard(it); });
+      if(!html) return '<div class="empty">這天只有打卡，沒有寫內容。</div>';
+      return html;
+    }
+    function dayCard(it){
+      var head='<div class="row1"><span class="'+(it.is_dump?'chip-dump':'chip-cat')+'">'
+        +(it.is_dump?'<i class="ti ti-writing" style="vertical-align:-2px"></i> 隨筆':esc(it.category||'事件'))
+        +'</span><span class="mini">'+esc(it.time||'')+'</span></div>';
+      if(it.is_dump) return '<div class="feed-item">'+head+'<div class="prev">'+esc(it.fact)+'</div></div>';
+      var det='';
+      if(it.reaction) det+='<p class="orid-line"><b>R</b>'+esc(it.reaction)+'</p>';
+      if(it.insight)  det+='<p class="orid-line"><b>I</b>'+esc(it.insight)+'</p>';
+      if(it.action)   det+='<p class="orid-line'+(it.followed?' done-line':'')+'"><b>D</b>'+esc(it.action)+(it.followed?' ✓':'')+'</p>';
+      var tg=it.tags&&it.tags.length?'<div class="feed-tags">'+it.tags.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div>':'';
+      return '<div class="feed-item">'+head+'<div class="fact">'+esc(it.fact||'（未填事實）')+'</div>'
+        +(it.insight?'<div class="prev">洞察：'+esc(it.insight)+'</div>':'')
+        +'<div class="detail">'+(det||'<p class="mini">沒有更多細節</p>')+tg+'</div></div>';
+    }
+
     function openSheet(id){ document.getElementById('scrim').classList.add('on'); document.getElementById(id).classList.add('on'); }
     function closeSheets(){ document.getElementById('scrim').classList.remove('on');
       document.querySelectorAll('.sheet').forEach(function(s){s.classList.remove('on');}); }
