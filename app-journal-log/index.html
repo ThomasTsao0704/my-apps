@@ -368,9 +368,9 @@
     /* ---- header 打卡 ---- */
     function buildSegs(){
       var eb=document.getElementById('energy'); eb.innerHTML='';
-      for(var i=1;i<=5;i++){ eb.appendChild(seg(i, String(i), function(v){ energyVal=v; paint('energy',energyVal); doCheckin({energy_score:v}); })); }
+      for(var i=1;i<=5;i++){ eb.appendChild(seg(i, String(i), function(v){ energyVal=v; paint('energy',energyVal); scheduleCheckin(); })); }
       var mb=document.getElementById('mood'); mb.innerHTML='';
-      [-2,-1,0,1,2].forEach(function(v){ mb.appendChild(seg(v,(v>0?'+':'')+v,function(x){ moodVal=x; paint('mood',moodVal); doCheckin({mood_score:x}); })); });
+      [-2,-1,0,1,2].forEach(function(v){ mb.appendChild(seg(v,(v>0?'+':'')+v,function(x){ moodVal=x; paint('mood',moodVal); scheduleCheckin(); })); });
     }
     function seg(val,label,cb){
       var b=document.createElement('button'); b.className='seg'; b.textContent=label; b.dataset.v=val;
@@ -379,8 +379,13 @@
     function paint(id,val){
       document.querySelectorAll('#'+id+' .seg').forEach(function(s){ s.classList.toggle('on', String(s.dataset.v)===String(val)); });
     }
-    async function doCheckin(patch){
-      patch.log_date=TODAY;
+    // 打卡：連點合併成一次送出（依日期 upsert，永遠不會產生重複列）
+    var checkinTimer=null;
+    function scheduleCheckin(){ clearTimeout(checkinTimer); checkinTimer=setTimeout(flushCheckin, 700); }
+    async function flushCheckin(){
+      var patch={log_date:TODAY};
+      if(energyVal!=null) patch.energy_score=energyVal;
+      if(moodVal!=null) patch.mood_score=moodVal;
       try{ var r=await call('saveCheckin',patch); if(r&&r.streak!=null){ setStreak(r.streak); } toast('已記錄'); }
       catch(e){ toast('儲存失敗：'+e.message); }
     }
@@ -534,16 +539,23 @@
     }
 
     /* ---- 隨筆 sheet ---- */
-    function openDump(){ openSheet('sheet-dump'); document.getElementById('dumpText').focus(); }
+    function uuid(){ return (window.crypto&&crypto.randomUUID)?crypto.randomUUID():('c'+Date.now()+Math.random().toString(16).slice(2)); }
+    var dumpCid=null;
+    function openDump(){ dumpCid=uuid(); openSheet('sheet-dump'); document.getElementById('dumpText').focus(); }
     async function saveDump(){
       var t=document.getElementById('dumpText').value.trim();
       if(!t){ toast('還沒寫東西'); return; }
+      var btn=document.getElementById('saveDump');
+      if(btn.disabled) return;                       // 防連點
+      btn.disabled=true; btn.textContent='儲存中…';
+      if(!dumpCid) dumpCid=uuid();                    // 同一則沿用同一把 id，重送也只會有一筆
       try{
-        var r=await call('saveBrainDump',{log_date:TODAY,text:t});
-        document.getElementById('dumpText').value=''; closeSheets();
+        var r=await call('saveBrainDump',{log_date:TODAY,text:t,client_id:dumpCid});
+        document.getElementById('dumpText').value=''; dumpCid=null; closeSheets();
         if(r.item){ HOME.feed.push(r.item); renderFeed(HOME.feed); } else { HOME=await call('getHomeData',{date:TODAY}); renderAll(); }
-        toast('隨筆已存');
-      }catch(e){ toast('儲存失敗：'+e.message); }
+        toast(r.dedup?'已儲存（未重複）':'隨筆已存');
+      }catch(e){ toast('儲存失敗：'+e.message); }     // 失敗保留 dumpCid，重送會去重
+      finally{ btn.disabled=false; btn.textContent='存下來'; }
     }
 
     /* ---- ORID 精靈 ---- */
@@ -554,7 +566,7 @@
       {key:'i', tag:'I', lab:'我看見了什麼底色', hint:'為什麼會這樣、看見了什麼'},
       {key:'d', tag:'D', lab:'下一次怎麼做', hint:'行動與跟進', tags:true}
     ];
-    function openOrid(){ wz={step:0,category:'',o:'',r:'',i:'',d:'',tags:[]}; renderWz(); openSheet('sheet-orid'); }
+    function openOrid(){ wz={step:0,category:'',o:'',r:'',i:'',d:'',tags:[],client_id:uuid()}; renderWz(); openSheet('sheet-orid'); }
     function renderWz(){
       var s=WZ[wz.step];
       document.getElementById('oridSub').textContent='第 '+(wz.step+1)+' 步 / 共 4 步';
@@ -600,17 +612,22 @@
       toast('已加入 '+name);
     }
     function oridPrev(){ wzCommit(); if(wz.step>0){ wz.step--; renderWz(); } }
+    var wzSaving=false;
     async function oridNext(){
       wzCommit();
       if(wz.step<3){ wz.step++; renderWz(); return; }
       if(!wz.o.trim() && !wz.category){ toast('至少填類別或 O'); return; }
+      if(wzSaving) return;                            // 防連點
+      wzSaving=true;
+      var btn=document.getElementById('oridNext'); btn.disabled=true; btn.textContent='儲存中…';
       try{
         var r=await call('addEvent',{log_date:TODAY,category:wz.category,fact_objective:wz.o,
-          reaction_subjective:wz.r,insight:wz.i,action_next:wz.d,tags:wz.tags});
+          reaction_subjective:wz.r,insight:wz.i,action_next:wz.d,tags:wz.tags,client_id:wz.client_id});
         closeSheets();
         if(r.item){ HOME.feed.push(r.item); renderFeed(HOME.feed); } else { HOME=await call('getHomeData',{date:TODAY}); renderAll(); }
-        toast('事件已存');
-      }catch(e){ toast('儲存失敗：'+e.message); }
+        toast(r.dedup?'已儲存（未重複）':'事件已存');
+      }catch(e){ toast('儲存失敗：'+e.message); }       // 失敗保留 wz.client_id，重送會去重
+      finally{ wzSaving=false; btn.disabled=false; btn.textContent='儲存'; }
     }
 
     /* ---- sheet / nav / 共用 ---- */
