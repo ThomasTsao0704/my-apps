@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="無聊終結者 — 一個幫你找到下一件有趣事情的互動 App">
+  <title>無聊終結者</title>
+
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #171717;
+      --muted: #737373;
+      --border: #e5e5e5;
+      --track: #eeeeee;
+      --btn-hover: #fafafa;
+
+      --primary: #111827;
+      --primary-text: #ffffff;
+      --primary-hover: #27272a;
+
+      --accent: #6366f1;
+      --accent-light: #eef2ff;
+      --accent-text: #3730a3;
+
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+
+      --hint-bg: #fffbeb;
+      --hint-text: #92400e;
+      --hint-border: #fde68a;
+
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0b0f;
+        --card: #17171c;
+        --text: #f4f4f5;
+        --muted: #a1a1aa;
+        --border: #2a2a32;
+        --track: #2a2a32;
+        --btn-hover: #1f1f26;
+
+        --primary: #f4f4f5;
+        --primary-text: #111111;
+        --primary-hover: #d4d4d8;
+
+        --accent: #818cf8;
+        --accent-light: #1e1b4b;
+        --accent-text: #c7d2fe;
+
+        --success: #22c55e;
+        --success-light: #052e16;
+
+        --hint-bg: #2a2110;
+        --hint-text: #fcd34d;
+        --hint-border: #4a3a12;
+
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.6;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+
+    /* ========== App ========== */
+
+    .app {
+      width: min(760px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 calc(60px + env(safe-area-inset-bottom));
+    }
+
+    /* ========== Header ========== */
+
+    .header { margin-bottom: 24px; }
+
+    .header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 7vw, 42px);
+      line-height: 1.15;
+      letter-spacing: -1px;
+    }
+
+    .header p { margin: 0; color: var(--muted); font-size: 15px; }
+
+    /* ========== Dashboard ========== */
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+
+    .stat-value { font-size: 25px; font-weight: 800; letter-spacing: -0.5px; }
+
+    .xp-bar {
+      width: 100%;
+      height: 7px;
+      margin-top: 9px;
+      background: var(--track);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .xp-progress {
+      width: 0%;
+      height: 100%;
+      background: var(--accent);
+      border-radius: inherit;
+      transition: width 0.35s ease;
+    }
+
+    /* ========== Challenge ========== */
+
+    .challenge-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      scroll-margin-top: 16px;
+    }
+
+    .challenge-category {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 99px;
+      background: var(--accent-light);
+      color: var(--accent-text);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 13px;
+    }
+
+    .challenge-title {
+      margin: 0 0 10px;
+      font-size: clamp(23px, 5vw, 30px);
+      line-height: 1.25;
+      letter-spacing: -0.5px;
+    }
+
+    .challenge-description { margin: 0 0 16px; color: var(--muted); font-size: 15px; }
+
+    .hint-toggle {
+      padding: 0;
+      margin: 0 0 12px;
+      border: 0;
+      background: none;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hint-box {
+      margin: 0 0 16px;
+      padding: 12px 14px;
+      background: var(--hint-bg);
+      color: var(--hint-text);
+      border: 1px solid var(--hint-border);
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    .note-label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+
+    .note-input {
+      display: block;
+      width: 100%;
+      min-height: 72px;
+      margin-bottom: 16px;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 16px; /* 16px 避免 iOS 自動放大 */
+      resize: vertical;
+    }
+
+    .note-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+    .reward {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      background: var(--success-light);
+      color: var(--success);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    [hidden] { display: none !important; }
+
+    /* ========== Buttons ========== */
+
+    .button-row { display: flex; flex-wrap: wrap; gap: 9px; }
+
+    .btn {
+      min-height: 46px;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-weight: 700;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:active { transform: translateY(0); }
+
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn-primary { color: var(--primary-text); background: var(--primary); border-color: var(--primary); }
+
+    .btn-success { color: #fff; background: var(--success); border-color: var(--success); }
+
+    /* 只在有滑鼠的裝置套用 hover，避免手機點完殘留 */
+    @media (hover: hover) {
+      .btn:not(:disabled):hover { transform: translateY(-1px); background: var(--btn-hover); }
+      .btn-primary:not(:disabled):hover { background: var(--primary-hover); }
+      .btn-success:not(:disabled):hover { background: var(--success); filter: brightness(1.08); }
+      .mode-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow); }
+    }
+
+    /* ========== Modes ========== */
+
+    .section-title { margin: 22px 0 10px; font-size: 16px; font-weight: 800; }
+
+    .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+    .mode-card {
+      min-height: 86px;
+      padding: 14px;
+      text-align: left;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .mode-card.active { border-color: var(--accent); background: var(--accent-light); }
+
+    .mode-icon { display: block; font-size: 20px; margin-bottom: 4px; }
+    .mode-name { display: block; font-weight: 800; font-size: 14px; }
+    .mode-description { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* ========== History ========== */
+
+    .history { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .history-header h2 { margin: 0; font-size: 17px; }
+    .history-count { color: var(--muted); font-size: 12px; }
+
+    .history-list { display: flex; flex-direction: column; gap: 7px; }
+
+    .history-item {
+      padding: 11px 13px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .history-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+    .history-time { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 6px; }
+    .history-name { font-weight: 700; }
+    .history-xp { color: var(--success); font-weight: 800; white-space: nowrap; }
+
+    .history-note {
+      margin: 6px 0 0;
+      padding-left: 10px;
+      border-left: 2px solid var(--border);
+      color: var(--muted);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .empty-history {
+      padding: 20px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    /* ========== Footer ========== */
+
+    .footer { margin-top: 28px; text-align: center; color: var(--muted); font-size: 12px; }
+
+    /* ========== Toast ========== */
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(24px + env(safe-area-inset-bottom));
+      transform: translate(-50%, 20px);
+      max-width: calc(100% - 32px);
+      padding: 12px 16px;
+      background: #171717;
+      color: #fff;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 100;
+    }
+
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ========== Focus（可見的焦點框） ========== */
+
+    button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    /* ========== Mobile ========== */
+
+    @media (max-width: 600px) {
+      .app { width: min(100% - 22px, 760px); padding-top: 26px; }
+      .dashboard { grid-template-columns: repeat(2, 1fr); }
+      .stat-card:last-child { grid-column: 1 / -1; }
+      .challenge-card { padding: 21px; border-radius: 20px; }
+      .mode-grid { grid-template-columns: repeat(2, 1fr); }
+      .button-row { display: grid; grid-template-columns: 1fr 1fr; }
+      .btn-primary { grid-column: 1 / -1; }
+      .btn { width: 100%; }
+    }
+
+    @media (max-width: 360px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .stat-card:last-child { grid-column: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+
+    <header class="header">
+      <h1>😐 我好無聊。</h1>
+      <p>不用想。交給我決定你現在做什麼。</p>
+    </header>
+
+    <section class="dashboard" aria-label="遊戲狀態">
+      <div class="stat-card">
+        <span class="stat-label">無聊指數</span>
+        <strong class="stat-value" id="boredomValue">82%</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">等級</span>
+        <strong class="stat-value" id="levelValue">Lv.1</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">XP</span>
+        <strong class="stat-value" id="xpValue">0 / 100</strong>
+        <div class="xp-bar"><div class="xp-progress" id="xpProgress"></div></div>
+      </div>
+    </section>
+
+    <section class="challenge-card" id="challengeCard" aria-live="polite">
+      <span class="challenge-category" id="challengeCategory">🎲 隨機挑戰</span>
+      <h2 class="challenge-title" id="challengeTitle">準備好了嗎？</h2>
+      <p class="challenge-description" id="challengeDescription">
+        按下「幫我決定」，讓系統替你挑一件現在值得做的小事。
+      </p>
+
+      <button type="button" class="hint-toggle" id="hintToggle" hidden>💡 看提示</button>
+      <div class="hint-box" id="hintBox" hidden></div>
+
+      <div id="noteWrap" hidden>
+        <label class="note-label" for="noteInput">✍️ 你的想法（選填，會存進紀錄）</label>
+        <textarea class="note-input" id="noteInput" maxlength="300" placeholder="寫一句就好…"></textarea>
+      </div>
+
+      <div class="reward" id="challengeReward">完成獎勵：10～20 XP</div>
+
+      <div class="button-row">
+        <button type="button" class="btn btn-primary" id="decideButton">🎯 幫我決定</button>
+        <button type="button" class="btn btn-success" id="completeButton" disabled>✓ 完成挑戰</button>
+        <button type="button" class="btn" id="skipButton" disabled>↻ 換一個</button>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">或者直接選模式</h2>
+      <div class="mode-grid">
+        <button type="button" class="mode-card" data-mode="brain">
+          <span class="mode-icon">🧠</span><span class="mode-name">動腦</span>
+          <span class="mode-description">邏輯、推理、判斷</span>
+        </button>
+        <button type="button" class="mode-card" data-mode="stock">
+          <span class="mode-icon">📈</span><span class="mode-name">股市</span>
+          <span class="mode-description">市場觀察挑戰</span>
+        </button>
+        <button type="button" class="mode-card" data-mode="create">
+          <span class="mode-icon">🎨</span><span class="mode-name">創作</span>
+          <span class="mode-description">設計、發想、腦洞</span>
+        </button>
+        <button type="button" class="mode-card" data-mode="observe">
+          <span class="mode-icon">👀</span><span class="mode-name">觀察</span>
+          <span class="mode-description">訓練注意力</span>
+        </button>
+        <button type="button" class="mode-card" data-mode="action">
+          <span class="mode-icon">🏃</span><span class="mode-name">行動</span>
+          <span class="mode-description">立刻做一件小事</span>
+        </button>
+        <button type="button" class="mode-card" data-mode="life">
+          <span class="mode-icon">🧭</span><span class="mode-name">人生</span>
+          <span class="mode-description">思考自己的選擇</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="history">
+      <div class="history-header">
+        <h2>今日紀錄</h2>
+        <span class="history-count" id="historyCount">0 個挑戰</span>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </section>
+
+    <footer class="footer">無聊不是問題。沒有下一件事情才是。</footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /*
+     * 無聊終結者 v1.1
+     * - 換一個會沿用目前模式、不會抽到同一題
+     * - 跨日自動重置（含頁面一直開著的情況）
+     * - 存檔驗證與舊版資料遷移
+     * - 想法筆記、提示／解答、紀錄時間
+     * - 升級曲線、深色模式、手機體驗修正
+     */
+    (() => {
+      "use strict";
+
+      /* ========== Constants ========== */
+
+      const STORAGE_KEY = "boredom-killer-v1"; // 沿用舊 key，保留 v1 進度
+      const STATE_VERSION = 2;
+      const INITIAL_BOREDOM = 82;
+      const MIN_BOREDOM = 8;
+      const BOREDOM_PER_TASK = 7;
+      const MAX_HISTORY = 20;
+      const MAX_NOTE = 300;
+
+      /** 每一級需要的 XP：Lv.1 → 100、Lv.2 → 120、Lv.3 → 140… */
+      const xpForLevel = level => 100 + (level - 1) * 20;
+
+      /* ========== Challenge Data ========== */
+
+      const challengeData = {
+        brain: [
+          {
+            id: "brain-1", category: "🧠 動腦", title: "三分鐘推理", xp: 15,
+            description: "如果所有 A 都是 B，而部分 B 是 C，你能確定部分 A 是 C 嗎？先不要查答案。",
+            answer: "不能確定。「部分 B 是 C」的那些 B，可能剛好都不是 A。例如：所有貓都是動物，部分動物會飛，但不能推出部分貓會飛。"
+          },
+          {
+            id: "brain-2", category: "🧠 動腦", title: "反向思考", xp: 15,
+            description: "想一件你最近很在意的事，列出「如果完全相反，會發生什麼？」",
+            hint: "先寫下現況，再把主詞或結果反過來。例如「我怕被拒絕」→「如果每個人都答應我，會怎樣？」"
+          },
+          {
+            id: "brain-3", category: "🧠 動腦", title: "找漏洞", xp: 15,
+            description: "想一個你今天相信的觀點，試著找出它最弱的一個假設。",
+            hint: "問自己：「這個觀點要成立，什麼事情必須是真的？」通常最弱的就是你從沒驗證過的那一條。"
+          },
+          {
+            id: "brain-4", category: "🧠 動腦", title: "五個為什麼", xp: 15,
+            description: "選一個你最近遇到的問題，連續問自己五次「為什麼？」",
+            hint: "每次回答都要比上一次更接近「可以改變的原因」，而不是「別人的錯」。"
+          }
+        ],
+
+        stock: [
+          {
+            id: "stock-1", category: "📈 股市", title: "K 線偵探", xp: 20,
+            description: "假設一檔股票連續上漲 5 天，但成交量每天下降。你會偏多、偏空，還是觀望？寫出一個理由。",
+            hint: "常見解讀是「價漲量縮」代表追價意願減弱，但不是絕對訊號，要搭配位置（高檔或低檔）判斷。"
+          },
+          {
+            id: "stock-2", category: "📈 股市", title: "市場觀察", xp: 20,
+            description: "隨便挑一檔你熟悉的股票，只看價格、成交量與近期高點，說出一個你注意到的異常。"
+          },
+          {
+            id: "stock-3", category: "📈 股市", title: "投資反應", xp: 20,
+            description: "如果明天大盤突然跌 5%，列出你認為最可能的三個原因，再判斷哪一個最值得驗證。"
+          },
+          {
+            id: "stock-4", category: "📈 股市", title: "假想交易", xp: 20,
+            description: "選一檔股票，假設你現在有 10 萬元，只能做一次交易。你會怎麼配置？（純思考練習，非投資建議）"
+          }
+        ],
+
+        create: [
+          {
+            id: "create-1", category: "🎨 創作", title: "App 腦洞", xp: 15,
+            description: "設計一個「只有一個功能」但你自己會每天使用的 App。功能是什麼？"
+          },
+          {
+            id: "create-2", category: "🎨 創作", title: "30 秒品牌", xp: 15,
+            description: "替「無聊」這件事情取一個品牌名稱，再想一句 slogan。"
+          },
+          {
+            id: "create-3", category: "🎨 創作", title: "極限設計", xp: 15,
+            description: "如果你的手機只能留下 5 個 App，你會留下哪五個？為什麼？"
+          },
+          {
+            id: "create-4", category: "🎨 創作", title: "重新設計生活", xp: 15,
+            description: "選一個你每天都在使用的東西，想像你是產品經理，你會怎麼重新設計它？"
+          }
+        ],
+
+        observe: [
+          {
+            id: "observe-1", category: "👀 觀察", title: "60 秒偵測", xp: 10,
+            description: "看你周圍 60 秒，找出 5 個平常完全不會注意的細節。"
+          },
+          {
+            id: "observe-2", category: "👀 觀察", title: "聲音地圖", xp: 10,
+            description: "閉上眼睛 30 秒，數一數你能辨識出幾種不同聲音。"
+          },
+          {
+            id: "observe-3", category: "👀 觀察", title: "異常搜尋", xp: 10,
+            description: "找出你所在空間裡一個「本來可以更好設計」的地方。"
+          }
+        ],
+
+        action: [
+          {
+            id: "action-1", category: "🏃 行動", title: "立刻整理", xp: 10,
+            description: "把手機桌面第一頁整理乾淨，只留下真正會用的 App。"
+          },
+          {
+            id: "action-2", category: "🏃 行動", title: "喝水任務", xp: 10,
+            description: "現在站起來，喝一杯水，再走動 2 分鐘。"
+          },
+          {
+            id: "action-3", category: "🏃 行動", title: "微型整理", xp: 10,
+            description: "整理身邊一個只有 3 分鐘就能完成的小區域。"
+          },
+          {
+            id: "action-4", category: "🏃 行動", title: "離開螢幕", xp: 10,
+            description: "離開手機 5 分鐘，看看窗外或到戶外走一圈。"
+          }
+        ],
+
+        life: [
+          {
+            id: "life-1", category: "🧭 人生", title: "如果明天放假", xp: 15,
+            description: "假設明天完全不用工作，你第一件想做的事是什麼？不要想「應該」，只回答「想」。"
+          },
+          {
+            id: "life-2", category: "🧭 人生", title: "刪掉一件事", xp: 15,
+            description: "如果人生只能刪掉一件讓你消耗的事情，你會刪掉什麼？"
+          },
+          {
+            id: "life-3", category: "🧭 人生", title: "一年後的你", xp: 15,
+            description: "想像一年後的自己，只回答一題：現在的你最希望他已經學會什麼？"
+          },
+          {
+            id: "life-4", category: "🧭 人生", title: "重新選擇", xp: 15,
+            description: "如果今天可以重新選一次，你會把更多時間放在哪一件事情上？"
+          }
+        ]
+      };
+
+      const ALL_CHALLENGES = Object.values(challengeData).flat();
+      const CHALLENGE_BY_ID = new Map(ALL_CHALLENGES.map(c => [c.id, c]));
+      const XP_MIN = Math.min(...ALL_CHALLENGES.map(c => c.xp));
+      const XP_MAX = Math.max(...ALL_CHALLENGES.map(c => c.xp));
+
+      /* ========== Utility ========== */
+
+      function getTodayKey(date = new Date()) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+
+      function formatTime(iso) {
+        const date = new Date(iso);
+        if (Number.isNaN(date.getTime())) return "";
+        const h = String(date.getHours()).padStart(2, "0");
+        const m = String(date.getMinutes()).padStart(2, "0");
+        return `${h}:${m}`;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function randomItem(array) {
+        if (!Array.isArray(array) || array.length === 0) return null;
+        return array[Math.floor(Math.random() * array.length)];
+      }
+
+      /** 轉成 >= min 的整數，不合法時回傳 fallback */
+      function toInt(value, min, fallback) {
+        const n = Number(value);
+        return Number.isFinite(n) && n >= min ? Math.floor(n) : fallback;
+      }
+
+      /* ========== State ========== */
+
+      function createDefaultState() {
+        return {
+          version: STATE_VERSION,
+          xp: 0,
+          level: 1,
+          completed: 0,
+          history: [],
+          currentId: null,
+          currentMode: null,
+          lastDate: getTodayKey()
+        };
+      }
+
+      /** 驗證並修正存檔內容，也負責把 v1 的資料轉成 v2 */
+      function sanitizeState(raw) {
+        const state = createDefaultState();
+        if (!raw || typeof raw !== "object") return state;
+
+        state.xp = toInt(raw.xp, 0, 0);
+        state.level = toInt(raw.level, 1, 1);
+        state.completed = toInt(raw.completed, 0, 0);
+
+        if (typeof raw.lastDate === "string") state.lastDate = raw.lastDate;
+
+        if (Array.isArray(raw.history)) {
+          state.history = raw.history
+            .filter(item => item && typeof item === "object" && typeof item.title === "string")
+            .slice(0, MAX_HISTORY)
+            .map(item => ({
+              title: item.title,
+              category: typeof item.category === "string" ? item.category : "",
+              xp: toInt(item.xp, 0, 0),
+              note: typeof item.note === "string" ? item.note.slice(0, MAX_NOTE) : "",
+              timestamp: typeof item.timestamp === "string" ? item.timestamp : ""
+            }));
+        }
+
+        if (typeof raw.currentId === "string" && CHALLENGE_BY_ID.has(raw.currentId)) {
+          state.currentId = raw.currentId;
+        } else if (raw.currentChallenge && typeof raw.currentChallenge.title === "string") {
+          // v1 存的是整份題目物件，用標題找回對應的題目
+          const found = ALL_CHALLENGES.find(c => c.title === raw.currentChallenge.title);
+          if (found) state.currentId = found.id;
+        }
+
+        if (typeof raw.currentMode === "string" && challengeData[raw.currentMode]) {
+          state.currentMode = raw.currentMode;
+        }
+
+        return state;
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? sanitizeState(JSON.parse(raw)) : createDefaultState();
+        } catch (error) {
+          console.warn("讀取資料失敗", error);
+          return createDefaultState();
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (error) {
+          console.warn("無法儲存資料", error);
+        }
+      }
+
+      let state = loadState();
+      let hintOpen = false;
+
+      /* ========== DOM ========== */
+
+      const $ = id => document.getElementById(id);
+
+      const el = {
+        boredomValue: $("boredomValue"),
+        levelValue: $("levelValue"),
+        xpValue: $("xpValue"),
+        xpProgress: $("xpProgress"),
+        card: $("challengeCard"),
+        category: $("challengeCategory"),
+        title: $("challengeTitle"),
+        description: $("challengeDescription"),
+        reward: $("challengeReward"),
+        hintToggle: $("hintToggle"),
+        hintBox: $("hintBox"),
+        noteWrap: $("noteWrap"),
+        noteInput: $("noteInput"),
+        decideButton: $("decideButton"),
+        completeButton: $("completeButton"),
+        skipButton: $("skipButton"),
+        historyList: $("historyList"),
+        historyCount: $("historyCount"),
+        toast: $("toast"),
+        modeButtons: document.querySelectorAll("[data-mode]")
+      };
+
+      /* ========== Toast ========== */
+
+      let toastTimer = null;
+
+      function showToast(message) {
+        clearTimeout(toastTimer);
+        el.toast.textContent = message;
+        el.toast.classList.add("show");
+        toastTimer = setTimeout(() => el.toast.classList.remove("show"), 2200);
+      }
+
+      /* ========== Game Logic ========== */
+
+      /** 處理升級，回傳升了幾級 */
+      function processLevelUp() {
+        let gained = 0;
+        while (state.xp >= xpForLevel(state.level)) {
+          state.xp -= xpForLevel(state.level);
+          state.level += 1;
+          gained += 1;
+        }
+        return gained;
+      }
+
+      function calculateBoredom() {
+        return Math.max(MIN_BOREDOM, INITIAL_BOREDOM - state.completed * BOREDOM_PER_TASK);
+      }
+
+      /** 跨日時重置今日資料；回傳是否有重置 */
+      function resetTodayIfNeeded() {
+        const today = getTodayKey();
+        if (state.lastDate === today) return false;
+
+        state.completed = 0;
+        state.history = [];
+        state.lastDate = today;
+        // 不清掉目前的題目：使用者可能正在做，跨過午夜也能完成
+        saveState();
+        return true;
+      }
+
+      function pickChallenge(mode = null, { scroll = false } = {}) {
+        const pool = mode ? challengeData[mode] : ALL_CHALLENGES;
+        // 排除目前這題，避免「換一個」換到一樣的
+        const candidates = pool.filter(c => c.id !== state.currentId);
+        const challenge = randomItem(candidates.length ? candidates : pool);
+
+        if (!challenge) {
+          showToast("找不到挑戰。");
+          return false;
+        }
+
+        state.currentId = challenge.id;
+        state.currentMode = mode;
+        hintOpen = false;
+        el.noteInput.value = "";
+
+        saveState();
+        render();
+
+        if (scroll) el.card.scrollIntoView({ behavior: "smooth", block: "start" });
+        return true;
+      }
+
+      function completeChallenge() {
+        resetTodayIfNeeded();
+
+        const challenge = CHALLENGE_BY_ID.get(state.currentId);
+        if (!challenge) return;
+
+        const gain = toInt(challenge.xp, 1, 0);
+        if (gain <= 0) return;
+
+        const note = el.noteInput.value.trim().slice(0, MAX_NOTE);
+
+        state.xp += gain;
+        state.completed += 1;
+        state.history.unshift({
+          title: challenge.title,
+          category: challenge.category,
+          xp: gain,
+          note,
+          timestamp: new Date().toISOString()
+        });
+        state.history = state.history.slice(0, MAX_HISTORY);
+
+        const levelsGained = processLevelUp();
+
+        state.currentId = null;
+        hintOpen = false;
+        el.noteInput.value = "";
+
+        saveState();
+        render();
+
+        // 升級訊息優先，避免被「挑戰完成」蓋掉
+        showToast(
+          levelsGained > 0
+            ? `🎉 +${gain} XP，升級！現在是 Lv.${state.level}`
+            : `✓ 挑戰完成！+${gain} XP`
+        );
+      }
+
+      /* ========== Render ========== */
+
+      function renderDashboard() {
+        const needed = xpForLevel(state.level);
+        const percentage = Math.min(100, (state.xp / needed) * 100);
+
+        el.boredomValue.textContent = `${calculateBoredom()}%`;
+        el.levelValue.textContent = `Lv.${state.level}`;
+        el.xpValue.textContent = `${state.xp} / ${needed}`;
+        el.xpProgress.style.width = `${percentage}%`;
+      }
+
+      function renderChallenge() {
+        const challenge = CHALLENGE_BY_ID.get(state.currentId);
+
+        el.modeButtons.forEach(button => {
+          const active = Boolean(challenge) && button.dataset.mode === state.currentMode;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", String(active));
+        });
+
+        if (!challenge) {
+          el.category.textContent = "🎲 隨機挑戰";
+          el.title.textContent = "準備好了嗎？";
+          el.description.textContent = "按下「幫我決定」，讓系統替你挑一件現在值得做的小事。";
+          el.reward.textContent = `完成獎勵：${XP_MIN}～${XP_MAX} XP`;
+          el.hintToggle.hidden = true;
+          el.hintBox.hidden = true;
+          el.noteWrap.hidden = true;
+          el.completeButton.disabled = true;
+          el.skipButton.disabled = true;
+          return;
+        }
+
+        el.category.textContent = challenge.category;
+        el.title.textContent = challenge.title;
+        el.description.textContent = challenge.description;
+        el.reward.textContent = `完成獎勵：+${challenge.xp} XP`;
+
+        const hintText = challenge.answer || challenge.hint || "";
+        const hintLabel = challenge.answer ? "看答案" : "看提示";
+
+        el.hintToggle.hidden = !hintText;
+        el.hintToggle.textContent = hintOpen ? `🙈 收起${hintLabel.slice(1)}` : `💡 ${hintLabel}`;
+        el.hintToggle.setAttribute("aria-expanded", String(hintOpen));
+        el.hintBox.textContent = hintText;
+        el.hintBox.hidden = !hintText || !hintOpen;
+
+        el.noteWrap.hidden = false;
+        el.completeButton.disabled = false;
+        el.skipButton.disabled = false;
+      }
+
+      function renderHistory() {
+        el.historyCount.textContent = `${state.completed} 個挑戰`;
+
+        if (state.history.length === 0) {
+          el.historyList.innerHTML = `
+            <div class="empty-history">還沒有完成挑戰。今天的第一個 XP 正在等你。</div>
+          `;
+          return;
+        }
+
+        el.historyList.innerHTML = state.history.map(item => {
+          const time = formatTime(item.timestamp);
+          return `
+            <div class="history-item">
+              <div class="history-row">
+                <span>
+                  ${time ? `<span class="history-time">${escapeHtml(time)}</span>` : ""}
+                  <span class="history-name">${escapeHtml(item.category)} ${escapeHtml(item.title)}</span>
+                </span>
+                <span class="history-xp">+${item.xp} XP</span>
+              </div>
+              ${item.note ? `<p class="history-note">${escapeHtml(item.note)}</p>` : ""}
+            </div>
+          `;
+        }).join("");
+      }
+
+      function render() {
+        renderDashboard();
+        renderChallenge();
+        renderHistory();
+      }
+
+      /* ========== Events ========== */
+
+      el.decideButton.addEventListener("click", () => pickChallenge(null));
+
+      el.completeButton.addEventListener("click", completeChallenge);
+
+      el.skipButton.addEventListener("click", () => {
+        // 沿用目前模式（選了股市就換另一題股市）
+        if (pickChallenge(state.currentMode)) showToast("↻ 已換一個挑戰");
+      });
+
+      el.hintToggle.addEventListener("click", () => {
+        hintOpen = !hintOpen;
+        renderChallenge();
+      });
+
+      el.modeButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          pickChallenge(button.dataset.mode, { scroll: true });
+        });
+      });
+
+      // 空白鍵：隨機挑戰（打字時不觸發）
+      document.addEventListener("keydown", event => {
+        if (event.code === "Space" && event.target === document.body) {
+          event.preventDefault();
+          pickChallenge(null);
+        }
+      });
+
+      // 切回頁面時檢查是否跨日（手機常常一直開著分頁）
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && resetTodayIfNeeded()) render();
+      });
+
+      /* ========== Init ========== */
+
+      resetTodayIfNeeded();
+      if (processLevelUp() > 0) saveState(); // 修正舊存檔可能累積的溢出 XP
+      saveState(); // 寫入 v2 結構
+      render();
+    })();
+  </script>
+</body>
+</html>
