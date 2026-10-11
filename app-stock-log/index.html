@@ -1,1 +1,115 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="每日股票市場判斷紀錄與損益行事曆">
+  <meta name="theme-color" content="#f3f0e8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121417" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="盤後判斷簿">
+  <title>盤後判斷簿</title>
 
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#calendar" aria-label="回到行事曆">
+      <span class="brand-mark" aria-hidden="true">判</span>
+      <span class="brand-name">盤後判斷簿</span>
+    </a>
+    <div class="topbar-actions">
+      <button id="status-chip" class="status-chip" type="button" hidden></button>
+      <a class="icon-btn" href="#settings" aria-label="設定">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main id="app">
+    <section id="view-calendar" class="view" data-view="calendar" aria-label="行事曆"></section>
+    <section id="view-records" class="view" data-view="records" aria-label="判斷紀錄" hidden></section>
+    <section id="view-entry" class="view" data-view="entry" aria-label="新增判斷" hidden></section>
+    <section id="view-stocks" class="view" data-view="stocks" aria-label="股票資料" hidden></section>
+    <section id="view-stats" class="view" data-view="stats" aria-label="統計" hidden></section>
+    <section id="view-settings" class="view" data-view="settings" aria-label="設定" hidden></section>
+  </main>
+
+  <nav class="tabbar" aria-label="主要導覽">
+    <a href="#calendar" data-tab="calendar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      <span>行事曆</span>
+    </a>
+    <a href="#records" data-tab="records">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+      <span>紀錄</span>
+    </a>
+    <a href="#entry" data-tab="entry" class="tab-primary">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      <span>新增</span>
+    </a>
+    <a href="#stocks" data-tab="stocks">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+      <span>股票</span>
+    </a>
+    <a href="#stats" data-tab="stats">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg>
+      <span>統計</span>
+    </a>
+  </nav>
+
+  <dialog id="stock-dialog" class="sheet">
+    <form id="stock-form" method="dialog" novalidate>
+      <header class="sheet-head">
+        <h2 id="stock-dialog-title">新增股票</h2>
+        <button type="button" class="icon-btn" data-close aria-label="關閉">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </header>
+      <div class="field">
+        <label for="sf-code">股票代號</label>
+        <input id="sf-code" name="code" required maxlength="20" autocomplete="off" inputmode="text" placeholder="例如 2330、0050">
+      </div>
+      <div class="field">
+        <label for="sf-name">股票名稱</label>
+        <input id="sf-name" name="name" required maxlength="100" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="sf-market">股票市場</label>
+        <input id="sf-market" name="market" list="market-options" maxlength="50" autocomplete="off" placeholder="上市／上櫃／興櫃">
+        <datalist id="market-options">
+          <option value="上市"><option value="上櫃"><option value="興櫃"><option value="ETF"><option value="海外">
+        </datalist>
+      </div>
+      <div class="field">
+        <label for="sf-business">股票業務</label>
+        <textarea id="sf-business" name="business" rows="2" maxlength="500"></textarea>
+      </div>
+      <div class="field">
+        <label for="sf-tags">股票標籤 <small>以逗號分隔</small></label>
+        <input id="sf-tags" name="tags" maxlength="500" autocomplete="off" placeholder="AI, 晶圓代工">
+      </div>
+      <p class="form-error" id="stock-form-error" role="alert" hidden></p>
+      <footer class="sheet-foot">
+        <button type="button" class="btn btn-danger-ghost" id="stock-delete" hidden>刪除</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-ghost" data-close>取消</button>
+        <button type="submit" class="btn btn-primary">儲存</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
