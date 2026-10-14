@@ -7,5 +7,5 @@
  * 請勿在此放 API Token —— 這個檔案任何人都看得到。
  */
 window.APP_CONFIG = {
-  apiUrl: ''
+  apiUrl: 'https://script.google.com/macros/s/AKfycbx88b1-Yek0Fr3rOh0jtmhcgzOGEv6XXKUwxlEQ4QGWGTj3A696yEWKCtfaLfE2KRFO/exec'
 };
