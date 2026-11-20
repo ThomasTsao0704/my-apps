@@ -120,6 +120,18 @@
     .readout{font-size:12px;color:var(--ink-soft);margin-top:6px;min-height:18px}
     .note-line{font-size:14px;margin:0 0 8px;line-height:1.6}
     .note-line:last-child{margin-bottom:0}
+    .te-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+    .te-toggle{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:none}
+    .te-toggle button{border:none;background:var(--field);font:inherit;font-size:12px;color:var(--ink-soft);padding:5px 12px;cursor:pointer}
+    .te-toggle button.on{background:var(--accent);color:#fff;font-weight:500}
+    .te-row{display:grid;grid-template-columns:88px 1fr 44px;align-items:center;gap:8px;padding:7px 0;border:none;background:none;width:100%;font:inherit;text-align:left;cursor:pointer;color:var(--ink)}
+    .te-row+.te-row{border-top:1px solid #f1efea}
+    .te-tag{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .te-track{position:relative;height:10px;background:#f4f2ee;border-radius:5px}
+    .te-track::before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:#cfcbc2}
+    .te-bar{position:absolute;top:0;bottom:0;border-radius:5px}
+    .te-val{font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+    .te-sub{grid-column:1/-1;font-size:12px;color:var(--ink-mute);margin-top:-4px}
 
     /* nav */
     .nav{position:fixed;left:0;right:0;bottom:0;background:rgba(251,250,247,.96);
@@ -268,6 +280,8 @@
       <div class="card"><div id="chartMood"><div class="mini">載入中…</div></div></div>
       <div class="sec-title">看見的規律</div>
       <div class="card" id="trendNotes"><div class="mini">載入中…</div></div>
+      <div class="sec-title">標籤與精力 <span class="mini">· 近 90 天</span></div>
+      <div class="card" id="tagEnergy"><div class="mini">載入中…</div></div>
       <div class="sec-title">本月標籤頻率</div>
       <div class="tags-wrap" id="trendTags"></div>
     </section>
@@ -383,6 +397,8 @@
                         隨筆則送 {eventId, log_date, text, fact_objective}  → {item}
            deleteEvent  POST {eventId} → {ok:true}
            searchText   GET  {q}       → [item…]（每筆帶 date，跟 searchByTag 一樣）
+           getTagStats  GET  {days}    → {days, from, to, baseline:{energy,mood,energyDays},
+                                         tags:[{tag,days,energyDays,energy,mood,nextDays,nextEnergy}]}
          調整：saveCheckin 多送 mood_label（情緒關鍵詞）
        ====================================================================== */
     var CONFIG = {
@@ -397,8 +413,8 @@
     function getApiUrl(){ return (LS.get('diary_api_url')||CONFIG.API_URL||'').trim(); }
     function getApiToken(){ return (LS.get('diary_api_token')||CONFIG.API_TOKEN||'').trim(); }
 
-    var READ={getFormConfig:1,getHomeData:1,searchByTag:1,searchText:1,getSettings:1,getMonth:1,getDay:1};
-    var NEW_ACTIONS={updateEvent:1,deleteEvent:1,searchText:1};
+    var READ={getFormConfig:1,getHomeData:1,searchByTag:1,searchText:1,getTagStats:1,getSettings:1,getMonth:1,getDay:1};
+    var NEW_ACTIONS={updateEvent:1,deleteEvent:1,searchText:1,getTagStats:1};
     var PREVIEW = !getApiUrl();                 // 沒設 API 網址就顯示示範資料
     var CFG = { category: [], mood_label: [], tag: [] };
     var HOME = null, TODAY = null;
@@ -463,6 +479,18 @@
          reaction:'',insight:'',action:'',tags:['#系統優化'],time:'23:40',followed:false}
       ]};
       MOCK.checkins[t]={energy:4,mood:0,mood_label:''};
+      // 示範用：過去 80 天依精力高低帶上標籤，讓「標籤與精力」有東西可看
+      for(var i=2;i<=80;i++){
+        var dd=addDays(t,-i), ck=mockCheckin(dd); if(!ck) continue;
+        var tg=[];
+        if(ck.energy>=4 && i%2===0) tg.push('#健康');
+        if(ck.energy<=2 && i%3!==0) tg.push('#工作');
+        if(i%4===0) tg.push('#家庭');
+        if(i%5===0) tg.push('#長輩');
+        if(!tg.length) continue;
+        MOCK.events.push({id:'h'+i,date:dd,category:'微小勝利',is_dump:false,fact:'（示範紀錄）'+tg.join(' '),
+          reaction:'',insight:'',action:'',tags:tg,time:'20:00',followed:false});
+      }
       return MOCK;
     }
     function mockCheckin(ds){
@@ -548,6 +576,22 @@
             if(ck||ev) days[k]={energy:ck?ck.energy:null,mood:ck?ck.mood:null,events:ev};
           }
           return {ym:ym, days:days};
+        case 'getTagStats':
+          var nd=+p.days||90, from=addDays(t,-(nd-1)), tagDates={}, all=[];
+          db.events.forEach(function(x){ if(x.date<from||x.date>t) return;
+            (x.tags||[]).forEach(function(tg){ (tagDates[tg]=tagDates[tg]||{})[x.date]=true; }); });
+          for(i=0;i<nd;i++) all.push(addDays(from,i));
+          function eOf(d){ var c=mockCheckin(d); return c&&c.energy!=null?c.energy:null; }
+          function mOf(d){ var c=mockCheckin(d); return c&&c.mood!=null?c.mood:null; }
+          function mean(a){ a=a.filter(function(v){ return v!=null; }); return a.length?Math.round(a.reduce(function(x,y){return x+y;},0)/a.length*100)/100:null; }
+          function cnt(a){ return a.filter(function(v){ return v!=null; }).length; }
+          var be=all.map(eOf);
+          return {days:nd,from:from,to:t,baseline:{energy:mean(be),mood:mean(all.map(mOf)),energyDays:cnt(be)},
+            tags:Object.keys(tagDates).map(function(tg){
+              var dsl=Object.keys(tagDates[tg]).sort(), nx=dsl.map(function(d){ return addDays(d,1); }).filter(function(d){ return d<=t; });
+              var e=dsl.map(eOf), ne=nx.map(eOf);
+              return {tag:tg,days:dsl.length,energyDays:cnt(e),energy:mean(e),mood:mean(dsl.map(mOf)),nextDays:cnt(ne),nextEnergy:mean(ne)};
+            }).sort(function(a,b){ return b.days-a.days; })};
         case 'getDay':
           ck=mockCheckin(p.date);
           var evs=db.events.filter(function(x){ return x.date===p.date; });
@@ -1081,7 +1125,7 @@
       refreshSecondary();
     }
     function refreshSecondary(){
-      TREND_DATA=null;
+      TREND_DATA=null; TAGSTAT=null;
       if(viewOn('calendar')) loadCalendar();
       if(viewOn('trend')) loadTrend();
       rerunSearch();
@@ -1107,19 +1151,20 @@
         $('textQ').blur(); runSearch('text', q);
       };
       Array.prototype.forEach.call(document.querySelectorAll('.nav button'),function(b){
-        b.onclick=function(){
-          document.querySelectorAll('.nav button').forEach(function(x){ x.classList.remove('on'); }); b.classList.add('on');
-          document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
-          $('view-'+b.dataset.view).classList.add('on');
-          window.scrollTo(0,0);
-          if(b.dataset.view==='settings') loadSettings();
-          if(b.dataset.view==='calendar') loadCalendar();
-          if(b.dataset.view==='trend') loadTrend();
-        };
+        b.onclick=function(){ goView(b.dataset.view); };
       });
       bindSettings();
       $('calPrev').onclick=function(){ calShift(-1); };
       $('calNext').onclick=function(){ calShift(1); };
+    }
+    function goView(name){
+      document.querySelectorAll('.nav button').forEach(function(x){ x.classList.toggle('on', x.dataset.view===name); });
+      document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
+      $('view-'+name).classList.add('on');
+      window.scrollTo(0,0);
+      if(name==='settings') loadSettings();
+      if(name==='calendar') loadCalendar();
+      if(name==='trend') loadTrend();
     }
     function viewOn(name){ return $('view-'+name).classList.contains('on'); }
     function isSheetOn(id){ return $(id).classList.contains('on'); }
@@ -1269,6 +1314,7 @@
           TREND_DATA=days;
         }
         renderTrend(TREND_DATA);
+        loadTagEnergy();
       }catch(e){
         $('chartEnergy').innerHTML='<div class="empty">載入失敗：'+esc(e.message)+'</div>';
         $('chartMood').innerHTML=''; $('trendStats').innerHTML=''; $('trendNotes').innerHTML='';
@@ -1313,6 +1359,65 @@
       if(!notes.length) notes.push(rec<7?'再多打卡幾天，這裡就會出現你的精力與情緒規律。':'這 30 天精力和情緒都相當平穩，沒有明顯起伏。');
       $('trendNotes').innerHTML=notes.map(function(n){ return '<p class="note-line">'+n+'</p>'; }).join('');
     }
+    /* ---- 標籤與精力：哪些事出現的日子比較有電、哪些比較耗電 ---- */
+    var TAGSTAT=null, TE_MODE='same', TE_MIN=3;
+    async function loadTagEnergy(){
+      var box=$('tagEnergy');
+      try{
+        if(!TAGSTAT) TAGSTAT=await call('getTagStats',{days:90});
+        renderTagEnergy();
+      }catch(e){ box.innerHTML='<div class="empty" style="padding:6px 0">'+esc(e.message)+'</div>'; }
+    }
+    function renderTagEnergy(){
+      var box=$('tagEnergy'), st=TAGSTAT, base=st.baseline||{};
+      var next=TE_MODE==='next';
+      var rows=(st.tags||[]).map(function(t){
+        var v=next?t.nextEnergy:t.energy, n=next?t.nextDays:t.energyDays;
+        return {t:t, v:v, n:n, delta:(v!=null&&base.energy!=null)?v-base.energy:null};
+      });
+      var ok=rows.filter(function(r){ return r.n>=TE_MIN && r.delta!=null; }).sort(function(a,b){ return b.delta-a.delta; });
+      var few=rows.filter(function(r){ return !(r.n>=TE_MIN && r.delta!=null); });
+
+      var html='<div class="te-head"><div class="mini">整體平均精力 <b style="color:var(--ink)">'+f1(base.energy)+'</b>'
+        +'（'+(base.energyDays||0)+' 天有打卡）</div>'
+        +'<div class="te-toggle" role="group" aria-label="比較方式">'
+        +'<button type="button" data-m="same" class="'+(next?'':'on')+'" aria-pressed="'+!next+'">當天</button>'
+        +'<button type="button" data-m="next" class="'+(next?'on':'')+'" aria-pressed="'+next+'">隔天</button></div></div>';
+
+      if(base.energy==null){ box.innerHTML=html+'<div class="empty" style="padding:6px 0">近 90 天還沒有精力打卡。</div>'; bindTe(); return; }
+      if(!ok.length){
+        html+='<div class="empty" style="padding:6px 0">每個標籤至少要出現在 '+TE_MIN+' 個有打卡的日子，才看得出差別。多記幾天再回來看。</div>';
+      }else{
+        var top=ok[0], bot=ok[ok.length-1], lines=[];
+        if(top.delta>=0.3) lines.push((next?'隔天最有電':'最有電')+'的是 <b>'+esc(top.t.tag)+'</b>（'+sgn(top.delta)+'）');
+        if(bot!==top && bot.delta<=-0.3) lines.push((next?'隔天最累':'最耗電')+'的是 <b>'+esc(bot.t.tag)+'</b>（'+sgn(bot.delta)+'）');
+        html+='<p class="note-line" style="margin-bottom:10px">'+(lines.length?lines.join('；')+'。':'各標籤的日子精力都跟平均差不多。')+'</p>';
+        var maxAbs=Math.max(1, Math.max.apply(null, ok.map(function(r){ return Math.abs(r.delta); })));
+        ok.forEach(function(r){
+          var w=Math.min(50, Math.abs(r.delta)/maxAbs*50), pos=r.delta>=0;
+          var bar='<span class="te-bar" style="'+(pos?'left:50%;':'right:50%;')+'width:'+w.toFixed(1)+'%;background:'+(pos?'var(--accent)':'#c9776a')+'"></span>';
+          var mood=r.t.mood!=null&&!next?' · 當天情緒 '+sgn(r.t.mood):'';
+          html+='<button type="button" class="te-row" data-tag="'+esc(r.t.tag)+'" aria-label="'+esc(r.t.tag)+' 平均精力 '+f1(r.v)+'，比整體 '+sgn(r.delta)+'，點一下看相關紀錄">'
+            +'<span class="te-tag">'+esc(r.t.tag)+'</span><span class="te-track">'+bar+'</span>'
+            +'<span class="te-val" style="color:'+(pos?'var(--accent)':'#b3402f')+'">'+sgn(r.delta)+'</span>'
+            +'<span class="te-sub">'+r.n+' 天 · 平均精力 '+f1(r.v)+mood+'</span></button>';
+        });
+      }
+      if(few.length) html+='<p class="mini" style="margin:10px 0 0">樣本不足（少於 '+TE_MIN+' 天）：'+few.map(function(r){ return esc(r.t.tag); }).join('、')+'</p>';
+      html+='<p class="mini" style="margin:8px 0 0">'+(next?'「隔天」比較的是標籤出現後一天的精力，適合看哪些事會留下後勁。':'數字是那些日子的平均精力減去整體平均。')
+        +'這是相關，不代表因果；點標籤可以看當時的紀錄。</p>';
+      box.innerHTML=html; bindTe();
+    }
+    function bindTe(){
+      var box=$('tagEnergy');
+      Array.prototype.forEach.call(box.querySelectorAll('.te-toggle button'),function(b){
+        b.onclick=function(){ TE_MODE=b.dataset.m; renderTagEnergy(); };
+      });
+      Array.prototype.forEach.call(box.querySelectorAll('.te-row'),function(b){
+        b.onclick=function(){ goView('search'); runSearch('tag', b.dataset.tag); };
+      });
+    }
+
     function lineChart(root, days, o){
       var W=320,H=120,pl=24,pr=8,pt=10,pb=20,n=days.length,step=(W-pl-pr)/(n-1);
       function X(i){ return pl+i*step; }
