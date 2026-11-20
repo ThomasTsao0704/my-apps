@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <base target="_top">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbfaf7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="日記">
+  <title>日記</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600&display=swap" rel="stylesheet">
@@ -13,12 +18,12 @@
     :root{
       --paper:#fbfaf7; --ink:#23262b; --ink-soft:#6b7178; --ink-mute:#9aa0a6;
       --line:#e6e3dc; --field:#ffffff; --accent:#2f6f5e; --accent-soft:#e4efe9;
-      --danger:#b3402f; --radius:12px;
+      --mood:#b5832f; --danger:#b3402f; --radius:12px;
     }
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     body{margin:0;background:var(--paper);color:var(--ink);
       font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
-    .app{max-width:560px;margin:0 auto;padding:0 0 78px}
+    .app{max-width:560px;margin:0 auto;padding:0 0 calc(78px + env(safe-area-inset-bottom))}
     .view{display:none;padding:16px 16px 8px}
     .view.on{display:block}
     .serif{font-family:"Noto Serif TC",serif}
@@ -40,6 +45,8 @@
     .seg{flex:1;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--field);
       font:inherit;color:var(--ink-soft);cursor:pointer;transition:.12s}
     .seg.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+    .mlabels{margin-top:0}
+    .mlabels .chip{padding:4px 12px;font-size:12px}
 
     /* 快捷入口 */
     .quick{display:flex;gap:10px;margin-top:14px}
@@ -50,18 +57,22 @@
     .quick .d{font-size:12px;color:var(--ink-soft)}
 
     /* feed */
-    .feed-item{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;background:var(--field)}
+    .feed-item{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;background:var(--field);cursor:pointer}
     .feed-item .row1{display:flex;justify-content:space-between;align-items:center;gap:8px}
     .chip-cat{font-size:12px;background:var(--accent-soft);color:var(--accent);padding:3px 10px;border-radius:999px;font-weight:500}
     .chip-dump{font-size:12px;color:var(--ink-soft)}
     .feed-item .fact{font-size:15px;margin:8px 0 0;line-height:1.5}
-    .feed-item .prev{font-size:13px;color:var(--ink-soft);margin:6px 0 0;line-height:1.5}
+    .feed-item .prev{font-size:13px;color:var(--ink-soft);margin:6px 0 0;line-height:1.5;white-space:pre-wrap}
     .feed-item .detail{display:none;border-top:1px dashed var(--line);margin-top:10px;padding-top:10px}
     .feed-item.open .detail{display:block}
-    .orid-line{font-size:13px;margin:0 0 8px;line-height:1.5}
+    .orid-line{font-size:13px;margin:0 0 8px;line-height:1.5;white-space:pre-wrap}
     .orid-line b{color:var(--accent);font-weight:500;margin-right:6px}
     .feed-tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
     .feed-tags span{font-size:12px;color:var(--accent)}
+    .card-actions{display:flex;gap:14px;justify-content:flex-end;margin-top:8px}
+    .lnk{border:none;background:none;font:inherit;font-size:13px;color:var(--ink-soft);cursor:pointer;padding:4px 2px;display:inline-flex;align-items:center;gap:4px}
+    .lnk.danger{color:var(--danger)}
+    .lnk.confirm{color:#fff;background:var(--danger);border-radius:8px;padding:4px 10px}
     .empty{color:var(--ink-mute);font-size:14px;text-align:center;padding:18px 0}
 
     /* 待跟進 */
@@ -90,20 +101,30 @@
     .trendbar .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
     .trendbar .bar{width:22px;background:var(--accent-soft);border-radius:5px}
     .trendbar .bar.today{background:transparent;border:1.5px dashed var(--accent);height:44px!important}
+    .trendbar .bar.now{background:var(--accent)}
     .trendbar .wd{font-size:11px;color:var(--ink-mute)}
     .tags-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-    .tag-pill{font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--field);color:var(--ink-soft);cursor:pointer}
+    .tag-pill{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--field);color:var(--ink-soft)}
+    button.tag-pill{cursor:pointer}
     .tag-pill.hot{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:500}
     .tag-pill.sel{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
     .addtag{display:flex;gap:8px;margin-top:10px}
-    .addtag input{flex:1;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+    .addtag input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
     .addtag input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
     .addtag .btn{flex:none;padding:10px 16px}
     .orid-line.done-line{text-decoration:line-through;color:var(--ink-mute)}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .stat{background:var(--field);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px}
+    .stat .v{font-size:20px;font-weight:500;line-height:1.3}
+    .stat .k{font-size:12px;color:var(--ink-soft)}
+    .readout{font-size:12px;color:var(--ink-soft);margin-top:6px;min-height:18px}
+    .note-line{font-size:14px;margin:0 0 8px;line-height:1.6}
+    .note-line:last-child{margin-bottom:0}
 
     /* nav */
     .nav{position:fixed;left:0;right:0;bottom:0;background:rgba(251,250,247,.96);
-      backdrop-filter:blur(6px);border-top:1px solid var(--line);display:flex;max-width:560px;margin:0 auto}
+      backdrop-filter:blur(6px);border-top:1px solid var(--line);display:flex;max-width:560px;margin:0 auto;
+      padding-bottom:env(safe-area-inset-bottom)}
     .nav button{flex:1;border:none;background:none;padding:9px 0 8px;font:inherit;color:var(--ink-mute);cursor:pointer}
     .nav button i{font-size:21px;display:block}
     .nav button span{font-size:11px}
@@ -113,7 +134,7 @@
     .scrim{position:fixed;inset:0;background:rgba(30,32,36,.4);opacity:0;pointer-events:none;transition:.2s;z-index:20}
     .scrim.on{opacity:1;pointer-events:auto}
     .sheet{position:fixed;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;background:var(--paper);
-      border-radius:18px 18px 0 0;padding:18px 18px 24px;transform:translateY(100%);transition:.25s;z-index:21;max-height:90vh;overflow:auto}
+      border-radius:18px 18px 0 0;padding:18px 18px calc(24px + env(safe-area-inset-bottom));transform:translateY(100%);transition:.25s;z-index:21;max-height:90vh;overflow:auto}
     .sheet.on{transform:translateY(0)}
     .sheet h3{font-family:"Noto Serif TC",serif;font-weight:600;font-size:18px;margin:0 0 4px}
     .sheet .sub{font-size:13px;color:var(--ink-soft);margin:0 0 14px}
@@ -123,8 +144,12 @@
     .btn{font:inherit;cursor:pointer;border-radius:10px;padding:12px 16px;border:1px solid var(--line);background:var(--field);color:var(--ink)}
     .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
     .btn.block{width:100%}
+    .btn:disabled{opacity:.6;cursor:default}
     .sheet-foot{display:flex;gap:10px;margin-top:16px}
     .sheet-foot .btn{flex:1}
+    .draftbar{display:none;background:#fbf1e4;color:#8a5a1f;border-radius:10px;padding:9px 12px;font-size:13px;margin:0 0 12px;align-items:center;justify-content:space-between;gap:10px}
+    .draftbar.on{display:flex}
+    .draftbar button{flex:none;font:inherit;font-size:12px;border:1px solid #e3c9a3;background:#fff;color:#8a5a1f;border-radius:8px;padding:4px 10px;cursor:pointer}
 
     /* wizard */
     .steps{display:flex;gap:6px;margin-bottom:14px}
@@ -137,7 +162,9 @@
     .chip{border:1px solid var(--line);background:var(--field);color:var(--ink-soft);padding:6px 12px;border-radius:999px;font-size:13px;cursor:pointer;font:inherit}
     .chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:500}
 
-    .banner{background:#fbf1e4;color:#8a5a1f;border-radius:var(--radius);padding:10px 14px;font-size:13px;margin:12px 16px 0;display:none}
+    .banner{background:#fbf1e4;color:#8a5a1f;border-radius:var(--radius);padding:10px 14px;font-size:13px;margin:12px 16px 0;display:none;max-width:528px}
+    @media (min-width:560px){.banner{margin:12px auto 0}}
+    .banner button{font:inherit;font-size:12px;margin-left:8px;border:1px solid #e3c9a3;background:#fff;color:#8a5a1f;border-radius:8px;padding:2px 10px;cursor:pointer}
     .ip{width:100%;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
     .ip:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
     .lab2{font-size:12px;color:var(--ink-soft);margin:0 0 4px}
@@ -147,16 +174,31 @@
     .cal-nav{border:1px solid var(--line);background:var(--field);border-radius:10px;width:40px;height:40px;font-size:20px;color:var(--ink);cursor:pointer}
     .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
     .cal-wd{text-align:center;font-size:12px;color:var(--ink-mute);padding:2px 0}
-    .cal-cell{aspect-ratio:1/1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:14px;color:var(--ink-mute);border:1px solid transparent}
+    .cal-cell{aspect-ratio:1/1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:14px;color:var(--ink-soft);border:1px solid transparent}
     .cal-cell.empty{visibility:hidden}
-    .cal-cell.has{background:var(--field);border-color:var(--line);color:var(--ink);cursor:pointer}
-    .cal-cell.has:active{background:var(--accent-soft)}
-    .cal-cell.today{border-color:var(--accent);border-width:1.5px}
+    .cal-cell.tap{cursor:pointer}
+    .cal-cell.tap:active{outline:2px solid var(--accent-soft)}
+    .cal-cell.future{color:#c9cdd1}
+    .cal-cell.has{background:var(--field);border-color:var(--line);color:var(--ink)}
+    .cal-cell.lv1{background:#eef4f1;border-color:#dbe8e2}
+    .cal-cell.lv2{background:#d7e8e0;border-color:#c6ddd2}
+    .cal-cell.lv3{background:#b4d3c6;border-color:#a3c8b8}
+    .cal-cell.lv4{background:#7fb09d;border-color:#7fb09d;color:#fff}
+    .cal-cell.lv5{background:#4a8a75;border-color:#4a8a75;color:#fff}
+    .cal-cell.today{box-shadow:inset 0 0 0 2px var(--accent)}
+    .cal-cell.lv4.today,.cal-cell.lv5.today{box-shadow:inset 0 0 0 2px var(--ink)}
     .cal-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+    .cal-cell.lv4 .cal-dot,.cal-cell.lv5 .cal-dot{background:#fff}
+    .cal-legend{display:flex;align-items:center;gap:4px;margin:14px 2px 0;font-size:12px;color:var(--ink-mute);flex-wrap:wrap}
+    .cal-legend i.sw{display:inline-block;width:14px;height:14px;border-radius:4px}
     .day-checkin{font-size:14px;color:var(--ink);margin-bottom:6px}
-    .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;
-      padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30}
+    .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;
+      padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30;
+      display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px)}
     .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+    .toast.on.act{pointer-events:auto}
+    .toast button{border:none;background:none;color:#9fd8c5;font:inherit;font-weight:700;padding:0;cursor:pointer;white-space:nowrap}
+    .toast button[hidden]{display:none}
     @media (prefers-reduced-motion:reduce){*{transition:none!important}}
   </style>
 </head>
@@ -174,12 +216,7 @@
         <div class="streak" id="h-streak"></div>
       </div>
 
-      <div class="card checkin">
-        <div class="lab"><span>精力</span><span class="mini">今天的電量</span></div>
-        <div class="segrow" id="energy"></div>
-        <div class="lab"><span>情緒</span><span class="mini">-2 到 +2</span></div>
-        <div class="segrow" id="mood"></div>
-      </div>
+      <div class="card checkin" id="homeCheckin"><div class="mini">載入中…</div></div>
 
       <div class="quick">
         <button id="openDump">
@@ -201,7 +238,7 @@
 
       <div id="flashWrap"></div>
 
-      <div class="sec-title">近況 · 精力</div>
+      <div class="sec-title">這週 · 精力</div>
       <div class="trendbar" id="miniWeek"></div>
       <div class="mini" id="miniAvg" style="margin:8px 2px 0"></div>
 
@@ -211,6 +248,11 @@
 
     <!-- ============ 檢索 ============ -->
     <section class="view" id="view-search">
+      <div class="sec-title">全文搜尋</div>
+      <form class="addtag" id="textSearchForm" style="margin-top:0">
+        <input id="textQ" type="search" enterkeyhint="search" placeholder="搜尋事實、感受、洞察、隨筆…">
+        <button class="btn primary" type="submit">搜尋</button>
+      </form>
       <div class="sec-title">依標籤檢索</div>
       <div class="tags-wrap" id="searchTags"></div>
       <div id="searchResult" style="margin-top:16px"></div>
@@ -218,8 +260,14 @@
 
     <!-- ============ 趨勢 ============ -->
     <section class="view" id="view-trend">
-      <div class="sec-title">精力趨勢 · 近兩週</div>
-      <div class="card"><div id="bigSpark"></div><div class="mini" id="trendAvg2" style="margin-top:8px"></div></div>
+      <div class="sec-title">近 30 天概況</div>
+      <div class="stats" id="trendStats"></div>
+      <div class="sec-title">精力 <span class="mini">· 1 到 5</span></div>
+      <div class="card"><div id="chartEnergy"><div class="mini">載入中…</div></div></div>
+      <div class="sec-title">情緒 <span class="mini">· -2 到 +2</span></div>
+      <div class="card"><div id="chartMood"><div class="mini">載入中…</div></div></div>
+      <div class="sec-title">看見的規律</div>
+      <div class="card" id="trendNotes"><div class="mini">載入中…</div></div>
       <div class="sec-title">本月標籤頻率</div>
       <div class="tags-wrap" id="trendTags"></div>
     </section>
@@ -233,7 +281,12 @@
       </div>
       <div class="cal-grid" id="calWeekday"></div>
       <div class="cal-grid" id="calDays" style="margin-top:6px"></div>
-      <p class="mini" style="margin:14px 2px 0">有圓點的日子代表當天有紀錄，點一下看完整內容。</p>
+      <div class="cal-legend">
+        <span>精力 低</span>
+        <i class="sw" style="background:#eef4f1"></i><i class="sw" style="background:#d7e8e0"></i><i class="sw" style="background:#b4d3c6"></i><i class="sw" style="background:#7fb09d"></i><i class="sw" style="background:#4a8a75"></i>
+        <span>高</span>
+      </div>
+      <p class="mini" style="margin:6px 2px 0">圓點代表那天有寫內容。點任何一天可以看紀錄，也可以補寫、補打卡。</p>
     </section>
 
     <!-- ============ 設定 ============ -->
@@ -243,8 +296,12 @@
         <p class="mini" style="margin:0 0 10px">網頁放在 GitHub，資料存取靠 Apps Script API。貼上你的 /exec 網址（存在這台裝置）。</p>
         <p class="lab2">API 網址（/exec）</p>
         <input id="apiInput" type="url" class="ip" placeholder="https://script.google.com/macros/s/.../exec">
-        <p class="lab2" style="margin-top:10px">存取權杖 token（選填，需與 Code.gs 相同）</p>
-        <input id="tokenInput" type="text" class="ip" placeholder="留空則不驗證">
+        <p class="lab2" style="margin-top:10px">存取權杖 token（強烈建議設定，需與 Code.gs 的 API_TOKEN 相同）</p>
+        <div style="display:flex;gap:8px">
+          <input id="tokenInput" type="text" class="ip" style="flex:1;min-width:0" placeholder="一串夠長的隨機字元" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="btn" id="btnGenToken" type="button">產生</button>
+        </div>
+        <p class="mini" style="margin:6px 0 0">沒有 token 時，任何拿到 /exec 網址的人都能讀寫你的日記。</p>
         <button class="btn primary block" id="btnSaveApi" style="margin-top:12px">儲存並重新載入</button>
         <p class="mini" id="apiStatus" style="margin:10px 0 0"></p>
       </div>
@@ -253,7 +310,7 @@
       <div class="card">
         <p class="mini" style="margin:0 0 10px">用手機掃 QR 開啟，或複製後在瀏覽器「加到主畫面」。</p>
         <div style="display:flex;gap:8px">
-          <input id="appUrl" type="text" class="ip" readonly style="flex:1">
+          <input id="appUrl" type="text" class="ip" readonly style="flex:1;min-width:0">
           <button class="btn" id="btnCopyApp">複製</button>
         </div>
         <div id="qrBox" style="display:flex;justify-content:center;padding:18px 0 4px"></div>
@@ -276,19 +333,22 @@
   <!-- scrim + sheets -->
   <div class="scrim" id="scrim"></div>
 
-  <div class="sheet" id="sheet-dump">
-    <h3>隨筆傾倒</h3>
-    <p class="sub">未整理的情感與流水帳，直接倒出來。</p>
+  <div class="sheet" id="sheet-dump" role="dialog" aria-modal="true" aria-labelledby="dumpTitle">
+    <h3 id="dumpTitle">隨筆傾倒</h3>
+    <p class="sub"><span id="dumpDate"></span> · 未整理的情感與流水帳，直接倒出來。</p>
+    <div class="draftbar" id="dumpDraft"></div>
     <textarea id="dumpText" rows="6" placeholder="今天心裡一直浮現…"></textarea>
+    <p class="mini" style="margin:6px 2px 0">打字時會自動存草稿，不小心關掉也不會不見。</p>
     <div class="sheet-foot">
       <button class="btn" data-close>取消</button>
       <button class="btn primary" id="saveDump">存下來</button>
     </div>
   </div>
 
-  <div class="sheet" id="sheet-orid">
-    <h3>事件覆盤</h3>
-    <p class="sub" id="oridSub">第 1 步 / 共 4 步</p>
+  <div class="sheet" id="sheet-orid" role="dialog" aria-modal="true" aria-labelledby="oridTitle">
+    <h3 id="oridTitle">事件覆盤</h3>
+    <p class="sub"><span id="oridDate"></span> · <span id="oridSub">第 1 步 / 共 4 步</span></p>
+    <div class="draftbar" id="oridDraft"></div>
     <div class="steps"><div class="s on"></div><div class="s"></div><div class="s"></div><div class="s"></div></div>
     <div id="oridBody"></div>
     <div class="sheet-foot">
@@ -297,31 +357,68 @@
     </div>
   </div>
 
-  <div class="sheet" id="sheet-day">
+  <div class="sheet" id="sheet-day" role="dialog" aria-modal="true" aria-labelledby="dayTitle">
     <h3 class="serif" id="dayTitle">—</h3>
+    <div class="card checkin" id="dayCheckin" style="margin:10px 0 12px"></div>
     <div id="dayBody"></div>
-    <div class="sheet-foot"><button class="btn block" data-close>關閉</button></div>
+    <div class="sheet-foot">
+      <button class="btn" id="dayDump"><i class="ti ti-writing"></i> 補寫隨筆</button>
+      <button class="btn" id="dayOrid"><i class="ti ti-list-check"></i> 補寫覆盤</button>
+    </div>
+    <button class="btn block" data-close style="margin-top:10px">關閉</button>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastAct" type="button" hidden></button></div>
 
   <script>
-    /* ====== 連線設定：網頁在 GitHub，資料存取靠 Apps Script /exec API ====== */
+    /* ======================================================================
+       連線設定：網頁在 GitHub，資料存取靠 Apps Script /exec API
+
+       後端（Code.gs）需要支援的 action：
+         既有：getFormConfig, getHomeData, searchByTag, getMonth, getDay,
+               saveCheckin, saveBrainDump, addEvent, setFollowedUp, addTag
+         本版新增（後端沒加時，前端會提示「需要更新 Code.gs」，其他功能照常）：
+           updateEvent  POST {eventId, log_date, category, fact_objective, reaction_subjective,
+                              insight, action_next, tags}   → {item}
+                        隨筆則送 {eventId, log_date, text, fact_objective}  → {item}
+           deleteEvent  POST {eventId} → {ok:true}
+           searchText   GET  {q}       → [item…]（每筆帶 date，跟 searchByTag 一樣）
+         調整：saveCheckin 多送 mood_label（情緒關鍵詞）
+       ====================================================================== */
     var CONFIG = {
       API_URL: '',    // 可直接貼上 /exec 網址；留空則到「設定」分頁輸入（存於這台裝置）
-      API_TOKEN: ''   // 選填：需與 Code.gs 的 API_TOKEN 相同
+      API_TOKEN: ''   // 需與 Code.gs 的 API_TOKEN 相同
     };
-    function getApiUrl(){ return (localStorage.getItem('diary_api_url')||CONFIG.API_URL||'').trim(); }
-    function getApiToken(){ return (localStorage.getItem('diary_api_token')||CONFIG.API_TOKEN||'').trim(); }
+    var LS = {
+      get:function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+      set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
+      del:function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+    };
+    function getApiUrl(){ return (LS.get('diary_api_url')||CONFIG.API_URL||'').trim(); }
+    function getApiToken(){ return (LS.get('diary_api_token')||CONFIG.API_TOKEN||'').trim(); }
 
-    var READ={getFormConfig:1,getHomeData:1,searchByTag:1,getSettings:1,getMonth:1,getDay:1};
+    var READ={getFormConfig:1,getHomeData:1,searchByTag:1,searchText:1,getSettings:1,getMonth:1,getDay:1};
+    var NEW_ACTIONS={updateEvent:1,deleteEvent:1,searchText:1};
     var PREVIEW = !getApiUrl();                 // 沒設 API 網址就顯示示範資料
     var CFG = { category: [], mood_label: [], tag: [] };
-    var HOME = null, TODAY = null, energyVal = null, moodVal = null;
+    var HOME = null, TODAY = null;
+    var HOMECK = { energy:null, mood:null, label:'' };   // 首頁打卡狀態
+    var DRAFT_ORID='diary_draft_orid', DRAFT_DUMP='diary_draft_dump';
+
+    function $(id){ return document.getElementById(id); }
+    function clone(o){ return JSON.parse(JSON.stringify(o)); }
+    function idxById(arr,id){ for(var i=0;i<(arr||[]).length;i++){ if(arr[i].id===id) return i; } return -1; }
+
+    /* ---- 日期：一律用這台裝置的本地日期，避免 UTC 在台灣早上 8 點前算成前一天 ---- */
+    function ymd(d){ return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+    function todayLocal(){ return ymd(new Date()); }
+    function parseD(s){ return new Date(s+'T00:00:00'); }
+    function addDays(s,n){ var d=parseD(s); d.setDate(d.getDate()+n); return ymd(d); }
+    function nowHM(){ var d=new Date(); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
 
     /* ---- 呼叫 API：讀用 GET、寫用 POST(text/plain 避免 CORS 預檢) ---- */
-    async function call(action, payload){
-      payload = payload || {};
+    async function call(action, payload, opts){
+      payload = payload || {}; opts = opts || {};
       if (PREVIEW) return mock(action, payload);
       var url=getApiUrl(), token=getApiToken(), res;
       try{
@@ -330,175 +427,345 @@
           Object.keys(payload).forEach(function(k){ if(payload[k]!=null) q.append(k,payload[k]); });
           res=await fetch(url+'?'+q.toString(), {method:'GET'});
         } else {
-          res=await fetch(url, {method:'POST', body: JSON.stringify(Object.assign({action:action,token:token},payload))});
+          res=await fetch(url, {method:'POST', keepalive:!!opts.keepalive,
+            body: JSON.stringify(Object.assign({action:action,token:token},payload))});
         }
       }catch(e){ throw new Error('連不到 API，請確認網址與網路'); }
       var j;
       try{ j=await res.json(); }
       catch(e){ throw new Error('API 回應非預期，通常是部署的存取權限沒設成「任何人」'); }
-      if(!j.ok) throw new Error(j.error||'未知錯誤');
+      if(!j.ok){
+        var msg=j.error||'未知錯誤';
+        if(msg==='unauthorized') msg='token 不正確，請到「設定」填入與 Code.gs 相同的 API_TOKEN';
+        if(NEW_ACTIONS[action]) msg+='（這個功能需要在 Code.gs 加入 '+action+'）';
+        throw new Error(msg);
+      }
       return j.data;
     }
 
+    /* ---- 示範資料（沒設 API 時使用，會記住這次開啟期間的操作） ---- */
+    var MOCK=null;
+    function mockDb(){
+      if(MOCK) return MOCK;
+      var t=todayLocal();
+      MOCK={seq:100, checkins:{}, events:[
+        {id:'1',date:t,category:'人際關係',is_dump:false,fact:'醫院探視包姐',reaction:'心裡一沉',
+         insight:'記住的是為人底色，而非表面脾氣',action:'週末回家陪爸媽吃飯',tags:['#長輩','#生死課題'],time:'21:04',followed:false},
+        {id:'2',date:t,category:'隨筆',is_dump:true,fact:'心裡一直浮現以前共事的樣子，那種踏實感很久沒有了。',
+         reaction:'',insight:'',action:'',tags:[],time:'22:10',followed:false},
+        {id:'e11',date:addDays(t,-8),category:'摩擦/阻礙',is_dump:false,fact:'臨時被加需求',reaction:'煩躁',
+         insight:'沒先問範圍就答應，後面才會被動',action:'下次會議先問清楚範圍再答應',tags:['#工作'],time:'18:30',followed:false},
+        {id:'e12',date:addDays(t,-11),category:'微小勝利',is_dump:false,fact:'早起那天狀態明顯好',reaction:'輕快',
+         insight:'睡眠是一切的底',action:'把冥想排進晨間例行',tags:['#健康','#系統優化'],time:'07:50',followed:false},
+        {id:'s2',date:addDays(t,-60),category:'決策覆盤',is_dump:false,fact:'決定先不接那個案子',reaction:'鬆一口氣',
+         insight:'邊界比機會重要',action:'',tags:['#工作'],time:'19:20',followed:false},
+        {id:'s3',date:addDays(t,-120),category:'隨筆',is_dump:true,fact:'又想起那句「慢慢來比較快」。',
+         reaction:'',insight:'',action:'',tags:['#系統優化'],time:'23:40',followed:false}
+      ]};
+      MOCK.checkins[t]={energy:4,mood:0,mood_label:''};
+      return MOCK;
+    }
+    function mockCheckin(ds){
+      var db=mockDb(); if(db.checkins[ds]) return db.checkins[ds];
+      if(ds>=todayLocal()) return null;
+      var d=+ds.slice(8), m=+ds.slice(5,7);
+      if((d*37+m*11)%17<4) return null;
+      return {energy:1+(d*7+m)%5, mood:((d*3+m*5)%5)-2, mood_label:''};
+    }
+    function mockTagCounts(filterFn){
+      var c={};
+      mockDb().events.forEach(function(e){ if(filterFn&&!filterFn(e)) return; (e.tags||[]).forEach(function(t){ c[t]=(c[t]||0)+1; }); });
+      return Object.keys(c).map(function(k){ return {tag:k,count:c[k]}; }).sort(function(a,b){ return b.count-a.count; });
+    }
+    function byDateDesc(a,b){ return a.date<b.date?1:a.date>b.date?-1:0; }
     function mock(fn, p){
-      if (fn==='setFollowedUp') return {ok:true};
-      if (fn==='getMonth'){
-        var ym=p.ym||todayLocal().slice(0,7), days={};
-        [3,7,9,12,14].forEach(function(dd){ var k=ym+'-'+(dd<10?'0'+dd:dd); days[k]={energy:(dd%5)+1,mood:0,events:dd%3}; });
-        return {ym:ym, days:days};
+      var db=mockDb(), t=todayLocal(), e, i, ck;
+      function find(id){ return db.events.filter(function(x){ return x.id===id; })[0]; }
+      switch(fn){
+        case 'getFormConfig': return {
+          config:{category:['決策覆盤','人際關係','微小勝利','摩擦/阻礙'],
+                  mood_label:['平靜','沉重','亢奮','焦慮','感恩'],
+                  tag:['#人際關係','#長輩','#生死課題','#系統優化','#工作','#家庭','#健康']},
+          today:t};
+        case 'getHomeData':
+          var week=[], trend=[];
+          for(i=6;i>=0;i--){ var ds=addDays(t,-i); ck=mockCheckin(ds);
+            week.push({weekday:'日一二三四五六'.charAt(parseD(ds).getDay()),energy:ck?ck.energy:null,isToday:i===0}); }
+          for(i=13;i>=0;i--){ ck=mockCheckin(addDays(t,-i)); trend.push(ck?ck.energy:null); }
+          var vals=trend.filter(function(v){ return v!=null; });
+          return clone({today:t, streak:6, checkin:db.checkins[t]||{energy:null,mood:null,mood_label:''},
+            feed:db.events.filter(function(x){ return x.date===t; }),
+            openLoops:db.events.filter(function(x){ return x.date<t && x.action && !x.followed && !x.is_dump; })
+              .sort(byDateDesc).map(function(x){ return {id:x.id,action:x.action,date:x.date,category:x.category,fact:x.fact,tags:x.tags}; }),
+            week:week, trend:trend,
+            trendAvg:vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length*10)/10:null,
+            topTags:mockTagCounts(function(x){ return x.date.slice(0,7)===t.slice(0,7); }),
+            allTags:mockTagCounts(),
+            flashback:{label:'半年前',date:addDays(t,-183),kind:'洞察',text:'很多時候阻礙推動的不是技術門檻，而是溝通的語境。'}});
+        case 'saveCheckin':
+          var c=db.checkins[p.log_date]||(db.checkins[p.log_date]=Object.assign({energy:null,mood:null,mood_label:''},mockCheckin(p.log_date)||{}));
+          if(p.energy_score!=null) c.energy=+p.energy_score;
+          if(p.mood_score!=null) c.mood=+p.mood_score;
+          if(p.mood_label!=null) c.mood_label=p.mood_label;
+          return {ok:true,streak:6,checkin:clone(c)};
+        case 'saveBrainDump':
+          e=db.events.filter(function(x){ return x.client_id && x.client_id===p.client_id; })[0];
+          if(e) return {ok:true,dedup:true,item:clone(e)};
+          e={id:'m'+(db.seq++),client_id:p.client_id,date:p.log_date,category:'隨筆',is_dump:true,fact:p.text,
+             reaction:'',insight:'',action:'',tags:[],time:nowHM(),followed:false};
+          db.events.push(e); return {ok:true,item:clone(e)};
+        case 'addEvent':
+          e=db.events.filter(function(x){ return x.client_id && x.client_id===p.client_id; })[0];
+          if(e) return {ok:true,dedup:true,item:clone(e)};
+          e={id:'m'+(db.seq++),client_id:p.client_id,date:p.log_date,category:p.category,is_dump:false,fact:p.fact_objective,
+             reaction:p.reaction_subjective,insight:p.insight,action:p.action_next,tags:(p.tags||[]).slice(),time:nowHM(),followed:false};
+          db.events.push(e); return {ok:true,item:clone(e)};
+        case 'updateEvent':
+          e=find(p.eventId); if(!e) throw new Error('找不到這筆紀錄');
+          if(e.is_dump){ e.fact=p.text!=null?p.text:p.fact_objective; }
+          else { e.category=p.category; e.fact=p.fact_objective; e.reaction=p.reaction_subjective;
+                 e.insight=p.insight; e.action=p.action_next; e.tags=(p.tags||[]).slice(); }
+          return {ok:true,item:clone(e)};
+        case 'deleteEvent':
+          db.events=db.events.filter(function(x){ return x.id!==p.eventId; }); return {ok:true};
+        case 'setFollowedUp':
+          e=find(p.eventId); if(e) e.followed=!!p.followed; return {ok:true};
+        case 'addTag':
+          var n=String(p.tag||'').replace(/\s+/g,''); if(n.charAt(0)!=='#') n='#'+n; return {ok:true,tag:n,added:true};
+        case 'searchByTag':
+          return clone(db.events.filter(function(x){ return (x.tags||[]).indexOf(p.tag)>=0; }).sort(byDateDesc));
+        case 'searchText':
+          var q=String(p.q||'').toLowerCase();
+          return clone(db.events.filter(function(x){
+            return [x.fact,x.reaction,x.insight,x.action,x.category,(x.tags||[]).join(' ')].join(' ').toLowerCase().indexOf(q)>=0;
+          }).sort(byDateDesc));
+        case 'getMonth':
+          var ym=p.ym||t.slice(0,7), y=+ym.slice(0,4), m=+ym.slice(5,7), dim=new Date(y,m,0).getDate(), days={};
+          for(i=1;i<=dim;i++){
+            var k=ym+'-'+(i<10?'0'+i:i); if(k>t) continue;
+            ck=mockCheckin(k);
+            var ev=db.events.filter(function(x){ return x.date===k; }).length;
+            if(ck||ev) days[k]={energy:ck?ck.energy:null,mood:ck?ck.mood:null,events:ev};
+          }
+          return {ym:ym, days:days};
+        case 'getDay':
+          ck=mockCheckin(p.date);
+          var evs=db.events.filter(function(x){ return x.date===p.date; });
+          return clone({date:p.date, exists:!!(ck||evs.length),
+            checkin:ck?Object.assign({raw_brain_dump:'',ai_reflection:''},ck):{}, events:evs});
       }
-      if (fn==='getDay'){
-        return {date:p.date, exists:true,
-          checkin:{energy:4,mood:0,mood_label:'平靜',raw_brain_dump:'今天整體還算平穩，晚上想起一些舊事。',ai_reflection:''},
-          events:[
-            {id:'d1',category:'人際關係',is_dump:false,fact:'醫院探視包姐',reaction:'心裡一沉',insight:'記住的是為人底色',action:'週末回家陪爸媽',tags:['#長輩','#生死課題'],time:'21:04',followed:false},
-            {id:'d2',category:'隨筆',is_dump:true,fact:'那種踏實感很久沒有了。',reaction:'',insight:'',action:'',tags:[],time:'22:10',followed:false}
-          ]};
-      }
-      if (fn==='addTag'){ var n=String(p.tag||'').replace(/\s+/g,''); if(n.charAt(0)!=='#')n='#'+n; return {ok:true,tag:n,added:true}; }
-      if (fn==='searchByTag'){
-        var t=p.tag;
-        return [
-          {id:'s1',category:'人際關係',is_dump:false,fact:'醫院探視包姐',reaction:'心裡一沉',insight:'記住的是為人底色',action:'週末回家陪爸媽',tags:[t,'#生死課題'],time:'21:04',followed:true,date:'2026-09-14'},
-          {id:'s2',category:'決策覆盤',is_dump:false,fact:'決定先不接那個案子',reaction:'鬆一口氣',insight:'邊界比機會重要',action:'',tags:[t],time:'19:20',followed:false,date:'2026-07-02'},
-          {id:'s3',category:'隨筆',is_dump:true,fact:'又想起那句「慢慢來比較快」。',reaction:'',insight:'',action:'',tags:[t],time:'23:40',followed:false,date:'2026-05-18'}
-        ];
-      }
-      if (fn==='getFormConfig') return {
-        config:{category:['決策覆盤','人際關係','微小勝利','摩擦/阻礙'],
-                mood_label:['平靜','沉重','亢奮'],
-                tag:['#人際關係','#長輩','#生死課題','#系統優化','#工作','#家庭','#健康']},
-        today:new Date().toISOString().slice(0,10)};
-      if (fn==='getHomeData') return {
-        today:new Date().toISOString().slice(0,10), streak:6,
-        checkin:{energy:4,mood:0,mood_label:''},
-        feed:[
-          {id:'1',category:'人際關係',is_dump:false,fact:'醫院探視包姐',reaction:'心裡一沉',
-           insight:'記住的是為人底色，而非表面脾氣',action:'週末回家陪爸媽吃飯',tags:['#長輩','#生死課題'],time:'21:04',followed:false},
-          {id:'2',category:'隨筆',is_dump:true,fact:'心裡一直浮現以前共事的樣子，那種踏實感很久沒有了。',
-           reaction:'',insight:'',action:'',tags:[],time:'22:10',followed:false}
-        ],
-        openLoops:[
-          {id:'e11',action:'下次會議先問清楚範圍再答應',date:'2026-09-12',category:'摩擦/阻礙',fact:'臨時被加需求',tags:['#工作']},
-          {id:'e12',action:'把冥想排進晨間例行',date:'2026-09-09',category:'微小勝利',fact:'早起那天狀態明顯好',tags:['#健康','#系統優化']}
-        ],
-        week:[{weekday:'一',energy:3,isToday:false},{weekday:'二',energy:4,isToday:false},
-              {weekday:'三',energy:2,isToday:false},{weekday:'四',energy:4,isToday:false},
-              {weekday:'五',energy:5,isToday:false},{weekday:'六',energy:3,isToday:false},
-              {weekday:'日',energy:null,isToday:true}],
-        trend:[3,4,2,4,5,3,null,3,4,3,4,5,4,null], trendAvg:3.6,
-        topTags:[{tag:'#長輩',count:8},{tag:'#工作',count:6},{tag:'#系統優化',count:4},{tag:'#生死課題',count:2}],
-        allTags:[{tag:'#長輩',count:12},{tag:'#工作',count:9},{tag:'#系統優化',count:7},{tag:'#生死課題',count:5},{tag:'#家庭',count:4},{tag:'#健康',count:3},{tag:'#人際關係',count:3}],
-        flashback:{label:'半年前',date:'2026-03-14',kind:'洞察',text:'很多時候阻礙推動的不是技術門檻，而是溝通的語境。'}
-      };
-      if (fn==='saveCheckin') return {ok:true,streak:6,checkin:{energy:energyVal,mood:moodVal,mood_label:''}};
       return {ok:true,item:null};
     }
 
     /* ---- 啟動 ---- */
     document.addEventListener('DOMContentLoaded', function(){
-      buildSegs();
       bindUI();
+      setupHomeScreenIcon();
       if (PREVIEW) showBanner('尚未設定 API 網址，目前為示範資料。到「設定」分頁貼上 Apps Script 的 /exec 網址即可連線。');
+      else if (!getApiToken()) showBanner('尚未設定存取權杖：任何拿到 /exec 網址的人都能讀寫你的日記。請在 Code.gs 設定 API_TOKEN，並在「設定」填入同一組。');
       boot();
     });
 
     async function boot(){
-      var c = await call('getFormConfig');
-      CFG = c.config; TODAY = c.today;
-      HOME = await call('getHomeData',{date:TODAY});
-      renderAll();
+      TODAY = todayLocal();
+      try{
+        var c = await call('getFormConfig');
+        CFG = normCfg(c && c.config);
+        HOME = await call('getHomeData',{date:TODAY});
+        normHome();
+        renderAll();
+      }catch(e){
+        showBanner('載入失敗：'+e.message, {label:'重試', fn:function(){ hideBanner(); boot(); }});
+        $('homeCheckin').innerHTML='<div class="mini">無法載入打卡資料。</div>';
+        $('feed').innerHTML='<div class="empty">資料沒有載入成功，請檢查網路，或到「設定」確認 API 網址與 token。</div>';
+      }
+    }
+    function normCfg(c){
+      c=c||{};
+      return {category:c.category||[], mood_label:c.mood_label||[], tag:c.tag||[]};
+    }
+    function normHome(){
+      var d=HOME||{};
+      d.feed=d.feed||[]; d.openLoops=d.openLoops||[]; d.week=d.week||[]; d.trend=d.trend||[];
+      d.topTags=d.topTags||[]; d.checkin=d.checkin||{};
+      HOME=d;
+      HOMECK={ energy:d.checkin.energy!=null?d.checkin.energy:null,
+               mood:d.checkin.mood!=null?d.checkin.mood:null,
+               label:d.checkin.mood_label||'' };
     }
 
-    /* ---- header 打卡 ---- */
-    function buildSegs(){
-      var eb=document.getElementById('energy'); eb.innerHTML='';
-      for(var i=1;i<=5;i++){ eb.appendChild(seg(i, String(i), function(v){ energyVal=v; paint('energy',energyVal); scheduleCheckin(); })); }
-      var mb=document.getElementById('mood'); mb.innerHTML='';
-      [-2,-1,0,1,2].forEach(function(v){ mb.appendChild(seg(v,(v>0?'+':'')+v,function(x){ moodVal=x; paint('mood',moodVal); scheduleCheckin(); })); });
+    /* ---- 跨日偵測：App 放著過午夜，自動切到新的一天 ---- */
+    var refreshing=false;
+    async function refreshHome(){
+      if(refreshing) return; refreshing=true;
+      TODAY=todayLocal();
+      try{ HOME=await call('getHomeData',{date:TODAY}); normHome(); renderAll(); }
+      catch(e){ toast('更新失敗：'+e.message); }
+      finally{ refreshing=false; }
     }
-    function seg(val,label,cb){
-      var b=document.createElement('button'); b.className='seg'; b.textContent=label; b.dataset.v=val;
-      b.onclick=function(){ cb(val); }; return b;
+    function checkRollover(){
+      if(TODAY && HOME && todayLocal()!==TODAY){ toast('已經是新的一天，畫面已更新'); refreshHome(); return true; }
+      return false;
     }
-    function paint(id,val){
-      document.querySelectorAll('#'+id+' .seg').forEach(function(s){ s.classList.toggle('on', String(s.dataset.v)===String(val)); });
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState==='hidden') flushAllCheckins();
+      else checkRollover();
+    });
+    window.addEventListener('pagehide', flushAllCheckins);
+    setInterval(checkRollover, 60000);
+
+    /* ---- 打卡（精力 / 情緒 / 情緒關鍵詞）：首頁與行事曆共用 ---- */
+    var MOOD_WORD={'-2':'很低落','-1':'有點低','0':'平穩','1':'不錯','2':'很好'};
+    function buildCheckinUI(root, st, opts){
+      var html='<div class="lab"><span>精力</span><span class="mini">'+esc(opts.hint||'今天的電量')+'</span></div>'
+        +'<div class="segrow" data-k="energy"></div>'
+        +'<div class="lab"><span>情緒</span><span class="mini">-2 到 +2</span></div>'
+        +'<div class="segrow" data-k="mood"></div>';
+      if(CFG.mood_label.length) html+='<div class="chips mlabels" data-k="label"></div>';
+      root.innerHTML=html;
+      var eb=root.querySelector('[data-k=energy]'), mb=root.querySelector('[data-k=mood]'), lb=root.querySelector('[data-k=label]');
+      [1,2,3,4,5].forEach(function(v){
+        eb.appendChild(segBtn(v,String(v),'精力 '+v,function(){ st.energy=v; paintCk(); opts.onChange({energy_score:v}); }));
+      });
+      [-2,-1,0,1,2].forEach(function(v){
+        mb.appendChild(segBtn(v,(v>0?'+':'')+v,'情緒 '+MOOD_WORD[v],function(){ st.mood=v; paintCk(); opts.onChange({mood_score:v}); }));
+      });
+      if(lb){
+        var labels=CFG.mood_label.slice(); if(st.label && labels.indexOf(st.label)<0) labels.push(st.label);
+        labels.forEach(function(l){
+          var b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=l; b.dataset.v=l;
+          b.onclick=function(){ st.label = st.label===l ? '' : l; paintCk(); opts.onChange({mood_label:st.label}); };
+          lb.appendChild(b);
+        });
+      }
+      function paintCk(){
+        Array.prototype.forEach.call(eb.children,function(s){ var on=String(s.dataset.v)===String(st.energy); s.classList.toggle('on',on); s.setAttribute('aria-pressed',on); });
+        Array.prototype.forEach.call(mb.children,function(s){ var on=String(s.dataset.v)===String(st.mood); s.classList.toggle('on',on); s.setAttribute('aria-pressed',on); });
+        if(lb) Array.prototype.forEach.call(lb.children,function(s){ var on=s.dataset.v===st.label; s.classList.toggle('on',on); s.setAttribute('aria-pressed',on); });
+      }
+      paintCk(); root._paint=paintCk;
     }
-    // 打卡：連點合併成一次送出（依日期 upsert，永遠不會產生重複列）
-    var checkinTimer=null;
-    function scheduleCheckin(){ clearTimeout(checkinTimer); checkinTimer=setTimeout(flushCheckin, 700); }
-    async function flushCheckin(){
-      var patch={log_date:TODAY};
-      if(energyVal!=null) patch.energy_score=energyVal;
-      if(moodVal!=null) patch.mood_score=moodVal;
-      try{ var r=await call('saveCheckin',patch); if(r&&r.streak!=null){ setStreak(r.streak); } toast('已記錄'); }
-      catch(e){ toast('儲存失敗：'+e.message); }
+    function segBtn(val,label,aria,cb){
+      var b=document.createElement('button'); b.type='button'; b.className='seg'; b.textContent=label; b.dataset.v=val;
+      b.title=aria; b.setAttribute('aria-label',aria); b.onclick=cb; return b;
     }
+    function onHomeCheckin(patch){
+      if(checkRollover()) return;
+      queueCheckin(TODAY, patch);
+      if(patch.energy_score!=null){
+        var w=HOME.week.filter(function(x){ return x.isToday; })[0];
+        if(w){ w.energy=patch.energy_score; renderMiniWeek(HOME.week); }
+      }
+    }
+    // 連點合併成一次送出（依日期 upsert）；切走 App 或關頁時立刻送出，不會漏
+    var pendingCheckins={};
+    function queueCheckin(date, patch){
+      var p=pendingCheckins[date]||(pendingCheckins[date]={patch:{log_date:date}});
+      Object.assign(p.patch, patch);
+      clearTimeout(p.timer);
+      p.timer=setTimeout(function(){ sendCheckin(date,false); }, 700);
+    }
+    async function sendCheckin(date, keepalive){
+      var p=pendingCheckins[date]; if(!p) return;
+      clearTimeout(p.timer); delete pendingCheckins[date];
+      try{
+        var r=await call('saveCheckin', p.patch, {keepalive:keepalive});
+        if(r && r.streak!=null) setStreak(r.streak);
+        TREND_DATA=null;
+        if(viewOn('calendar')) loadCalendar();
+        if(!keepalive) toast(date===TODAY?'已記錄':'已補記 '+fmtShort(date));
+      }catch(e){ toast('打卡儲存失敗：'+e.message); }
+    }
+    function flushAllCheckins(){ Object.keys(pendingCheckins).forEach(function(d){ sendCheckin(d,true); }); }
 
     /* ---- 全畫面渲染 ---- */
     function renderAll(){
       var d=HOME;
-      document.getElementById('h-date').textContent = fmtHead(d.today);
-      document.getElementById('h-greet').textContent = greet();
+      $('h-date').textContent = fmtHead(TODAY);
+      $('h-greet').textContent = greet();
       setStreak(d.streak);
-      energyVal=d.checkin.energy; moodVal=d.checkin.mood;
-      paint('energy',energyVal); paint('mood',moodVal);
-      renderFeed(d.feed);
-      renderLoops(d.openLoops||[]);
+      buildCheckinUI($('homeCheckin'), HOMECK, {hint:'今天的電量', onChange:onHomeCheckin});
       renderFlash(d.flashback);
-      renderMiniWeek(d.week); document.getElementById('miniAvg').textContent = d.trendAvg!=null?('近兩週平均精力 '+d.trendAvg):'';
-      renderTags('homeTags', d.topTags, false);
-      renderTags('searchTags', d.allTags||d.topTags, true);
-      if(!document.getElementById('searchResult').dataset.active)
-        document.getElementById('searchResult').innerHTML='<div class="mini">點上面任一標籤，拉出所有相關紀錄。</div>';
-      renderTags('trendTags', d.topTags, false);
-      document.getElementById('bigSpark').innerHTML = spark(d.trend, 320, 90);
-      document.getElementById('trendAvg2').textContent = d.trendAvg!=null?('平均 '+d.trendAvg+' · 空白處為當日未記錄'):'';
+      $('miniAvg').textContent = d.trendAvg!=null?('近兩週平均精力 '+d.trendAvg):'';
+      renderHomeParts();
+      if(!$('searchResult').dataset.active)
+        $('searchResult').innerHTML='<div class="mini">輸入關鍵字，或點上面任一標籤，拉出所有相關紀錄。</div>';
     }
-    function setStreak(n){ document.getElementById('h-streak').innerHTML = n>0 ? '<i class="ti ti-flame" style="vertical-align:-2px"></i> 連續 '+n+' 天' : ''; }
+    function renderHomeParts(){
+      renderFeed();
+      renderLoops();
+      renderMiniWeek(HOME.week);
+      renderTags('homeTags', HOME.topTags, false);
+      renderTags('searchTags', HOME.allTags||HOME.topTags, true);
+      renderTags('trendTags', HOME.topTags, false);
+    }
+    function setStreak(n){ $('h-streak').innerHTML = n>0 ? '<i class="ti ti-flame" style="vertical-align:-2px"></i> 連續 '+n+' 天' : ''; }
 
-    function renderFeed(feed){
-      var box=document.getElementById('feed'); box.innerHTML='';
-      if(!feed.length){ box.innerHTML='<div class="empty">今天還沒有紀錄，點上面兩個入口開始。</div>'; return; }
-      feed.forEach(function(it){
-        var el=document.createElement('div'); el.className='feed-item';
-        if(it.is_dump){
-          el.innerHTML='<div class="row1"><span class="chip-dump"><i class="ti ti-writing" style="vertical-align:-2px"></i> 隨筆</span><span class="mini">'+it.time+'</span></div>'
-            +'<div class="prev">'+esc(it.fact)+'</div>';
-        }else{
-          var det='';
-          if(it.reaction) det+='<p class="orid-line"><b>R</b>'+esc(it.reaction)+'</p>';
-          if(it.insight)  det+='<p class="orid-line"><b>I</b>'+esc(it.insight)+'</p>';
-          if(it.action){
+    /* ---- 紀錄卡片：首頁、檢索、行事曆共用同一個元件 ---- */
+    var OPEN={};
+    function eventCard(it, o){
+      o=o||{};
+      var date=it.date||o.date;
+      var el=document.createElement('div'); el.className='feed-item'+(OPEN[it.id]?' open':'');
+      var right=o.showDate?fmtShort(date):(it.time||'');
+      var head='<div class="row1"><span class="'+(it.is_dump?'chip-dump':'chip-cat')+'">'
+        +(it.is_dump?'<i class="ti ti-writing" style="vertical-align:-2px"></i> 隨筆':esc(it.category||'事件'))
+        +'</span><span class="mini">'+esc(right)+'</span></div>';
+      var tags=it.tags&&it.tags.length?'<div class="feed-tags">'+it.tags.map(function(t){ return '<span>'+esc(t)+'</span>'; }).join('')+'</div>':'';
+      var acts='<div class="card-actions">'
+        +'<button type="button" class="lnk" data-act="edit"><i class="ti ti-pencil"></i>編輯</button>'
+        +'<button type="button" class="lnk danger" data-act="del"><i class="ti ti-trash"></i>刪除</button></div>';
+      if(it.is_dump){
+        el.innerHTML=head+'<div class="prev">'+esc(it.fact)+'</div><div class="detail">'+tags+acts+'</div>';
+      }else{
+        var det='';
+        if(it.reaction) det+='<p class="orid-line"><b>R</b>'+esc(it.reaction)+'</p>';
+        if(it.insight)  det+='<p class="orid-line"><b>I</b>'+esc(it.insight)+'</p>';
+        if(it.action){
+          if(o.follow){
             det+='<div class="orid-line d-line'+(it.followed?' done':'')+'"><b>D</b>'
               +'<span class="d-text">'+esc(it.action)+'</span>'
               +'<label class="follow"><input type="checkbox" class="follow-cb"'+(it.followed?' checked':'')+'> 已跟進</label></div>';
+          }else{
+            det+='<p class="orid-line'+(it.followed?' done-line':'')+'"><b>D</b>'+esc(it.action)+(it.followed?' ✓':'')+'</p>';
           }
-          var tags = it.tags.length ? '<div class="feed-tags">'+it.tags.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div>' : '';
-          el.innerHTML='<div class="row1"><span class="chip-cat">'+esc(it.category||'事件')+'</span><span class="mini">'+it.time+'</span></div>'
-            +'<div class="fact">'+esc(it.fact||'（未填事實）')+'</div>'
-            +(it.insight?'<div class="prev">洞察：'+esc(it.insight)+'</div>':'')
-            +'<div class="detail">'+(det||'<p class="mini">沒有更多細節</p>')+tags+'</div>';
-          el.style.cursor='pointer';
-          el.onclick=function(){ el.classList.toggle('open'); };
         }
-        box.appendChild(el);
-        var cb=el.querySelector('.follow-cb');
-        if(cb){
-          var lbl=cb.parentNode;
-          lbl.addEventListener('click',function(ev){ ev.stopPropagation(); });
-          cb.addEventListener('change',function(ev){ ev.stopPropagation(); applyFollow(it.id, cb.checked); });
+        el.innerHTML=head+'<div class="fact">'+esc(it.fact||'（未填事實）')+'</div>'
+          +(it.insight?'<div class="prev">洞察：'+esc(it.insight)+'</div>':'')
+          +'<div class="detail">'+(det||'<p class="mini">沒有更多細節</p>')+tags+acts+'</div>';
+      }
+      el.onclick=function(ev){
+        if(ev.target.closest('.card-actions,.follow')) return;
+        el.classList.toggle('open'); OPEN[it.id]=el.classList.contains('open');
+      };
+      var cb=el.querySelector('.follow-cb');
+      if(cb) cb.addEventListener('change',function(){ applyFollow(it.id, cb.checked); });
+      el.querySelector('[data-act=edit]').onclick=function(){ editEvent(it, date); };
+      var del=el.querySelector('[data-act=del]');
+      del.onclick=function(){
+        if(!del.classList.contains('confirm')){        // 按兩次才刪，避免誤觸
+          del.classList.add('confirm'); del.textContent='確定刪除？';
+          setTimeout(function(){ if(del.isConnected && !del.disabled){ del.classList.remove('confirm'); del.innerHTML='<i class="ti ti-trash"></i>刪除'; } },3000);
+          return;
         }
-      });
+        removeEvent(it, date, del);
+      };
+      return el;
     }
 
-    function renderLoops(loops){
-      var w=document.getElementById('loopsWrap');
-      if(!loops || !loops.length){ w.innerHTML=''; return; }
+    function renderFeed(){
+      var box=$('feed'); box.innerHTML='';
+      if(!HOME.feed.length){ box.innerHTML='<div class="empty">今天還沒有紀錄，點上面兩個入口開始。</div>'; return; }
+      HOME.feed.forEach(function(it){ box.appendChild(eventCard(it,{date:TODAY,follow:true})); });
+    }
+
+    function renderLoops(){
+      var w=$('loopsWrap'), loops=HOME.openLoops;
+      if(!loops.length){ w.innerHTML=''; return; }
       var html='<div class="sec-title">待跟進 <span class="mini">· 你對自己說的下一步</span></div>';
       loops.forEach(function(l){
         var meta='來自 '+fmtShort(l.date)+'「'+esc(l.fact||l.category||'事件')+'」'
-          +(l.tags&&l.tags.length?' · '+l.tags.map(function(t){return '<span style="color:var(--accent)">'+esc(t)+'</span>';}).join(' '):'');
+          +(l.tags&&l.tags.length?' · '+l.tags.map(function(t){ return '<span style="color:var(--accent)">'+esc(t)+'</span>'; }).join(' '):'');
         html+='<div class="loop" data-id="'+esc(l.id)+'">'
           +'<button class="loop-check" aria-label="標記已跟進"><i class="ti ti-check"></i></button>'
           +'<div class="loop-body"><div class="loop-action">'+esc(l.action)+'</div>'
@@ -508,207 +775,366 @@
       Array.prototype.forEach.call(w.querySelectorAll('.loop'),function(el){
         el.querySelector('.loop-check').onclick=function(){
           el.classList.add('closing');
-          setTimeout(function(){ applyFollow(el.dataset.id, true); }, 180);
+          setTimeout(function(){ applyFollow(el.dataset.id, true, {undo:true}); }, 180);
         };
       });
     }
 
-    async function applyFollow(id, followed){
-      if(HOME.openLoops) HOME.openLoops=HOME.openLoops.filter(function(l){ return l.id!==id; });
+    // 跟進：取消勾選時把待跟進放回原位；從待跟進收起時提供「復原」
+    var LOOP_UNDO={};
+    async function applyFollow(id, followed, o){
+      o=o||{};
+      var loops=HOME.openLoops, i=idxById(loops,id);
+      if(followed){ if(i>=0){ LOOP_UNDO[id]={loop:loops[i],idx:i}; loops.splice(i,1); } }
+      else if(LOOP_UNDO[id] && i<0){ var u=LOOP_UNDO[id]; loops.splice(Math.min(u.idx,loops.length),0,u.loop); delete LOOP_UNDO[id]; }
       HOME.feed.forEach(function(f){ if(f.id===id) f.followed=followed; });
-      renderLoops(HOME.openLoops); renderFeed(HOME.feed);
-      try{ await call('setFollowedUp',{eventId:id,followed:followed}); toast(followed?'已跟進，收起來了':'已取消'); }
-      catch(e){ toast('更新失敗：'+e.message); HOME=await call('getHomeData',{date:TODAY}); renderAll(); }
+      renderLoops(); renderFeed();
+      try{
+        await call('setFollowedUp',{eventId:id,followed:followed});
+        if(followed && o.undo) toast('已跟進，收起來了',{label:'復原',fn:function(){ applyFollow(id,false); }});
+        else toast(followed?'已標記跟進':'已取消跟進');
+      }catch(e){ toast('更新失敗：'+e.message); refreshHome(); }
     }
 
     function renderFlash(f){
-      var w=document.getElementById('flashWrap');
+      var w=$('flashWrap');
       if(!f){ w.innerHTML=''; return; }
       w.innerHTML='<div class="sec-title">那年今日 · '+esc(f.label)+'</div>'
         +'<div class="flash"><div class="lab">'+esc(f.date)+' 的'+esc(f.kind)+'</div><div class="q">「'+esc(f.text)+'」</div></div>';
     }
 
     function renderMiniWeek(week){
-      var box=document.getElementById('miniWeek'); box.innerHTML='';
+      var box=$('miniWeek'); box.innerHTML='';
       week.forEach(function(d){
-        var h = d.energy? (10+d.energy*7) : 8;
-        var cls='bar'+(d.isToday?' today':'');
-        var style=d.isToday?'':('height:'+h+'px'+(d.energy?'':';background:var(--line)'));
-        box.innerHTML+='<div class="col"><div class="'+cls+'" style="'+style+'"></div><div class="wd">'+d.weekday+'</div></div>';
+        var has=d.energy!=null;
+        var col=document.createElement('div'); col.className='col';
+        var bar=document.createElement('div');
+        bar.className='bar'+(d.isToday?(has?' now':' today'):'');
+        if(!(d.isToday&&!has)){ bar.style.height=(has?(10+d.energy*7):8)+'px'; if(!has) bar.style.background='var(--line)'; }
+        bar.title=has?('精力 '+d.energy):'未記錄';
+        var wd=document.createElement('div'); wd.className='wd'; wd.textContent=d.weekday;
+        col.appendChild(bar); col.appendChild(wd); box.appendChild(col);
       });
     }
 
     function renderTags(id, tags, clickable){
-      var box=document.getElementById(id); box.innerHTML='';
+      var box=$(id); box.innerHTML=''; tags=tags||[];
       if(!tags.length){ box.innerHTML='<span class="mini">尚無標籤</span>'; return; }
       tags.forEach(function(t,i){
-        var p=document.createElement('span'); p.className='tag-pill'+(i<2&&!clickable?' hot':'');
+        var p=document.createElement(clickable?'button':'span');
+        if(clickable) p.type='button';
+        p.className='tag-pill'+(i<2&&!clickable?' hot':'')
+          +(clickable&&LAST_SEARCH&&LAST_SEARCH.kind==='tag'&&LAST_SEARCH.value===t.tag?' sel':'');
         p.textContent=t.tag+' '+t.count; p.dataset.tag=t.tag;
-        if(clickable) p.onclick=function(){ runSearch(t.tag); };
+        if(clickable) p.onclick=function(){ runSearch('tag', t.tag); };
         box.appendChild(p);
       });
     }
-
-    async function runSearch(tag){
-      Array.prototype.forEach.call(document.querySelectorAll('#searchTags .tag-pill'),function(p){
-        p.classList.toggle('sel', p.dataset.tag===tag);
-      });
-      var box=document.getElementById('searchResult'); box.dataset.active='1';
-      box.innerHTML='<div class="mini">檢索中…</div>';
-      try{
-        var res=await call('searchByTag',{tag:tag});
-        if(!res.length){ box.innerHTML='<div class="empty">「'+esc(tag)+'」還沒有相關紀錄。</div>'; return; }
-        var html='<div class="sec-title" style="margin-top:2px">「'+esc(tag)+'」· '+res.length+' 筆</div>';
-        res.forEach(function(it){ html+=searchCard(it); });
-        box.innerHTML=html;
-        Array.prototype.forEach.call(box.querySelectorAll('.feed-item'),function(el){
-          if(el.querySelector('.detail')){ el.style.cursor='pointer'; el.onclick=function(){ el.classList.toggle('open'); }; }
+    // 新增 / 修改 / 刪除後，就地更新標籤次數，不用重新載入
+    function bumpTags(add, rem, date){
+      var delta={};
+      (add||[]).forEach(function(t){ delta[t]=(delta[t]||0)+1; });
+      (rem||[]).forEach(function(t){ delta[t]=(delta[t]||0)-1; });
+      function apply(arr){
+        Object.keys(delta).forEach(function(t){
+          if(!delta[t]) return;
+          var e=arr.filter(function(x){ return x.tag===t; })[0];
+          if(e) e.count+=delta[t]; else if(delta[t]>0) arr.push({tag:t,count:delta[t]});
         });
+        return arr.filter(function(x){ return x.count>0; }).sort(function(a,b){ return b.count-a.count; });
+      }
+      if(HOME.allTags) HOME.allTags=apply(HOME.allTags);
+      if(date && date.slice(0,7)===TODAY.slice(0,7)) HOME.topTags=apply(HOME.topTags);
+    }
+
+    /* ---- 檢索：全文 + 標籤 ---- */
+    var LAST_SEARCH=null;
+    async function runSearch(kind, value, silent){
+      LAST_SEARCH={kind:kind,value:value};
+      Array.prototype.forEach.call(document.querySelectorAll('#searchTags .tag-pill'),function(p){
+        p.classList.toggle('sel', kind==='tag' && p.dataset.tag===value);
+      });
+      var box=$('searchResult'); box.dataset.active='1';
+      if(!silent) box.innerHTML='<div class="mini">檢索中…</div>';
+      try{
+        var res=await call(kind==='tag'?'searchByTag':'searchText', kind==='tag'?{tag:value}:{q:value}) || [];
+        box.innerHTML='';
+        if(!res.length){ box.innerHTML='<div class="empty">「'+esc(value)+'」'+(kind==='tag'?'還沒有相關紀錄。':'找不到符合的紀錄。')+'</div>'; return; }
+        var h=document.createElement('div'); h.className='sec-title'; h.style.marginTop='2px';
+        h.textContent='「'+value+'」· '+res.length+' 筆'; box.appendChild(h);
+        res.forEach(function(it){ box.appendChild(eventCard(it,{showDate:true,date:it.date})); });
       }catch(e){ box.innerHTML='<div class="empty">檢索失敗：'+esc(e.message)+'</div>'; }
     }
+    function rerunSearch(){ if(LAST_SEARCH) runSearch(LAST_SEARCH.kind, LAST_SEARCH.value, true); }
 
-    function searchCard(it){
-      var head='<div class="row1"><span class="'+(it.is_dump?'chip-dump':'chip-cat')+'">'
-        +(it.is_dump?'<i class="ti ti-writing" style="vertical-align:-2px"></i> 隨筆':esc(it.category||'事件'))
-        +'</span><span class="mini">'+esc(fmtShort(it.date||''))+'</span></div>';
-      if(it.is_dump) return '<div class="feed-item">'+head+'<div class="prev">'+esc(it.fact)+'</div></div>';
-      var det='';
-      if(it.reaction) det+='<p class="orid-line"><b>R</b>'+esc(it.reaction)+'</p>';
-      if(it.insight)  det+='<p class="orid-line"><b>I</b>'+esc(it.insight)+'</p>';
-      if(it.action)   det+='<p class="orid-line'+(it.followed?' done-line':'')+'"><b>D</b>'+esc(it.action)+(it.followed?' ✓':'')+'</p>';
-      var tags = it.tags&&it.tags.length ? '<div class="feed-tags">'+it.tags.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div>' : '';
-      return '<div class="feed-item">'+head
-        +'<div class="fact">'+esc(it.fact||'（未填事實）')+'</div>'
-        +(it.insight?'<div class="prev">洞察：'+esc(it.insight)+'</div>':'')
-        +'<div class="detail">'+(det||'<p class="mini">沒有更多細節</p>')+tags+'</div></div>';
+    /* ---- 草稿：寫到一半關掉、誤觸背景、App 被系統收掉都不會遺失 ---- */
+    function loadDraft(key){ try{ return JSON.parse(LS.get(key)||'null'); }catch(e){ return null; } }
+    function showDraftBar(id, msg, onDiscard){
+      var b=$(id); b.innerHTML='<span>'+esc(msg)+'</span><button type="button">捨棄草稿</button>';
+      b.classList.add('on');
+      b.querySelector('button').onclick=function(){ b.classList.remove('on'); onDiscard(); };
+    }
+    function hideDraftBar(id){ $(id).classList.remove('on'); }
+    function dateLabel(ds){ return ds===todayLocal() ? ('記在今天（'+fmtHead(ds)+'）') : ('補寫 '+fmtHead(ds)); }
+    function draftMsg(dr, sameCtx, what){
+      return sameCtx ? '已帶回上次沒寫完的'+what+'。'
+        : '你有一份 '+fmtShort(dr.date)+' 沒寫完的'+what+'，先帶回來了；捨棄後會打開你剛點的項目。';
     }
 
-    /* ---- 隨筆 sheet ---- */
+    /* ---- 隨筆 sheet（新增 / 修改 / 補寫） ---- */
     function uuid(){ return (window.crypto&&crypto.randomUUID)?crypto.randomUUID():('c'+Date.now()+Math.random().toString(16).slice(2)); }
-    var dumpCid=null;
-    function openDump(){ dumpCid=uuid(); openSheet('sheet-dump'); document.getElementById('dumpText').focus(); }
+    var ds=null, dumpSaving=false;
+    function newDs(ctx){
+      var e=ctx.edit;
+      return {date:ctx.date||todayLocal(), editId:e?e.id:null, text:e?(e.fact||''):'', orig:e?(e.fact||''):'', cid:uuid(), prev:e?clone(e):null};
+    }
+    function dsDirty(d){ return !!d && typeof d.text==='string' && d.text.trim()!==String(d.orig||'').trim(); }
+    function persistDs(){ if(dsDirty(ds)) LS.set(DRAFT_DUMP, JSON.stringify(ds)); else LS.del(DRAFT_DUMP); }
+    function openDump(ctx){
+      ctx=ctx||{};
+      var fresh=newDs(ctx), dr=loadDraft(DRAFT_DUMP);
+      if(dsDirty(dr)){
+        ds=dr;
+        var same=(dr.editId||null)===fresh.editId && dr.date===fresh.date;
+        showDraftBar('dumpDraft', draftMsg(dr,same,dr.editId?'修改':'隨筆'), function(){ LS.del(DRAFT_DUMP); ds=fresh; renderDumpSheet(); });
+      }else{ ds=fresh; hideDraftBar('dumpDraft'); }
+      renderDumpSheet(); openSheet('sheet-dump');
+      $('dumpText').focus();
+    }
+    function renderDumpSheet(){
+      $('dumpTitle').textContent=ds.editId?'修改隨筆':'隨筆傾倒';
+      $('dumpDate').textContent=dateLabel(ds.date);
+      $('dumpText').value=ds.text;
+    }
     async function saveDump(){
-      var t=document.getElementById('dumpText').value.trim();
+      var t=$('dumpText').value.trim();
       if(!t){ toast('還沒寫東西'); return; }
-      var btn=document.getElementById('saveDump');
-      if(btn.disabled) return;                       // 防連點
-      btn.disabled=true; btn.textContent='儲存中…';
-      if(!dumpCid) dumpCid=uuid();                    // 同一則沿用同一把 id，重送也只會有一筆
+      if(dumpSaving) return;                          // 防連點
+      dumpSaving=true;
+      var btn=$('saveDump'); btn.disabled=true; btn.textContent='儲存中…';
+      var cur=ds, r, item;
       try{
-        var r=await call('saveBrainDump',{log_date:TODAY,text:t,client_id:dumpCid});
-        document.getElementById('dumpText').value=''; dumpCid=null; closeSheets();
-        if(r.item){ HOME.feed.push(r.item); renderFeed(HOME.feed); } else { HOME=await call('getHomeData',{date:TODAY}); renderAll(); }
-        toast(r.dedup?'已儲存（未重複）':'隨筆已存');
-      }catch(e){ toast('儲存失敗：'+e.message); }     // 失敗保留 dumpCid，重送會去重
-      finally{ btn.disabled=false; btn.textContent='存下來'; }
+        if(cur.editId){
+          r=await call('updateEvent',{eventId:cur.editId,log_date:cur.date,text:t,fact_objective:t});
+          item=(r&&r.item)||Object.assign({},cur.prev,{fact:t});
+        }else{
+          // 同一則沿用同一把 client_id，失敗重送也只會有一筆
+          r=await call('saveBrainDump',{log_date:cur.date,text:t,client_id:cur.cid});
+          item=r&&r.item;
+        }
+        if(item && !item.date) item.date=cur.date;
+        LS.del(DRAFT_DUMP); ds=null; $('dumpText').value='';
+        closeSheets(true);
+        afterSaved(cur.date, item, cur.prev);
+        toast(cur.editId?'已更新':(r&&r.dedup?'已儲存（未重複）':(cur.date===TODAY?'隨筆已存':'已補寫到 '+fmtShort(cur.date))));
+      }catch(e){ toast('儲存失敗：'+e.message); }     // 失敗時草稿與 client_id 都保留
+      finally{ dumpSaving=false; btn.disabled=false; btn.textContent='存下來'; }
     }
 
-    /* ---- ORID 精靈 ---- */
-    var wz={step:0, category:'', o:'', r:'', i:'', d:'', tags:[]};
+    /* ---- ORID 精靈（新增 / 修改 / 補寫） ---- */
+    var wz=null;
     var WZ=[
       {key:'o', tag:'O', lab:'發生了什麼事', hint:'客觀事實，不帶評價地描述經過', cat:true},
       {key:'r', tag:'R', lab:'當下的感受', hint:'主觀情緒與直覺'},
       {key:'i', tag:'I', lab:'我看見了什麼底色', hint:'為什麼會這樣、看見了什麼'},
       {key:'d', tag:'D', lab:'下一次怎麼做', hint:'行動與跟進', tags:true}
     ];
-    function openOrid(){ wz={step:0,category:'',o:'',r:'',i:'',d:'',tags:[],client_id:uuid()}; renderWz(); openSheet('sheet-orid'); }
+    function wzSnap(w){ return JSON.stringify([w.category||'',w.o||'',w.r||'',w.i||'',w.d||'',(w.tags||[]).slice().sort()]); }
+    function newWz(ctx){
+      var e=ctx.edit;
+      var w={step:0, date:ctx.date||todayLocal(), editId:e?e.id:null,
+        category:e?(e.category||''):'', o:e?(e.fact||''):'', r:e?(e.reaction||''):'', i:e?(e.insight||''):'', d:e?(e.action||''):'',
+        tags:e?(e.tags||[]).slice():[], client_id:uuid(), prev:e?clone(e):null};
+      w.orig=wzSnap(w); return w;
+    }
+    function wzDirty(w){ return !!w && w.orig!=null && wzSnap(w)!==w.orig; }
+    function persistWz(){ if(wzDirty(wz)) LS.set(DRAFT_ORID, JSON.stringify(wz)); else LS.del(DRAFT_ORID); }
+    function openOrid(ctx){
+      ctx=ctx||{};
+      var fresh=newWz(ctx), dr=loadDraft(DRAFT_ORID);
+      if(wzDirty(dr)){
+        wz=dr;
+        var same=(dr.editId||null)===fresh.editId && dr.date===fresh.date;
+        showDraftBar('oridDraft', draftMsg(dr,same,dr.editId?'修改':'覆盤'), function(){ LS.del(DRAFT_ORID); wz=fresh; renderWz(); });
+      }else{ wz=fresh; hideDraftBar('oridDraft'); }
+      renderWz(); openSheet('sheet-orid');
+    }
     function renderWz(){
       var s=WZ[wz.step];
-      document.getElementById('oridSub').textContent='第 '+(wz.step+1)+' 步 / 共 4 步';
+      $('oridTitle').textContent=wz.editId?'修改覆盤':'事件覆盤';
+      $('oridDate').textContent=dateLabel(wz.date);
+      $('oridSub').textContent='第 '+(wz.step+1)+' 步 / 共 4 步';
       document.querySelectorAll('#sheet-orid .steps .s').forEach(function(el,idx){ el.classList.toggle('on', idx<=wz.step); });
       var html='';
       if(s.cat){
+        var cats=CFG.category.slice(); if(wz.category && cats.indexOf(wz.category)<0) cats.unshift(wz.category);
         html+='<p class="wz-lab">事件類別</p><select id="wzCat"><option value="">—</option>'
-          +CFG.category.map(function(c){return '<option'+(wz.category===c?' selected':'')+'>'+esc(c)+'</option>';}).join('')+'</select><div style="height:12px"></div>';
+          +cats.map(function(c){ return '<option'+(wz.category===c?' selected':'')+'>'+esc(c)+'</option>'; }).join('')+'</select><div style="height:12px"></div>';
       }
       html+='<p class="wz-lab"><b>'+s.tag+'</b>'+esc(s.lab)+'</p><p class="wz-hint">'+esc(s.hint)+'</p>'
         +'<textarea id="wzText" rows="4">'+esc(wz[s.key])+'</textarea>';
       if(s.tags){
+        var tagList=CFG.tag.slice(); wz.tags.forEach(function(t){ if(tagList.indexOf(t)<0) tagList.push(t); });
         html+='<p class="wz-lab" style="margin-top:12px">標籤</p><div class="chips" id="wzTags">'
-          +CFG.tag.map(function(t){return '<button type="button" class="chip'+(wz.tags.indexOf(t)>=0?' on':'')+'">'+esc(t)+'</button>';}).join('')+'</div>'
+          +tagList.map(function(t){ return '<button type="button" class="chip'+(wz.tags.indexOf(t)>=0?' on':'')+'" data-t="'+esc(t)+'">'+esc(t)+'</button>'; }).join('')+'</div>'
           +'<div class="addtag"><input id="wzNewTag" placeholder="新增標籤，如 #靈感"><button type="button" class="btn" id="wzAddTag">新增</button></div>';
       }
-      document.getElementById('oridBody').innerHTML=html;
-      if(s.cat) document.getElementById('wzCat').onchange=function(){ wz.category=this.value; };
+      $('oridBody').innerHTML=html;
+      $('wzText').oninput=function(){ wz[s.key]=this.value; persistWz(); };
+      if(s.cat) $('wzCat').onchange=function(){ wz.category=this.value; persistWz(); };
       if(s.tags){
         Array.prototype.forEach.call(document.querySelectorAll('#wzTags .chip'),function(c){
-          c.onclick=function(){ this.classList.toggle('on'); var t=this.textContent;
-            var k=wz.tags.indexOf(t); if(k>=0) wz.tags.splice(k,1); else wz.tags.push(t); };
+          c.onclick=function(){
+            this.classList.toggle('on'); var t=this.dataset.t, k=wz.tags.indexOf(t);
+            if(k>=0) wz.tags.splice(k,1); else wz.tags.push(t);
+            persistWz();
+          };
         });
-        document.getElementById('wzAddTag').onclick=addNewTag;
-        document.getElementById('wzNewTag').onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); addNewTag(); } };
+        $('wzAddTag').onclick=addNewTag;
+        $('wzNewTag').onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); addNewTag(); } };
       }
-      document.getElementById('oridPrev').style.visibility = wz.step===0?'hidden':'visible';
-      document.getElementById('oridNext').textContent = wz.step===3?'儲存':'下一步';
+      $('oridPrev').style.visibility = wz.step===0?'hidden':'visible';
+      $('oridNext').textContent = wz.step===3?'儲存':'下一步';
     }
-    function wzCommit(){ var ta=document.getElementById('wzText'); if(ta) wz[WZ[wz.step].key]=ta.value; }
+    function wzCommit(){ var ta=$('wzText'); if(ta && wz) wz[WZ[wz.step].key]=ta.value; }
     async function addNewTag(){
-      var inp=document.getElementById('wzNewTag'); if(!inp) return;
+      var inp=$('wzNewTag'); if(!inp) return;
       var raw=inp.value.trim(); if(!raw){ toast('先輸入標籤'); return; }
       var name=(raw.charAt(0)==='#'?raw:('#'+raw)).replace(/\s+/g,'');
       wzCommit();
       if(CFG.tag.indexOf(name)<0){
-        CFG.tag.push(name);
-        try{ await call('addTag',{tag:name}); }catch(e){ toast('標籤儲存失敗：'+e.message); }
+        try{ var r=await call('addTag',{tag:name}); if(r&&r.tag) name=r.tag; if(CFG.tag.indexOf(name)<0) CFG.tag.push(name); }
+        catch(e){ toast('標籤沒存進選項清單：'+e.message+'（這則紀錄仍會帶上它）'); }
       }
       if(wz.tags.indexOf(name)<0) wz.tags.push(name);
-      inp.value='';
-      renderWz();
+      inp.value=''; persistWz(); renderWz();
       toast('已加入 '+name);
     }
-    function oridPrev(){ wzCommit(); if(wz.step>0){ wz.step--; renderWz(); } }
+    function oridPrev(){ wzCommit(); if(wz.step>0){ wz.step--; persistWz(); renderWz(); } }
     var wzSaving=false;
     async function oridNext(){
       wzCommit();
-      if(wz.step<3){ wz.step++; renderWz(); return; }
+      if(wz.step<3){ wz.step++; persistWz(); renderWz(); return; }
       if(!wz.o.trim() && !wz.category){ toast('至少填類別或 O'); return; }
       if(wzSaving) return;                            // 防連點
       wzSaving=true;
-      var btn=document.getElementById('oridNext'); btn.disabled=true; btn.textContent='儲存中…';
+      var btn=$('oridNext'); btn.disabled=true; btn.textContent='儲存中…';
+      var cur=wz, r, item;
+      var fields={category:cur.category,fact_objective:cur.o,reaction_subjective:cur.r,insight:cur.i,action_next:cur.d,tags:cur.tags};
       try{
-        var r=await call('addEvent',{log_date:TODAY,category:wz.category,fact_objective:wz.o,
-          reaction_subjective:wz.r,insight:wz.i,action_next:wz.d,tags:wz.tags,client_id:wz.client_id});
-        closeSheets();
-        if(r.item){ HOME.feed.push(r.item); renderFeed(HOME.feed); } else { HOME=await call('getHomeData',{date:TODAY}); renderAll(); }
-        toast(r.dedup?'已儲存（未重複）':'事件已存');
-      }catch(e){ toast('儲存失敗：'+e.message); }       // 失敗保留 wz.client_id，重送會去重
+        if(cur.editId){
+          r=await call('updateEvent',Object.assign({eventId:cur.editId,log_date:cur.date},fields));
+          item=(r&&r.item)||Object.assign({},cur.prev,{category:cur.category,fact:cur.o,reaction:cur.r,insight:cur.i,action:cur.d,tags:cur.tags.slice()});
+        }else{
+          r=await call('addEvent',Object.assign({log_date:cur.date,client_id:cur.client_id},fields));
+          item=r&&r.item;
+        }
+        if(item && !item.date) item.date=cur.date;
+        LS.del(DRAFT_ORID); wz=null;
+        closeSheets(true);
+        afterSaved(cur.date, item, cur.prev);
+        toast(cur.editId?'已更新':(r&&r.dedup?'已儲存（未重複）':(cur.date===TODAY?'事件已存':'已補寫到 '+fmtShort(cur.date))));
+      }catch(e){ toast('儲存失敗：'+e.message); }       // 失敗時草稿與 client_id 都保留
       finally{ wzSaving=false; btn.disabled=false; btn.textContent='儲存'; }
+    }
+
+    /* ---- 編輯 / 刪除 ---- */
+    function editEvent(it, date){
+      if(isSheetOn('sheet-day')) DAY_RETURN=date;
+      closeSheets(true);
+      if(it.is_dump) openDump({date:date,edit:it}); else openOrid({date:date,edit:it});
+    }
+    async function removeEvent(it, date, btn){
+      btn.disabled=true; btn.textContent='刪除中…';
+      try{
+        await call('deleteEvent',{eventId:it.id});
+        HOME.feed=HOME.feed.filter(function(f){ return f.id!==it.id; });
+        HOME.openLoops=HOME.openLoops.filter(function(l){ return l.id!==it.id; });
+        bumpTags([], it.tags, date);
+        renderHomeParts();
+        if(isSheetOn('sheet-day')) DAY_RETURN=date;
+        refreshSecondary();
+        toast('已刪除');
+      }catch(e){
+        toast('刪除失敗：'+e.message);
+        btn.disabled=false; btn.classList.remove('confirm'); btn.innerHTML='<i class="ti ti-trash"></i>刪除';
+      }
+    }
+    // 存檔後就地更新首頁、待跟進、標籤，再刷新目前開著的其他畫面
+    function afterSaved(date, item, prev){
+      if(!HOME) return;
+      if(date===TODAY){
+        if(!item){ refreshHome(); }
+        else if(prev){ var fi=idxById(HOME.feed,prev.id); if(fi>=0) HOME.feed[fi]=item; else HOME.feed.push(item); }
+        else HOME.feed.push(item);
+      }
+      if(item || prev){
+        var id=item?item.id:prev.id, loops=HOME.openLoops, li=idxById(loops,id);
+        // 與後端規則一致：有下一步、未跟進、30 天內（含今天）
+        if(item && date<=TODAY && date>=addDays(TODAY,-30) && item.action && !item.followed && !item.is_dump){
+          var lp={id:item.id,action:item.action,date:date,category:item.category,fact:item.fact,tags:item.tags||[]};
+          if(li>=0) loops[li]=lp; else { loops.push(lp); loops.sort(byDateDesc); }
+        }else if(li>=0) loops.splice(li,1);
+      }
+      bumpTags(item?item.tags:[], prev?prev.tags:[], date);
+      renderHomeParts();
+      refreshSecondary();
+    }
+    function refreshSecondary(){
+      TREND_DATA=null;
+      if(viewOn('calendar')) loadCalendar();
+      if(viewOn('trend')) loadTrend();
+      rerunSearch();
+      if(DAY_RETURN){ var d=DAY_RETURN; DAY_RETURN=null; openDay(d); }
     }
 
     /* ---- sheet / nav / 共用 ---- */
     function bindUI(){
-      document.getElementById('openDump').onclick=openDump;
-      document.getElementById('openOrid').onclick=openOrid;
-      document.getElementById('saveDump').onclick=saveDump;
-      document.getElementById('oridPrev').onclick=oridPrev;
-      document.getElementById('oridNext').onclick=oridNext;
-      document.getElementById('scrim').onclick=closeSheets;
-      Array.prototype.forEach.call(document.querySelectorAll('[data-close]'),function(b){ b.onclick=closeSheets; });
+      $('openDump').onclick=function(){ if(!HOME) return; checkRollover(); openDump({date:todayLocal()}); };
+      $('openOrid').onclick=function(){ if(!HOME) return; checkRollover(); openOrid({date:todayLocal()}); };
+      $('saveDump').onclick=saveDump;
+      $('dumpText').oninput=function(){ if(ds){ ds.text=this.value; persistDs(); } };
+      $('oridPrev').onclick=oridPrev;
+      $('oridNext').onclick=oridNext;
+      $('scrim').onclick=function(){ closeSheets(); };
+      Array.prototype.forEach.call(document.querySelectorAll('[data-close]'),function(b){ b.onclick=function(){ closeSheets(); }; });
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeSheets(); });
+      $('dayDump').onclick=function(){ var d=DAY_CUR; DAY_RETURN=d; closeSheets(true); openDump({date:d}); };
+      $('dayOrid').onclick=function(){ var d=DAY_CUR; DAY_RETURN=d; closeSheets(true); openOrid({date:d}); };
+      $('textSearchForm').onsubmit=function(e){
+        e.preventDefault(); var q=$('textQ').value.trim();
+        if(!q){ toast('先輸入關鍵字'); return; }
+        $('textQ').blur(); runSearch('text', q);
+      };
       Array.prototype.forEach.call(document.querySelectorAll('.nav button'),function(b){
         b.onclick=function(){
-          document.querySelectorAll('.nav button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on');
-          document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on');});
-          document.getElementById('view-'+b.dataset.view).classList.add('on');
+          document.querySelectorAll('.nav button').forEach(function(x){ x.classList.remove('on'); }); b.classList.add('on');
+          document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
+          $('view-'+b.dataset.view).classList.add('on');
+          window.scrollTo(0,0);
           if(b.dataset.view==='settings') loadSettings();
           if(b.dataset.view==='calendar') loadCalendar();
+          if(b.dataset.view==='trend') loadTrend();
         };
       });
       bindSettings();
-      document.getElementById('calPrev').onclick=function(){ calShift(-1); };
-      document.getElementById('calNext').onclick=function(){ calShift(1); };
+      $('calPrev').onclick=function(){ calShift(-1); };
+      $('calNext').onclick=function(){ calShift(1); };
     }
+    function viewOn(name){ return $('view-'+name).classList.contains('on'); }
+    function isSheetOn(id){ return $(id).classList.contains('on'); }
 
     function loadSettings(){
-      document.getElementById('apiInput').value=getApiUrl();
-      document.getElementById('tokenInput').value=getApiToken();
+      $('apiInput').value=getApiUrl();
+      $('tokenInput').value=getApiToken();
       var app=location.href.split('#')[0];
-      document.getElementById('appUrl').value=app;
-      document.getElementById('apiStatus').textContent=getApiUrl()
-        ? ('目前 API：'+getApiUrl()) : '尚未設定 API 網址，目前顯示示範資料。';
+      $('appUrl').value=app;
+      $('apiStatus').textContent=getApiUrl()
+        ? ('目前 API：'+getApiUrl()+(getApiToken()?'':'（未設定 token）')) : '尚未設定 API 網址，目前顯示示範資料。';
       renderQR(app);
     }
     function renderQR(url){
-      var box=document.getElementById('qrBox'); box.innerHTML='';
+      var box=$('qrBox'); box.innerHTML='';
       if(!url){ box.innerHTML='<div class="mini">沒有可產生的網址</div>'; return; }
       try{
         if(typeof qrcode==='function'){
@@ -725,123 +1151,242 @@
       box.appendChild(im);
     }
     function bindSettings(){
-      document.getElementById('btnSaveApi').onclick=function(){
-        var u=document.getElementById('apiInput').value.trim();
-        var tk=document.getElementById('tokenInput').value.trim();
+      $('btnSaveApi').onclick=function(){
+        var u=$('apiInput').value.trim();
+        var tk=$('tokenInput').value.trim();
         if(u && u.indexOf('/exec')<0) toast('網址通常以 /exec 結尾，仍會儲存');
-        localStorage.setItem('diary_api_url', u);
-        localStorage.setItem('diary_api_token', tk);
+        LS.set('diary_api_url', u);
+        LS.set('diary_api_token', tk);
         toast('已儲存，重新載入…');
         setTimeout(function(){ location.reload(); }, 600);
       };
-      document.getElementById('btnCopyApp').onclick=async function(){
-        var u=document.getElementById('appUrl').value.trim(); if(!u) return;
+      $('btnGenToken').onclick=function(){
+        var a=new Uint8Array(24); crypto.getRandomValues(a);
+        $('tokenInput').value=Array.prototype.map.call(a,function(b){ return ('0'+b.toString(16)).slice(-2); }).join('');
+        toast('已產生，記得同步貼到 Code.gs 的 API_TOKEN');
+      };
+      $('btnCopyApp').onclick=async function(){
+        var u=$('appUrl').value.trim(); if(!u) return;
         try{ await navigator.clipboard.writeText(u); toast('已複製'); }
         catch(e){ var t=document.createElement('textarea'); t.value=u; document.body.appendChild(t); t.select();
           try{ document.execCommand('copy'); toast('已複製'); }catch(_){ toast('複製失敗，請長按選取'); }
           document.body.removeChild(t); }
       };
     }
-    /* ---- 行事曆 ---- */
+
+    /* ---- 行事曆：顏色深淺 = 精力；任何過去的日子都能點開補寫 ---- */
     var calYM=null;
-    function todayLocal(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
     function renderWeekday(){
-      var box=document.getElementById('calWeekday'); if(box.childElementCount) return;
+      var box=$('calWeekday'); if(box.childElementCount) return;
       ['日','一','二','三','四','五','六'].forEach(function(w){ var e=document.createElement('div'); e.className='cal-wd'; e.textContent=w; box.appendChild(e); });
     }
     async function loadCalendar(){
       if(!calYM) calYM=(TODAY||todayLocal()).slice(0,7);
       renderWeekday();
-      try{ renderCalendar(await call('getMonth',{ym:calYM})); }
-      catch(e){ document.getElementById('calDays').innerHTML='<div class="empty" style="grid-column:1/8">載入失敗：'+esc(e.message)+'</div>'; }
+      var ym=calYM;
+      try{ var data=await call('getMonth',{ym:ym}); if(ym===calYM) renderCalendar(data); }
+      catch(e){ $('calDays').innerHTML='<div class="empty" style="grid-column:1/8">載入失敗：'+esc(e.message)+'</div>'; }
     }
     function calShift(delta){
       var y=+calYM.slice(0,4), m=+calYM.slice(5,7)-1+delta, dt=new Date(y,m,1);
       calYM=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2); loadCalendar();
     }
     function renderCalendar(data){
-      var ym=data.ym||calYM; calYM=ym;
+      var ym=data.ym||calYM;
       var y=+ym.slice(0,4), m=+ym.slice(5,7);
-      document.getElementById('calTitle').textContent=y+' 年 '+m+' 月';
-      var first=new Date(y,m-1,1).getDay(), dim=new Date(y,m,0).getDate(), today=(TODAY||todayLocal());
-      var box=document.getElementById('calDays'); box.innerHTML='';
+      $('calTitle').textContent=y+' 年 '+m+' 月';
+      var first=new Date(y,m-1,1).getDay(), dim=new Date(y,m,0).getDate(), today=todayLocal();
+      var box=$('calDays'); box.innerHTML='';
       for(var i=0;i<first;i++){ var b=document.createElement('div'); b.className='cal-cell empty'; box.appendChild(b); }
       for(var d=1;d<=dim;d++){
-        var ds=ym+'-'+(d<10?'0'+d:d), has=data.days&&data.days[ds];
+        var dstr=ym+'-'+(d<10?'0'+d:d), info=data.days&&data.days[dstr], future=dstr>today;
+        var en=info&&info.energy!=null&&info.energy!==''?Math.max(1,Math.min(5,Math.round(+info.energy))):null;
+        var wrote=info&&(info.events==null||+info.events>0);
         var cell=document.createElement('div');
-        cell.className='cal-cell'+(has?' has':'')+(ds===today?' today':'');
-        cell.innerHTML='<span>'+d+'</span><span class="cal-dot" style="'+(has?'':'visibility:hidden')+'"></span>';
-        if(has){ (function(x){ cell.onclick=function(){ openDay(x); }; })(ds); }
+        cell.className='cal-cell'+(info?' has':'')+(en?' lv'+en:'')+(dstr===today?' today':'')+(future?' future':' tap');
+        cell.innerHTML='<span>'+d+'</span><span class="cal-dot" style="'+(wrote?'':'visibility:hidden')+'"></span>';
+        var aria=m+' 月 '+d+' 日'+(en?'，精力 '+en:'')+(info&&info.mood!=null?'，情緒 '+info.mood:'')+(wrote?'，有紀錄':'');
+        cell.setAttribute('aria-label',aria);
+        if(!future){
+          cell.setAttribute('role','button'); cell.tabIndex=0;
+          (function(x){ cell.onclick=function(){ openDay(x); };
+            cell.onkeydown=function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openDay(x); } }; })(dstr);
+        }
         box.appendChild(cell);
       }
     }
+
+    var DAY_CUR=null, DAY_RETURN=null;
     async function openDay(date){
-      document.getElementById('dayTitle').textContent=fmtHead(date);
-      document.getElementById('dayBody').innerHTML='<div class="mini">載入中…</div>';
+      DAY_CUR=date;
+      var isToday=date===todayLocal();
+      $('dayTitle').textContent=fmtHead(date);
+      $('dayDump').innerHTML='<i class="ti ti-writing"></i> '+(isToday?'寫隨筆':'補寫隨筆');
+      $('dayOrid').innerHTML='<i class="ti ti-list-check"></i> '+(isToday?'寫覆盤':'補寫覆盤');
+      $('dayCheckin').innerHTML='<div class="mini">載入中…</div>';
+      $('dayBody').innerHTML='';
       openSheet('sheet-day');
       try{
         var d=await call('getDay',{date:date});
-        document.getElementById('dayBody').innerHTML=renderDayBody(d);
-        Array.prototype.forEach.call(document.querySelectorAll('#dayBody .feed-item'),function(el){
-          if(el.querySelector('.detail')){ el.style.cursor='pointer'; el.onclick=function(){ el.classList.toggle('open'); }; }
-        });
-      }catch(e){ document.getElementById('dayBody').innerHTML='<div class="empty">載入失敗：'+esc(e.message)+'</div>'; }
-    }
-    function dots5(n){ var s=''; for(var i=1;i<=5;i++) s+=(i<=n?'●':'○'); return s; }
-    function renderDayBody(d){
-      if(!d.exists) return '<div class="empty">這天沒有紀錄。</div>';
-      var c=d.checkin||{}, html='', bits=[];
-      if(c.energy!=null) bits.push('精力 '+dots5(c.energy));
-      if(c.mood!=null) bits.push('情緒 '+(c.mood>0?'+':'')+c.mood+(c.mood_label?('・'+esc(c.mood_label)):''));
-      else if(c.mood_label) bits.push('情緒 '+esc(c.mood_label));
-      if(bits.length) html+='<div class="day-checkin">'+bits.join('　　')+'</div>';
-      if(c.raw_brain_dump) html+='<div class="prev" style="margin:8px 0 0">'+esc(c.raw_brain_dump)+'</div>';
-      if(c.ai_reflection) html+='<div class="prev" style="margin:8px 0 0">AI 洞察：'+esc(c.ai_reflection)+'</div>';
-      (d.events||[]).forEach(function(it){ html+=dayCard(it); });
-      if(!html) return '<div class="empty">這天只有打卡，沒有寫內容。</div>';
-      return html;
-    }
-    function dayCard(it){
-      var head='<div class="row1"><span class="'+(it.is_dump?'chip-dump':'chip-cat')+'">'
-        +(it.is_dump?'<i class="ti ti-writing" style="vertical-align:-2px"></i> 隨筆':esc(it.category||'事件'))
-        +'</span><span class="mini">'+esc(it.time||'')+'</span></div>';
-      if(it.is_dump) return '<div class="feed-item">'+head+'<div class="prev">'+esc(it.fact)+'</div></div>';
-      var det='';
-      if(it.reaction) det+='<p class="orid-line"><b>R</b>'+esc(it.reaction)+'</p>';
-      if(it.insight)  det+='<p class="orid-line"><b>I</b>'+esc(it.insight)+'</p>';
-      if(it.action)   det+='<p class="orid-line'+(it.followed?' done-line':'')+'"><b>D</b>'+esc(it.action)+(it.followed?' ✓':'')+'</p>';
-      var tg=it.tags&&it.tags.length?'<div class="feed-tags">'+it.tags.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div>':'';
-      return '<div class="feed-item">'+head+'<div class="fact">'+esc(it.fact||'（未填事實）')+'</div>'
-        +(it.insight?'<div class="prev">洞察：'+esc(it.insight)+'</div>':'')
-        +'<div class="detail">'+(det||'<p class="mini">沒有更多細節</p>')+tg+'</div></div>';
+        if(DAY_CUR!==date) return;
+        var c=d.checkin||{};
+        var st = (date===TODAY && HOME) ? HOMECK
+          : {energy:c.energy!=null?c.energy:null, mood:c.mood!=null?c.mood:null, label:c.mood_label||''};
+        buildCheckinUI($('dayCheckin'), st, {hint:isToday?'今天的電量':'這天的電量', onChange:function(p){
+          if(date===TODAY && HOME){ onHomeCheckin(p); if($('homeCheckin')._paint) $('homeCheckin')._paint(); }
+          else queueCheckin(date, p);
+        }});
+        var body=$('dayBody'); body.innerHTML='';
+        if(c.raw_brain_dump) body.insertAdjacentHTML('beforeend','<div class="feed-item" style="cursor:default"><div class="row1"><span class="chip-dump"><i class="ti ti-writing" style="vertical-align:-2px"></i> 當日隨筆</span></div><div class="prev">'+esc(c.raw_brain_dump)+'</div></div>');
+        if(c.ai_reflection) body.insertAdjacentHTML('beforeend','<div class="flash" style="margin-bottom:10px"><div class="lab">AI 洞察</div><div class="q">'+esc(c.ai_reflection)+'</div></div>');
+        (d.events||[]).forEach(function(it){ body.appendChild(eventCard(it,{date:date})); });
+        if(!body.childElementCount)
+          body.innerHTML='<div class="empty">'+(d.exists?'這天只有打卡，還沒寫內容。':(isToday?'今天還沒有紀錄。':'這天還沒有紀錄，可以在下面補寫。'))+'</div>';
+      }catch(e){ $('dayCheckin').innerHTML=''; $('dayBody').innerHTML='<div class="empty">載入失敗：'+esc(e.message)+'</div>'; }
     }
 
-    function openSheet(id){ document.getElementById('scrim').classList.add('on'); document.getElementById(id).classList.add('on'); }
-    function closeSheets(){ document.getElementById('scrim').classList.remove('on');
-      document.querySelectorAll('.sheet').forEach(function(s){s.classList.remove('on');}); }
-
-    function spark(vals,w,h){
-      var pad=6, n=vals.length, step=(w-pad*2)/(n-1);
-      var pts=[]; vals.forEach(function(v,i){ if(v==null){pts.push(null);return;}
-        var x=pad+i*step, y=h-pad-((v-1)/4)*(h-pad*2); pts.push([Math.round(x),Math.round(y)]); });
-      var segs='', cur=[];
-      pts.forEach(function(p){ if(p){cur.push(p);} else { if(cur.length){segs+=poly(cur);cur=[];} } });
-      if(cur.length) segs+=poly(cur);
-      var dots=pts.filter(Boolean).map(function(p){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.5" fill="#2f6f5e"/>';}).join('');
-      return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto" role="img" aria-label="精力折線圖">'+segs+dots+'</svg>';
+    function openSheet(id){ $('scrim').classList.add('on'); $(id).classList.add('on'); }
+    function closeSheets(silent){
+      var drafted = !silent && ((isSheetOn('sheet-orid') && LS.get(DRAFT_ORID)) || (isSheetOn('sheet-dump') && LS.get(DRAFT_DUMP)));
+      if(!silent) DAY_RETURN=null;
+      $('scrim').classList.remove('on');
+      document.querySelectorAll('.sheet').forEach(function(s){ s.classList.remove('on'); });
+      if(drafted) toast('已存成草稿，下次打開可以接著寫');
     }
-    function poly(pts){ return '<polyline points="'+pts.map(function(p){return p[0]+','+p[1];}).join(' ')
-      +'" fill="none" stroke="#2f6f5e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'; }
+
+    /* ---- 趨勢：近 30 天精力 + 情緒，點圖看當天數值 ---- */
+    var TREND_DATA=null;
+    function num(v){ if(v==null||v==='') return null; var n=+v; return isNaN(n)?null:n; }
+    async function loadTrend(){
+      var t=todayLocal(), start=addDays(t,-29);
+      try{
+        if(!TREND_DATA){
+          var yms=[start.slice(0,7)]; if(t.slice(0,7)!==yms[0]) yms.push(t.slice(0,7));
+          var res=await Promise.all(yms.map(function(ym){ return call('getMonth',{ym:ym}); }));
+          var map={}; res.forEach(function(r){ Object.assign(map,(r&&r.days)||{}); });
+          var days=[];
+          for(var i=0;i<30;i++){ var dstr=addDays(start,i), x=map[dstr]||{}; days.push({date:dstr,energy:num(x.energy),mood:num(x.mood)}); }
+          TREND_DATA=days;
+        }
+        renderTrend(TREND_DATA);
+      }catch(e){
+        $('chartEnergy').innerHTML='<div class="empty">載入失敗：'+esc(e.message)+'</div>';
+        $('chartMood').innerHTML=''; $('trendStats').innerHTML=''; $('trendNotes').innerHTML='';
+      }
+    }
+    function avg(arr){ return arr.length?arr.reduce(function(a,b){ return a+b; },0)/arr.length:null; }
+    function f1(v){ return v==null?'—':(Math.round(v*10)/10).toFixed(1); }
+    function sgn(v){ return v==null?'—':((v>0?'+':'')+f1(v)); }
+    function renderTrend(days){
+      var E=days.filter(function(d){ return d.energy!=null; }), M=days.filter(function(d){ return d.mood!=null; });
+      var rec=days.filter(function(d){ return d.energy!=null||d.mood!=null; }).length;
+      var aE=avg(E.map(function(d){ return d.energy; })), aM=avg(M.map(function(d){ return d.mood; }));
+      $('trendStats').innerHTML=
+         '<div class="stat"><div class="v">'+rec+'<span class="mini"> / 30</span></div><div class="k">打卡天數</div></div>'
+        +'<div class="stat"><div class="v" style="color:var(--accent)">'+f1(aE)+'</div><div class="k">平均精力</div></div>'
+        +'<div class="stat"><div class="v" style="color:var(--mood)">'+sgn(aM)+'</div><div class="k">平均情緒</div></div>';
+      lineChart($('chartEnergy'), days, {key:'energy',name:'精力',min:1,max:5,ticks:[1,3,5],color:'#2f6f5e',fmt:function(v){ return String(v); }});
+      lineChart($('chartMood'), days, {key:'mood',name:'情緒',min:-2,max:2,ticks:[-2,0,2],color:'#b5832f',zero:true,fmt:function(v){ return (v>0?'+':'')+v; }});
+
+      var notes=[];
+      var both=days.filter(function(d){ return d.energy!=null&&d.mood!=null; });
+      var hi=both.filter(function(d){ return d.energy>=4; }), lo=both.filter(function(d){ return d.energy<=2; });
+      if(hi.length>=2 && lo.length>=2){
+        var mh=avg(hi.map(function(d){ return d.mood; })), ml=avg(lo.map(function(d){ return d.mood; }));
+        notes.push('精力 4 以上的 '+hi.length+' 天，情緒平均 <b>'+sgn(mh)+'</b>；精力 2 以下的 '+lo.length+' 天，情緒平均 <b>'+sgn(ml)+'</b>。'
+          +(mh-ml>=1?'精力和情緒明顯連動，顧好睡眠和體力，心情通常也跟著穩。':(Math.abs(mh-ml)<0.5?'這個月情緒不太受精力影響。':'')));
+      }
+      var byWd={}; E.forEach(function(d){ var w=parseD(d.date).getDay(); (byWd[w]=byWd[w]||[]).push(d.energy); });
+      var wds=Object.keys(byWd).filter(function(w){ return byWd[w].length>=2; });
+      if(wds.length>=3){
+        wds.sort(function(a,b){ return avg(byWd[b])-avg(byWd[a]); });
+        var name='日一二三四五六';
+        var best=wds[0], worst=wds[wds.length-1];
+        if(avg(byWd[best])-avg(byWd[worst])>=0.5)
+          notes.push('精力最好通常在<b>週'+name.charAt(best)+'</b>（平均 '+f1(avg(byWd[best]))+'），最低在<b>週'+name.charAt(worst)+'</b>（平均 '+f1(avg(byWd[worst]))+'）。');
+      }
+      var last7=E.filter(function(d){ return d.date>addDays(todayLocal(),-7); }), prev=E.filter(function(d){ return d.date<=addDays(todayLocal(),-7) && d.date>addDays(todayLocal(),-14); });
+      if(last7.length>=3 && prev.length>=3){
+        var diff=avg(last7.map(function(d){ return d.energy; }))-avg(prev.map(function(d){ return d.energy; }));
+        if(Math.abs(diff)>=0.5) notes.push('這週精力比上週'+(diff>0?'<b>高</b>':'<b>低</b>')+' '+f1(Math.abs(diff))+'。');
+      }
+      if(!notes.length) notes.push(rec<7?'再多打卡幾天，這裡就會出現你的精力與情緒規律。':'這 30 天精力和情緒都相當平穩，沒有明顯起伏。');
+      $('trendNotes').innerHTML=notes.map(function(n){ return '<p class="note-line">'+n+'</p>'; }).join('');
+    }
+    function lineChart(root, days, o){
+      var W=320,H=120,pl=24,pr=8,pt=10,pb=20,n=days.length,step=(W-pl-pr)/(n-1);
+      function X(i){ return pl+i*step; }
+      function Y(v){ return pt+(o.max-v)/(o.max-o.min)*(H-pt-pb); }
+      var s='';
+      o.ticks.forEach(function(tk){
+        var y=Y(tk).toFixed(1);
+        s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y+'" y2="'+y+'" stroke="#e6e3dc" stroke-width="1"'+(o.zero&&tk===0?'':' stroke-dasharray="2 3"')+'/>';
+        s+='<text x="'+(pl-6)+'" y="'+(+y+3.5)+'" text-anchor="end" font-size="10" fill="#9aa0a6">'+o.fmt(tk)+'</text>';
+      });
+      var cur=[];
+      function flush(){ if(cur.length>1) s+='<polyline points="'+cur.join(' ')+'" fill="none" stroke="'+o.color+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'; cur=[]; }
+      days.forEach(function(d,i){ var v=d[o.key]; if(v==null){ flush(); return; } cur.push(X(i).toFixed(1)+','+Y(v).toFixed(1)); });
+      flush();
+      days.forEach(function(d,i){ var v=d[o.key]; if(v!=null) s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.6" fill="'+o.color+'"/>'; });
+      [[0,'start'],[Math.floor((n-1)/2),'middle'],[n-1,'end']].forEach(function(p){
+        s+='<text x="'+X(p[0]).toFixed(1)+'" y="'+(H-4)+'" text-anchor="'+p[1]+'" font-size="10" fill="#9aa0a6">'+fmtShort(days[p[0]].date)+'</text>';
+      });
+      s+='<line class="cur-l" x1="0" x2="0" y1="'+pt+'" y2="'+(H-pb)+'" stroke="'+o.color+'" stroke-width="1" opacity="0"/>'
+        +'<circle class="cur-c" r="4.5" fill="#fff" stroke="'+o.color+'" stroke-width="2" opacity="0"/>';
+      root.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;touch-action:pan-y;cursor:crosshair" role="img" aria-label="'+o.name+'近 30 天折線圖">'+s+'</svg>'
+        +'<div class="readout">點圖上任一天，看當天的'+o.name+'</div>';
+      var svg=root.querySelector('svg'), ro=root.querySelector('.readout'), cl=svg.querySelector('.cur-l'), cc=svg.querySelector('.cur-c');
+      function pick(ev){
+        var r=svg.getBoundingClientRect(), x=(ev.clientX-r.left)*W/r.width;
+        var i=Math.max(0,Math.min(n-1,Math.round((x-pl)/step))), d=days[i], v=d[o.key];
+        cl.setAttribute('x1',X(i)); cl.setAttribute('x2',X(i)); cl.setAttribute('opacity','.35');
+        if(v!=null){ cc.setAttribute('cx',X(i)); cc.setAttribute('cy',Y(v)); cc.setAttribute('opacity','1'); } else cc.setAttribute('opacity','0');
+        ro.textContent=fmtHead(d.date)+'　'+o.name+' '+(v==null?'未記錄':o.fmt(v));
+      }
+      svg.addEventListener('pointerdown',pick);
+      svg.addEventListener('pointermove',function(ev){ if(ev.pointerType==='mouse'||ev.buttons) pick(ev); });
+    }
+
+    /* ---- 加到主畫面的圖示與 manifest（執行時產生，不需要額外檔案） ---- */
+    function setupHomeScreenIcon(){
+      function draw(){
+        try{
+          var c=document.createElement('canvas'); c.width=c.height=192; var g=c.getContext('2d');
+          g.fillStyle='#2f6f5e'; g.fillRect(0,0,192,192);
+          g.fillStyle='#fbfaf7'; g.font='600 104px "Noto Serif TC", serif'; g.textAlign='center'; g.textBaseline='middle';
+          g.fillText('記',96,100);
+          var png=c.toDataURL('image/png');
+          var l=document.createElement('link'); l.rel='apple-touch-icon'; l.href=png; document.head.appendChild(l);
+          var start=location.href.split('#')[0].split('?')[0];
+          var man={name:'日記',short_name:'日記',start_url:start,scope:start.replace(/[^\/]*$/,''),display:'standalone',
+            background_color:'#fbfaf7',theme_color:'#fbfaf7',icons:[{src:png,sizes:'192x192',type:'image/png',purpose:'any maskable'}]};
+          var mlink=document.createElement('link'); mlink.rel='manifest';
+          mlink.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(man));
+          document.head.appendChild(mlink);
+        }catch(e){}
+      }
+      if(document.fonts && document.fonts.load) document.fonts.load('600 104px "Noto Serif TC"','記').then(draw,draw); else draw();
+    }
 
     function greet(){ var h=new Date().getHours(); return h<5?'夜深了':h<11?'早安':h<14?'午安':h<18?'午後好':'晚上好'; }
-    function fmtHead(s){ var d=new Date(s+'T00:00:00'); var wd=['日','一','二','三','四','五','六'][d.getDay()];
+    function fmtHead(s){ var d=parseD(s); var wd=['日','一','二','三','四','五','六'][d.getDay()];
       return (d.getMonth()+1)+' 月 '+d.getDate()+' 日 · 週'+wd; }
-    function fmtShort(s){ var d=new Date(s+'T00:00:00'); return (d.getMonth()+1)+'/'+d.getDate(); }
-    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    function fmtShort(s){ if(!s) return ''; var d=parseD(s); return (d.getMonth()+1)+'/'+d.getDate(); }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
     var toastT;
-    function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on');
-      clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('on');},1600); }
-    function showBanner(m){ var b=document.getElementById('banner'); b.textContent=m; b.style.display='block'; }
+    function toast(m, act){
+      var t=$('toast'), b=$('toastAct'); $('toastMsg').textContent=m;
+      if(act){ b.hidden=false; b.textContent=act.label; b.onclick=function(){ t.classList.remove('on'); act.fn(); }; t.classList.add('act'); }
+      else { b.hidden=true; b.onclick=null; t.classList.remove('act'); }
+      t.classList.add('on');
+      clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); }, act?4500:1800);
+    }
+    function showBanner(m, act){
+      var b=$('banner'); b.textContent=m;
+      if(act){ var btn=document.createElement('button'); btn.type='button'; btn.textContent=act.label; btn.onclick=act.fn; b.appendChild(btn); }
+      b.style.display='block';
+    }
+    function hideBanner(){ $('banner').style.display='none'; }
   </script>
 </body>
 </html>
